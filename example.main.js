@@ -1,5 +1,5 @@
 import { AUNTransitions } from "./foundations";
-import { ActiveAutoHydrateComponents, AsyncComponent, CreateComponent, CreateState, HydrateComponentQueue, aune, TextWidget, UseComponent, CreateKit, Widget, View, CreateStackViews, } from "./index";
+import { ActiveAutoHydrateComponents, AsyncComponent, CreateComponent, CreateState, HydrateComponentQueue, aune, TextWidget, UseComponent, CreateKit, Widget, View, CreateStackViews, ImageWidget, } from "./index";
 ActiveAutoHydrateComponents();
 /**
  * Create State
@@ -121,6 +121,11 @@ const HomeFrameComponent = () => Widget({
         }).layer(element => element.style({
             fontSize: '3vmin'
         }).attributeNS({ navigate: { view: 'about' } }, undefined)),
+        Widget({
+            children: ImageWidget({
+                src: 'https://placehold.co/600x400'
+            }),
+        }),
         TextWidget({
             children: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed ipsum explicabo modi, voluptates possimus ducimus excepturi optio consequuntur reiciendis quod quisquam ex, error autem suscipit, enim nisi aliquid sunt impedit?'
         }),

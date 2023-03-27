@@ -16,6 +16,7 @@ import {
   Widget, 
   View,
   CreateStackViews,
+  ImageWidget,
 } from "./index";
 import type { IWProps } from "./types";
 
@@ -248,6 +249,13 @@ const HomeFrameComponent = () => Widget({
       }).attributeNS( { navigate:{ view : 'about' } }, undefined )
       
     ),
+
+    Widget({
+      children: ImageWidget({
+        src: 'https://placehold.co/600x400'
+      }),
+    }),
+    
     
     TextWidget({
 

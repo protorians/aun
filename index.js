@@ -137,6 +137,22 @@ export function Widget(props) {
 export function TextWidget(props) {
     return VWidget('span', props);
 }
+export function ImageWidget(props) {
+    return VWidget('img', props)
+        .layer(e => {
+        Object.entries(props).forEach(({ 0: name, 1: value }) => {
+            if (name == 'mode') {
+                return;
+            }
+            const attr = {};
+            attr[name] = value;
+            e.attribute(attr);
+        });
+        if (props.mode) {
+            e.style({ objectFit: props.mode || '' });
+        }
+    });
+}
 export function View(component, options) {
     return new AunView(component, options);
 }

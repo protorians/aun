@@ -10,26 +10,6 @@ Les Widgets sont des représentant des balise native en HTML. Par contre les com
 Pour cet exemple nous allons créer un composant pour afficher `Hello World`
 
 ```javascript
-<<<<<<< HEAD
-import  type { IWProps } from  "@protorians/aun/types";
-import { Widget } from  "@protorians/aun/index";
-
-// Typage de propriétés
-interface  IHelloProps  extends  IWProps {
-    name : string
-}
-// Composant
-const  myComponent = (( props : IHelloProps ) =>  Widget({
-    children: `Hello ${  props.name  }`
-}));
-
-// Hydrater sur la balise HTML "<HelloWorld name="Me"></HelloWorld>"
-HydrateComponentQueue('HelloWorld', myComponent );
-
-// Deposer le composant dans la balise HTML avec l'id "root" (<div id="root"></div>)
-DropComponent( myComponent, '#root' );
-DropComponent( myComponent, document.querySelector('#root') );
-=======
 import type { IWProps } from "@protorians/aun/types";
 import { Widget } from "@protorians/aun/index";
 
@@ -49,7 +29,6 @@ HydrateComponentQueue("HelloWorld", myComponent);
 // Deposer le composant dans la balise HTML avec l'id "root" (<div id="root"></div>)
 DropComponent(myComponent, "#root");
 DropComponent(myComponent, document.querySelector("#root"));
->>>>>>> 5d64324 (beta.10)
 ```
 
 ## License

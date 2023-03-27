@@ -1,6 +1,6 @@
 {
   "name": "@protorians/aun",
-  "version": "0.0.1-beta.10",
+  "version": "0.0.1-beta.20",
   "description": "user interface maker",
   "main": "index.js",
   "type": "module",

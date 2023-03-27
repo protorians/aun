@@ -2243,13 +2243,15 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
           component.element.on('transitionend', () =>{
 
+          })
+          
+          view.options.transitions?.entry.in( component.element, () => {
+
             this.oldComponent?.element.remove()
 
             this.oldComponent = component;
             
-          })
-          
-          view.options.transitions?.entry.in( component.element, () => {} )
+          } )
 
           if( this.oldComponent ){
 
@@ -2757,7 +2759,7 @@ export class AUNAnimate implements IAnimate{
 
     const patterns = options.patterns || [ (v) => `${ v / 100 }` ]
 
-    options.target.instance.style.transition = `${ properties.join(', ') } 100ms ease`
+    options.target.instance.style.transition = `${ properties.join(', ') } 100ms linear`
   
 
     this.create({
@@ -2780,7 +2782,7 @@ export class AUNAnimate implements IAnimate{
 
           if( property ){
 
-            const style : { [K:string] : string } = {};
+            const style : { [ K : string ] : string } = {};
 
             const pattern = patterns[ k ] || null;
 
@@ -2802,7 +2804,7 @@ export class AUNAnimate implements IAnimate{
 
         else{ 
 
-          requestAnimationFrame(()=> options.target.removeStyle('transition') )
+          setTimeout(()=> options.target.removeStyle('transition'), 100 )
           
         }
         

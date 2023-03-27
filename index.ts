@@ -8,7 +8,25 @@ import {
   AunView,
   AunStackViews
 } from "./foundations";
-import { AUNWindow, IChildren, IComponentConstructor, IHydrateComponent, IKitProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWProps, IWTarget } from "./types";
+
+import { 
+  AUNWindow, 
+  IAttributesMap, 
+  IChildren, 
+  IComponentConstructor, 
+  IHydrateComponent, 
+  IKitProps, 
+  ImageWProps, 
+  INode, 
+  IStackViewsList, 
+  IStackViewsOptions, 
+  IState, 
+  IViewOptions, 
+  IWidget, 
+  IWidgetAsyncCallback, 
+  IWProps, 
+  IWTarget 
+} from "./types";
 
 
 const aunWindow : AUNWindow = { ...window }
@@ -231,9 +249,40 @@ export function Widget<P extends IWProps>( props : P ){
  * otherProp: ...
  * })
  */
-export function TextWidget<P extends IWProps>( props : P ){
+export function TextWidget<P extends IWProps>( props : P ) : AunWidget<P, HTMLSpanElement>{
 
   return VWidget<P, HTMLSpanElement>( 'span', props )
+  
+}
+
+
+export function ImageWidget( props : ImageWProps ) : AunWidget<ImageWProps, HTMLImageElement>{
+
+  return VWidget<ImageWProps, HTMLImageElement>( 'img', props )
+
+    .layer( e => {
+
+      Object.entries( props ).forEach( ({ 0: name, 1: value }) => {
+
+        if( name == 'mode'){ return ; }
+
+        const attr : IAttributesMap = {};
+
+        attr[ name ] = value;
+
+        e.attribute( attr );
+        
+      });
+
+      if( props.mode ){
+
+        e.style({ objectFit: props.mode || '' });
+        
+      }
+      
+    })
+  
+  ;
   
 }
 

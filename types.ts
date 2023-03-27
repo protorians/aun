@@ -88,6 +88,39 @@ export interface IWProps extends IProps{
 
 
 
+export interface ImageWProps extends IProps{
+
+  src: string;
+  
+  mode?: 'cover' | 'contain' | 'auto';
+
+  alt?: string;
+
+  width?: string;
+
+  height?: string;
+
+  aspectRatio?: string;
+
+  crossorigin?: string;
+
+  ismap?: boolean;
+
+  loading?: 'eager' | 'lazy';
+
+  longdesc?: string;
+
+  referrerpolicy?: 'no-referrer' | 'no-referrer-when-downgrade' | 'origin' | ' origin-when-cross-origin' | 'unsafe-url';
+
+  sizes?: string;
+
+  srcset?: string;
+
+  usemap?: string;
+
+}
+
+
 export type IEmitterCallback<I> = ( payload : I ) => void | boolean;
 
 

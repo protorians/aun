@@ -762,7 +762,7 @@ declare module '@protorians/aun/foundations' {
 }
 declare module '@protorians/aun/index' {
   import { AunElement, AunState, AunWidget, AunView, AunStackViews } from "@protorians/aun/foundations";
-  import { IChildren, IComponentConstructor, IHydrateComponent, IKitProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWProps, IWTarget } from "@protorians/aun/types";
+  import { IChildren, IComponentConstructor, IHydrateComponent, IKitProps, ImageWProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWProps, IWTarget } from "@protorians/aun/types";
   /**
    * CreateState
    * @description Instance fonctionnelle d'usage de gestion des états AUN
@@ -858,6 +858,7 @@ declare module '@protorians/aun/index' {
    * })
    */
   export function TextWidget<P extends IWProps>(props: P): AunWidget<P, HTMLSpanElement>;
+  export function ImageWidget(props: ImageWProps): AunWidget<ImageWProps, HTMLImageElement>;
   export function View<C extends IWProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined): AunView<C>;
   export function CreateStackViews<Scheme>(views: IStackViewsList<Scheme>, options?: IStackViewsOptions<Scheme>): AunStackViews<Scheme>;
   /**
@@ -1037,6 +1038,22 @@ declare module '@protorians/aun/types' {
    */
   export interface IWProps extends IProps {
       children?: IChildren;
+  }
+  export interface ImageWProps extends IProps {
+      src: string;
+      mode?: 'cover' | 'contain' | 'auto';
+      alt?: string;
+      width?: string;
+      height?: string;
+      aspectRatio?: string;
+      crossorigin?: string;
+      ismap?: boolean;
+      loading?: 'eager' | 'lazy';
+      longdesc?: string;
+      referrerpolicy?: 'no-referrer' | 'no-referrer-when-downgrade' | 'origin' | ' origin-when-cross-origin' | 'unsafe-url';
+      sizes?: string;
+      srcset?: string;
+      usemap?: string;
   }
   export type IEmitterCallback<I> = (payload: I) => void | boolean;
   export type IEmitterEntry = {
