@@ -41,7 +41,7 @@ export function fe(find, callback) {
     return target;
 }
 /**
- * Protorian EventDispatcher — Emetteur d'émission
+ * AUN EventDispatcher — Emetteur d'émission
  * @description Gestionnaire d'évènements
  * @example new AunEmitter<EmitScheme>()
  */
@@ -94,11 +94,15 @@ export default class AunEmitter {
     }
 }
 /**
- * Protorian Element
+ * AUN Element
  * @description Encapscule l'lement HTML pour un usage optimal
  * @example AunElement<HTMLDivElement>('div')
  */
 export class AunElement {
+    /**
+     * Widget associé
+     */
+    get widget() { return __classPrivateFieldGet(this, _AunElement_widget, "f"); }
     constructor(tagname) {
         /**
          * Emetteur
@@ -107,10 +111,6 @@ export class AunElement {
         _AunElement_widget.set(this, undefined);
         this.instance = document.createElement(tagname);
     }
-    /**
-     * Widget associé
-     */
-    get widget() { return __classPrivateFieldGet(this, _AunElement_widget, "f"); }
     /**
      * own
      * @description Définit le widget propriétaire de l'élément
@@ -480,8 +480,8 @@ export function AunrseAppearanceValues(value) {
     return value;
 }
 /**
- * Protorian Appearance
- * @description Gestionnaire d'apparence des éléments Protorian
+ * AUN Appearance
+ * @description Gestionnaire d'apparence des éléments AUN
  */
 export class AunAppearance {
     constructor() {
@@ -642,10 +642,18 @@ export class AunAppearance {
     }
 }
 /**
- * Protorian Attribute
+ * AUN Attribute
  * @description Gestionnaire d'attribute dynamique
  */
 export class AunAttribute {
+    /**
+     * Les entrées
+     */
+    get entries() { return __classPrivateFieldGet(this, _AunAttribute_entries, "f"); }
+    /**
+     * La valeur de l'attribut
+     */
+    get value() { return __classPrivateFieldGet(this, _AunAttribute_entries, "f").filter(value => value.trim().length).join(' ').trim(); }
     constructor(element, attributeName = '') {
         _AunAttribute_entries.set(this, []);
         _AunAttribute_element.set(this, null);
@@ -661,14 +669,6 @@ export class AunAttribute {
         this.attributeName = attributeName;
         this.sync(this.attributeName);
     }
-    /**
-     * Les entrées
-     */
-    get entries() { return __classPrivateFieldGet(this, _AunAttribute_entries, "f"); }
-    /**
-     * La valeur de l'attribut
-     */
-    get value() { return __classPrivateFieldGet(this, _AunAttribute_entries, "f").filter(value => value.trim().length).join(' ').trim(); }
     /**
      * sync
      * @description Synchronise les attributs
@@ -768,10 +768,14 @@ export class AunAttribute {
 }
 _AunAttribute_entries = new WeakMap(), _AunAttribute_element = new WeakMap();
 /**
- * Protorian State
+ * AUN State
  * @description Gestionnaire d'état
  */
 export class AunState {
+    /**
+     * Retourne la valeur de l'état
+     */
+    get value() { return __classPrivateFieldGet(this, _AunState_mirror, "f"); }
     constructor(state) {
         _AunState_instances.add(this);
         _AunState_mirror.set(this, void 0);
@@ -786,10 +790,6 @@ export class AunState {
         // this.#store = state;
         __classPrivateFieldGet(this, _AunState_instances, "m", _AunState_emitters).call(this).initialize();
     }
-    /**
-     * Retourne la valeur de l'état
-     */
-    get value() { return __classPrivateFieldGet(this, _AunState_mirror, "f"); }
     /**
      * initialize
      * @description Initialise l'état
@@ -937,10 +937,14 @@ _AunState_mirror = new WeakMap(), _AunState_recorded = new WeakMap(), _AunState_
     return this;
 };
 /**
- * Protorian Widget
+ * AUN Widget
  * @description Pour les composant HTML de base
  */
 export class AunWidget {
+    /**
+     * Les propriétés
+     */
+    get props() { return __classPrivateFieldGet(this, _AunWidget__props, "f"); }
     constructor(tagname, props) {
         _AunWidget_instances.add(this);
         _AunWidget__props.set(this, void 0);
@@ -956,10 +960,6 @@ export class AunWidget {
         this.element = (new AunElement(tagname)).own(this);
         __classPrivateFieldGet(this, _AunWidget_instances, "m", _AunWidget_excavation).call(this, this.props);
     }
-    /**
-     * Les propriétés
-     */
-    get props() { return __classPrivateFieldGet(this, _AunWidget__props, "f"); }
     append(...nodes) {
         this.element.instance.append(...nodes);
         return this;
@@ -1087,7 +1087,7 @@ _AunWidget__props = new WeakMap(), _AunWidget_instances = new WeakSet(), _AunWid
     return this;
 };
 /**
- * Protorian Construct
+ * AUN Construct
  * @description Constructeur de Widget
  */
 export class AunConstruct {
@@ -1178,14 +1178,14 @@ export class AunConstruct {
     }
 }
 export class AunView {
+    get parameters() { return __classPrivateFieldGet(this, _AunView__parameters, "f"); }
+    get component() { return __classPrivateFieldGet(this, _AunView__component, "f"); }
     constructor(componentConstructor, options) {
         _AunView__parameters.set(this, {});
         _AunView__component.set(this, undefined);
         this.componentConstructor = componentConstructor;
         this.options = options || {};
     }
-    get parameters() { return __classPrivateFieldGet(this, _AunView__parameters, "f"); }
-    get component() { return __classPrivateFieldGet(this, _AunView__component, "f"); }
     show(parameters) {
         __classPrivateFieldSet(this, _AunView__parameters, parameters, "f");
         this.component?.element.removeStyle('display');
@@ -1211,6 +1211,10 @@ export class AunView {
 }
 _AunView__parameters = new WeakMap(), _AunView__component = new WeakMap();
 export class AunStackViews {
+    /**
+     * Les vues
+     */
+    get views() { return __classPrivateFieldGet(this, _AunStackViews_views, "f"); }
     constructor(views, options) {
         _AunStackViews_instances.add(this);
         _AunStackViews_views.set(this, {});
@@ -1240,10 +1244,6 @@ export class AunStackViews {
         });
         __classPrivateFieldGet(this, _AunStackViews_instances, "m", _AunStackViews_initializeCanvas).call(this);
     }
-    /**
-     * Les vues
-     */
-    get views() { return __classPrivateFieldGet(this, _AunStackViews_views, "f"); }
     middleware(callback) {
         this.navigation.options.middlewares?.push(callback);
         return this;
@@ -1517,6 +1517,7 @@ AUNTransitions.horizontalSlide = new AUNTransition({
  * Animation des éléments
  */
 export class AUNAnimate {
+    get defaultFrame() { return 60; }
     constructor(target, callback) {
         _AUNAnimate_instances.add(this);
         _AUNAnimate_target.set(this, void 0);
@@ -1531,7 +1532,6 @@ export class AUNAnimate {
         __classPrivateFieldSet(this, _AUNAnimate_target, target, "f");
         __classPrivateFieldSet(this, _AUNAnimate_callback, callback, "f");
     }
-    get defaultFrame() { return 60; }
     clean() {
         this.options = __classPrivateFieldGet(this, _AUNAnimate_originOptions, "f");
         return this;
@@ -1704,29 +1704,3 @@ _AUNAnimate_target = new WeakMap(), _AUNAnimate_callback = new WeakMap(), _AUNAn
     });
     return this;
 };
-/**
- * Animations des éléments
- */
-// export class AUNAnimates implements IAnimates{
-//   props : IAnimateProps;
-//   constructor( props : IAnimateProps ){
-//     this.props = props;
-//     console.log('Animate with', props )
-//   }
-//   start() : this {
-//     return this;
-//   }
-// }
-/**
- * Système de changement de vue
- */
-// export class AunViewSwitcher implements IViewSwitcher{
-//   props : IViewSwitcherProps = {} as IViewSwitcherProps;
-//   constructor( props : IViewSwitcherProps ){
-//     this.props = props;
-//   }
-//   make(){
-//     console.log('Make Switcher', this.props )
-//     return this;
-//   }
-// }

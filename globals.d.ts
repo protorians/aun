@@ -20,7 +20,7 @@ declare module '@protorians/aun/foundations' {
    */
   export function fe(find: IWTarget | undefined, callback?: IFindElementCallback): IWTargetNode | undefined;
   /**
-   * Protorian EventDispatcher — Emetteur d'émission
+   * AUN EventDispatcher — Emetteur d'émission
    * @description Gestionnaire d'évènements
    * @example new AunEmitter<EmitScheme>()
    */
@@ -52,7 +52,7 @@ declare module '@protorians/aun/foundations' {
       dispatch(type: keyof Scheme, data: any): this;
   }
   /**
-   * Protorian Element
+   * AUN Element
    * @description Encapscule l'lement HTML pour un usage optimal
    * @example AunElement<HTMLDivElement>('div')
    */
@@ -262,8 +262,8 @@ declare module '@protorians/aun/foundations' {
    */
   export function AunrseAppearanceValues(value: IAppearanceValues): string | undefined;
   /**
-   * Protorian Appearance
-   * @description Gestionnaire d'apparence des éléments Protorian
+   * AUN Appearance
+   * @description Gestionnaire d'apparence des éléments AUN
    */
   export class AunAppearance implements IAppearance {
       /**
@@ -366,7 +366,7 @@ declare module '@protorians/aun/foundations' {
       sync(): this;
   }
   /**
-   * Protorian Attribute
+   * AUN Attribute
    * @description Gestionnaire d'attribute dynamique
    */
   export class AunAttribute implements IAttribute {
@@ -446,7 +446,7 @@ declare module '@protorians/aun/foundations' {
       unlink(attributes?: string | string[]): this;
   }
   /**
-   * Protorian State
+   * AUN State
    * @description Gestionnaire d'état
    */
   export class AunState<S extends IState> implements IStateManager<S> {
@@ -519,7 +519,7 @@ declare module '@protorians/aun/foundations' {
       catch(callback: IStateErrorCallback<S>): this;
   }
   /**
-   * Protorian Widget
+   * AUN Widget
    * @description Pour les composant HTML de base
    */
   export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P, E> {
@@ -611,7 +611,7 @@ declare module '@protorians/aun/foundations' {
       frameReady(callback: IWidgetRequestAnimationFrameCallback): this;
   }
   /**
-   * Protorian Construct
+   * AUN Construct
    * @description Constructeur de Widget
    */
   export class AunConstruct<P extends IWProps, E extends INode> implements IConstruct<P, E> {
@@ -758,12 +758,6 @@ declare module '@protorians/aun/foundations' {
       play(): this;
       static trigger(target: IAnimateTarget, callback: IAnimateCallback): AUNAnimate;
   }
-  /**
-   * Animations des éléments
-   */
-  /**
-   * Système de changement de vue
-   */
 
 }
 declare module '@protorians/aun/index' {
@@ -771,7 +765,7 @@ declare module '@protorians/aun/index' {
   import { IChildren, IComponentConstructor, IHydrateComponent, IKitProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWProps, IWTarget } from "@protorians/aun/types";
   /**
    * CreateState
-   * @description Instance fonctionnelle d'usage de gestion des états Protorian
+   * @description Instance fonctionnelle d'usage de gestion des états AUN
    * @param state Valeur par default de l'état
    * @example CreateState<StateType>( stateValue )
    */
@@ -830,15 +824,15 @@ declare module '@protorians/aun/index' {
    */
   export function CreateKit(definition: IKitProps): <P extends IWProps, E extends HTMLElement>(p: P) => IWidget<P, E>;
   /**
-   * aun — Protorian Virtual Element
-   * @description Instance fonctionnelle d'usage des éléments Protorian
+   * aune — AUN Virtual Element
+   * @description Instance fonctionnelle d'usage des éléments AUN
    * @param tagname Nom de la balise HTML
    * @example aun<HTMLSpanElement>( 'span' )
    */
   export function aune<E extends INode>(tagname: string): AunElement<E>;
   /**
    * VWidget
-   * @description Instance fonctionnelle d'usage des Widgets Protorian
+   * @description Instance fonctionnelle d'usage des Widgets AUN
    * @param tagname Nom de la balise HTML
    * @param props Propriétés du widget
    * @example VWidget<PropsType, HTMLSpanElement>( 'span', props )
@@ -867,7 +861,7 @@ declare module '@protorians/aun/index' {
   export function View<C extends IWProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined): AunView<C>;
   export function CreateStackViews<Scheme>(views: IStackViewsList<Scheme>, options?: IStackViewsOptions<Scheme>): AunStackViews<Scheme>;
   /**
-   * Protorian Construct
+   * AUN Construct
    * @description Construire un composant à partir des enfants
    * @param component Composant cible
    * @param children Enfant à injecter
@@ -885,16 +879,16 @@ declare module '@protorians/aun/index' {
   export function CreateComponent<P extends IWProps>(name: string, widgetConstructor: IHydrateComponent<any, HTMLElement>): IHydrateComponent<P, HTMLElement>;
   /**
    * HydrateComponentQueue
-   * @description Fil d'attente des hydration des composants Protorian
+   * @description Fil d'attente des hydration des composants AUN
    * @param name CNom du composant. Sensible à la case
-   * @param widgetConstructor Constructeur du composant Protorian
+   * @param widgetConstructor Constructeur du composant AUN
    * @example HydrateComponentQueue<WidgetPropsType>( 'ComponentName', ( props : WidgetProps ) => ... )
    */
   export function HydrateComponentQueue<P extends IWProps>(name: string, widgetConstructor: IHydrateComponent<any, HTMLElement>): IHydrateComponent<any, HTMLElement>;
   /**
    * HydrateComponent
    * @param name Chaine de caratère représentant le nom du composant. Sensible à la case
-   * @param widgetConstructor Constructeur du composant Protorian
+   * @param widgetConstructor Constructeur du composant AUN
    * @example HydrateComponent<PropsType>( 'Hello', HelloComponent )
    */
   export function HydrateComponent<P extends IWProps>(name: string, widgetConstructor: IHydrateComponent<any, HTMLElement>): IHydrateComponent<any, HTMLElement>;
@@ -912,38 +906,43 @@ declare module '@protorians/aun/index' {
    */
   export function ActiveAutoHydrateComponents(): MutationObserver;
   /**
-   * Protorian
+   * AUN
    * @description Exportations des fonctionnalités de base du framework
    */
-  export default class Protorian {
+  export default class AUN {
       /**
-       * aun — Protorian Virtual Element
-       * @description Instance fonctionnelle d'usage des éléments Protorian
+       * aune — AUN Virtual Element
+       * @alias aune
+       * @description Instance fonctionnelle d'usage des éléments AUN
        */
-      static VirtualElement: typeof aune;
+      static Element: typeof aune;
       /**
        * VWidget
-       * @description Instance fonctionnelle d'usage des Widgets Protorian
+       * @alias VWidget
+       * @description Instance fonctionnelle d'usage des Widgets AUN
        */
       static VWidget: typeof VWidget;
       /**
        * Construct
+       * @alias Construct
        * @description Construire un composant via AunConstruct
        */
       static Construct: typeof Construct;
       /**
        * Widget
+       * @alias Widget
        * @description Créer une couche de calque
        */
       static Widget: typeof Widget;
       /**
        * Textual
+       * @alias TextWidget
        * @description Calque destiné aux textes
        */
       static Textual: typeof TextWidget;
       /**
        * CreateState
-       * @description Instance fonctionnelle d'usage de gestion des états Protorian
+       * @description Instance fonctionnelle d'usage de gestion des états AUN
        */
       static CreateState: typeof CreateState;
       /**

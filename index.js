@@ -3,7 +3,7 @@ const aunWindow = { ...window };
 aunWindow.AUNRC = aunWindow.AUNRC || {};
 /**
  * CreateState
- * @description Instance fonctionnelle d'usage de gestion des états Protorian
+ * @description Instance fonctionnelle d'usage de gestion des états AUN
  * @param state Valeur par default de l'état
  * @example CreateState<StateType>( stateValue )
  */
@@ -91,8 +91,8 @@ export function CreateKit(definition) {
         .layer(element => element.className(appearence.uid));
 }
 /**
- * aun — Protorian Virtual Element
- * @description Instance fonctionnelle d'usage des éléments Protorian
+ * aune — AUN Virtual Element
+ * @description Instance fonctionnelle d'usage des éléments AUN
  * @param tagname Nom de la balise HTML
  * @example aun<HTMLSpanElement>( 'span' )
  */
@@ -101,7 +101,7 @@ export function aune(tagname) {
 }
 /**
  * VWidget
- * @description Instance fonctionnelle d'usage des Widgets Protorian
+ * @description Instance fonctionnelle d'usage des Widgets AUN
  * @param tagname Nom de la balise HTML
  * @param props Propriétés du widget
  * @example VWidget<PropsType, HTMLSpanElement>( 'span', props )
@@ -154,7 +154,7 @@ export function CreateStackViews(views, options = {}) {
 // export function FormWidget(){}
 // export function InputWidget(){}
 /**
- * Protorian Construct
+ * AUN Construct
  * @description Construire un composant à partir des enfants
  * @param component Composant cible
  * @param children Enfant à injecter
@@ -178,9 +178,9 @@ export function CreateComponent(name, widgetConstructor) {
 }
 /**
  * HydrateComponentQueue
- * @description Fil d'attente des hydration des composants Protorian
+ * @description Fil d'attente des hydration des composants AUN
  * @param name CNom du composant. Sensible à la case
- * @param widgetConstructor Constructeur du composant Protorian
+ * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponentQueue<WidgetPropsType>( 'ComponentName', ( props : WidgetProps ) => ... )
  */
 export function HydrateComponentQueue(name, widgetConstructor) {
@@ -193,7 +193,7 @@ export function HydrateComponentQueue(name, widgetConstructor) {
 /**
  * HydrateComponent
  * @param name Chaine de caratère représentant le nom du composant. Sensible à la case
- * @param widgetConstructor Constructeur du composant Protorian
+ * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponent<PropsType>( 'Hello', HelloComponent )
  */
 export function HydrateComponent(name, widgetConstructor) {
@@ -257,63 +257,68 @@ export function ActiveAutoHydrateComponents() {
     return aunWindow.AUNHW;
 }
 /**
- * Protorian
+ * AUN
  * @description Exportations des fonctionnalités de base du framework
  */
-export default class Protorian {
+export default class AUN {
 }
 /**
- * aun — Protorian Virtual Element
- * @description Instance fonctionnelle d'usage des éléments Protorian
+ * aune — AUN Virtual Element
+ * @alias aune
+ * @description Instance fonctionnelle d'usage des éléments AUN
  */
-Protorian.VirtualElement = aune;
+AUN.Element = aune;
 /**
  * VWidget
- * @description Instance fonctionnelle d'usage des Widgets Protorian
+ * @alias VWidget
+ * @description Instance fonctionnelle d'usage des Widgets AUN
  */
-Protorian.VWidget = VWidget;
+AUN.VWidget = VWidget;
 /**
  * Construct
+ * @alias Construct
  * @description Construire un composant via AunConstruct
  */
-Protorian.Construct = Construct;
+AUN.Construct = Construct;
 /**
  * Widget
+ * @alias Widget
  * @description Créer une couche de calque
  */
-Protorian.Widget = Widget;
+AUN.Widget = Widget;
 /**
  * Textual
+ * @alias TextWidget
  * @description Calque destiné aux textes
  */
-Protorian.Textual = TextWidget;
+AUN.Textual = TextWidget;
 /**
  * CreateState
- * @description Instance fonctionnelle d'usage de gestion des états Protorian
+ * @description Instance fonctionnelle d'usage de gestion des états AUN
  */
-Protorian.CreateState = CreateState;
+AUN.CreateState = CreateState;
 /**
  * DropComponent
  * @description Lier un composant à une cicle
  */
-Protorian.DropComponent = DropComponent;
+AUN.DropComponent = DropComponent;
 /**
  * DropComponents
  * @description Lier plusieurs composants à plusieurs cicles
  */
-Protorian.DropComponents = DropComponents;
+AUN.DropComponents = DropComponents;
 /**
  * InstantiateComponent
  * @description Instancier un composant. Cela permet de garder l'instance courante du composant avec les propriétés définies
  */
-Protorian.InstantiateComponent = InstantiateComponent;
+AUN.InstantiateComponent = InstantiateComponent;
 /**
  * AsyncComponent
  * @description Utiliser un composant avec une promesse. Composant bloquant en attendant le traitement.
  */
-Protorian.AsyncComponent = AsyncComponent;
+AUN.AsyncComponent = AsyncComponent;
 /**
  * UseComponent
  * @description Utiliser un composant dans une / plusieurs cibles
  */
-Protorian.UseComponent = UseComponent;
+AUN.UseComponent = UseComponent;

@@ -19,7 +19,7 @@ aunWindow.AUNRC = aunWindow.AUNRC || {}
 
 /**
  * CreateState
- * @description Instance fonctionnelle d'usage de gestion des états Protorian
+ * @description Instance fonctionnelle d'usage de gestion des états AUN
  * @param state Valeur par default de l'état
  * @example CreateState<StateType>( stateValue )
  */
@@ -172,8 +172,8 @@ export function CreateKit( definition : IKitProps ){
 
 
 /**
- * aun — Protorian Virtual Element
- * @description Instance fonctionnelle d'usage des éléments Protorian
+ * aune — AUN Virtual Element
+ * @description Instance fonctionnelle d'usage des éléments AUN
  * @param tagname Nom de la balise HTML
  * @example aun<HTMLSpanElement>( 'span' )
  */
@@ -186,7 +186,7 @@ export function aune<E extends INode>( tagname : string ){
 
 /**
  * VWidget
- * @description Instance fonctionnelle d'usage des Widgets Protorian
+ * @description Instance fonctionnelle d'usage des Widgets AUN
  * @param tagname Nom de la balise HTML
  * @param props Propriétés du widget
  * @example VWidget<PropsType, HTMLSpanElement>( 'span', props )
@@ -291,7 +291,7 @@ export function CreateStackViews<Scheme>(
 
 
 /**
- * Protorian Construct
+ * AUN Construct
  * @description Construire un composant à partir des enfants
  * @param component Composant cible
  * @param children Enfant à injecter
@@ -339,9 +339,9 @@ export function CreateComponent<P extends IWProps>(
 
 /**
  * HydrateComponentQueue
- * @description Fil d'attente des hydration des composants Protorian
+ * @description Fil d'attente des hydration des composants AUN
  * @param name CNom du composant. Sensible à la case
- * @param widgetConstructor Constructeur du composant Protorian
+ * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponentQueue<WidgetPropsType>( 'ComponentName', ( props : WidgetProps ) => ... )
  */
 export function HydrateComponentQueue<P extends IWProps>( 
@@ -368,7 +368,7 @@ export function HydrateComponentQueue<P extends IWProps>(
 /**
  * HydrateComponent
  * @param name Chaine de caratère représentant le nom du composant. Sensible à la case
- * @param widgetConstructor Constructeur du composant Protorian
+ * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponent<PropsType>( 'Hello', HelloComponent )
  */
 export function HydrateComponent<P extends IWProps>( 
@@ -485,44 +485,49 @@ export function ActiveAutoHydrateComponents(){
 
 
 /**
- * Protorian
+ * AUN
  * @description Exportations des fonctionnalités de base du framework 
  */
-export default class Protorian { 
+export default class AUN { 
 
   /**
-   * aun — Protorian Virtual Element
-   * @description Instance fonctionnelle d'usage des éléments Protorian
+   * aune — AUN Virtual Element
+   * @alias aune
+   * @description Instance fonctionnelle d'usage des éléments AUN
    */
-  static VirtualElement = aune;
+  static Element = aune;
 
   /**
    * VWidget
-   * @description Instance fonctionnelle d'usage des Widgets Protorian
+   * @alias VWidget
+   * @description Instance fonctionnelle d'usage des Widgets AUN
    */
   static VWidget = VWidget;
 
   /**
    * Construct
+   * @alias Construct
    * @description Construire un composant via AunConstruct
    */
   static Construct = Construct;
 
   /**
    * Widget
+   * @alias Widget
    * @description Créer une couche de calque
    */
   static Widget = Widget;
 
   /**
    * Textual
+   * @alias TextWidget
    * @description Calque destiné aux textes
    */
   static Textual = TextWidget;
   
   /**
    * CreateState
-   * @description Instance fonctionnelle d'usage de gestion des états Protorian
+   * @description Instance fonctionnelle d'usage de gestion des états AUN
    */
   static CreateState = CreateState;
 

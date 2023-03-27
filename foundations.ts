@@ -139,7 +139,7 @@ export function fe(
 }
 
 /**
- * Protorian EventDispatcher — Emetteur d'émission
+ * AUN EventDispatcher — Emetteur d'émission
  * @description Gestionnaire d'évènements
  * @example new AunEmitter<EmitScheme>()
  */
@@ -214,7 +214,7 @@ export default class AunEmitter<Scheme extends IEmitterScheme> implements IEmitt
 }
 
 /**
- * Protorian Element
+ * AUN Element
  * @description Encapscule l'lement HTML pour un usage optimal
  * @example AunElement<HTMLDivElement>('div')
  */
@@ -868,8 +868,8 @@ export function AunrseAppearanceValues( value : IAppearanceValues ){
 }
 
 /**
- * Protorian Appearance
- * @description Gestionnaire d'apparence des éléments Protorian
+ * AUN Appearance
+ * @description Gestionnaire d'apparence des éléments AUN
  */
 export class AunAppearance implements IAppearance{
 
@@ -1131,7 +1131,7 @@ export class AunAppearance implements IAppearance{
 }
 
 /**
- * Protorian Attribute
+ * AUN Attribute
  * @description Gestionnaire d'attribute dynamique
  */
 export class AunAttribute implements IAttribute {
@@ -1313,7 +1313,7 @@ export class AunAttribute implements IAttribute {
 }
 
 /**
- * Protorian State
+ * AUN State
  * @description Gestionnaire d'état
  */
 export class AunState<S extends IState> implements IStateManager<S>{
@@ -1606,7 +1606,7 @@ export class AunState<S extends IState> implements IStateManager<S>{
 }
 
 /**
- * Protorian Widget
+ * AUN Widget
  * @description Pour les composant HTML de base
  */
 export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P, E>{
@@ -1846,7 +1846,7 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
 }
 
 /**
- * Protorian Construct
+ * AUN Construct
  * @description Constructeur de Widget
  */
 export class AunConstruct<P extends IWProps, E extends INode> implements IConstruct<P, E>{
