@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        
+        "noImplicitAny": true,
+        "allowJs": false,
+        "moduleResolution":"node",
+        // "jsx": "react",
+        "removeComments": false,
+        "target": "ES2020",
+        "declaration": false,
+        "declarationMap": false,
+        "inlineSourceMap": false,
+        "inlineSources": false,
+        "strict": true,
+        // "module": "ES2020",
+        "esModuleInterop": true,
+        "sourceMap": false,
+        "preserveConstEnums": false,
+
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noEmit": false,
+
+        "types": ["node"],
+
+        "outDir": "."
+
+    },
+    
+    "exclude": [
+        "node_modules",
+        "vite.config.ts"
+    ],
+
+    "include": ["./"]
+  
+  }

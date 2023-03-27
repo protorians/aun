@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.formatOnSave": false,
+    "editor.maxTokenizationLineLength": 2500
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  }
+}
