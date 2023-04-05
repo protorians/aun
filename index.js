@@ -1,4 +1,5 @@
-import { AunConstruct, AunElement, AunAppearance, AunState, AunWidget, AunView, AunStackViews } from "./foundations";
+import CoreAppearance from "@protorians/core/appearance";
+import { AunConstruct, AunElement, AunState, AunWidget, AunView, AunStackViews } from "./foundations";
 const aunWindow = { ...window };
 aunWindow.AUNRC = aunWindow.AUNRC || {};
 /**
@@ -33,13 +34,13 @@ export function DropComponents(component, targets) {
     targets.forEach(target => DropComponent(component, target));
     return component;
 }
-/**
- * InstantiateComponent
- * @description Instancier un composant. Cela permet de garder l'instance courante du composant avec les propriétés définies. À utiliser dans les cas l'IDE n'arrive pas typer correctement les variables.
- * @param component Composant cible
- * @example InstantiateComponent( component( props ) )
- */
-export function InstantiateComponent(component) { return component; }
+// /**
+//  * InstantiateComponent
+//  * @description Instancier un composant. Cela permet de garder l'instance courante du composant avec les propriétés définies. À utiliser dans les cas l'IDE n'arrive pas typer correctement les variables.
+//  * @param component Composant cible
+//  * @example InstantiateComponent( component( props ) )
+//  */
+// export function InstantiateComponent( component : IWidget<any, any> ){ return component; }
 /**
  * AsyncComponent
  * @description Utiliser un composant avec une promesse. Composant bloquant en attendant le traitement. Il peut être ajouter aux enfants d'un widget
@@ -85,10 +86,8 @@ export function UseComponent(component, target) {
  * } )
  */
 export function CreateKit(definition) {
-    const appearence = new AunAppearance();
-    appearence.sheet(definition.appearance).mount();
     return (p) => definition.component(p)
-        .layer(element => element.className(appearence.uid));
+        .layer(element => element.className((new CoreAppearance()).sheet(definition.appearance).mount().uid));
 }
 /**
  * aune — AUN Virtual Element
@@ -100,13 +99,13 @@ export function aune(tagname) {
     return (new AunElement(tagname));
 }
 /**
- * VWidget
+ * RawWidget
  * @description Instance fonctionnelle d'usage des Widgets AUN
  * @param tagname Nom de la balise HTML
  * @param props Propriétés du widget
- * @example VWidget<PropsType, HTMLSpanElement>( 'span', props )
+ * @example RawWidget<PropsType, HTMLSpanElement>( 'span', props )
  */
-export function VWidget(tagname, props) {
+export function RawWidget(tagname, props) {
     const widget = (new AunWidget(tagname, props));
     widget.emitter.dispatch('beforeRendering', widget);
     widget.render();
@@ -116,29 +115,37 @@ export function VWidget(tagname, props) {
 /**
  * Widget
  * @description Créer une couche de calque
- * @param props Propriétés du widget. La propriété `children` représente les enfants du widget (contenu)
+ * @param props Propriétés du widget. La propriété `child` représente les enfants du widget (contenu)
  * @example Widget<PropsType>({
- * children: ...
+ * child: ...
  * otherProp: ...
  * })
  */
 export function Widget(props) {
-    return VWidget('div', props);
+    return RawWidget('div', props);
 }
 /**
  * Textual
  * @description Calque destiné aux textes
- * @param props Propriétés du widget. La propriété `children` représente les enfants du widget (contenu)
+ * @param props Propriétés du widget. La propriété `child` représente contenu de type string
  * @example Textual<PropsType>({
- * children: ...
+ * child: ...
  * otherProp: ...
  * })
  */
 export function TextWidget(props) {
-    return VWidget('span', props);
+    return RawWidget('span', props);
 }
+/**
+ * Image
+ * @description Calque aus images
+ * @param props Propriétés du widget.
+ * @example ImageWidget<PropsType>({
+ * src: ...
+ * })
+ */
 export function ImageWidget(props) {
-    return VWidget('img', props)
+    return RawWidget('img', props)
         .layer(e => {
         Object.entries(props).forEach(({ 0: name, 1: value }) => {
             if (name == 'mode') {
@@ -173,11 +180,11 @@ export function CreateStackViews(views, options = {}) {
  * AUN Construct
  * @description Construire un composant à partir des enfants
  * @param component Composant cible
- * @param children Enfant à injecter
- * @example Construct<ComponentType>( component, children )
- * Construct( component, children )
+ * @param child Enfant à injecter
+ * @example Construct<ComponentType>( component, child )
+ * Construct( component, child )
  */
-export function Construct(component, children) { return (new AunConstruct()).make(component, children); }
+export function Construct(component, child) { return (new AunConstruct()).make(component, child); }
 /**
  * CreateComponent
  * @description Créer un composant en ajoutant immédiatement à la fil d'attente hydratation tout en permetant de l'exporter avec un nom d'emprunt.
@@ -222,7 +229,7 @@ export function HydrateComponent(name, widgetConstructor) {
          * Extraction des props
          */
         const props = ExtractProps(ref.attributes);
-        props.children = ref.innerHTML || undefined;
+        props.child = ref.innerHTML || undefined;
         /**
          * Mise en place du composant
          */
@@ -285,11 +292,11 @@ export default class AUN {
  */
 AUN.Element = aune;
 /**
- * VWidget
- * @alias VWidget
+ * RawWidget
+ * @alias RawWidget
  * @description Instance fonctionnelle d'usage des Widgets AUN
  */
-AUN.VWidget = VWidget;
+AUN.RawWidget = RawWidget;
 /**
  * Construct
  * @alias Construct
@@ -323,11 +330,11 @@ AUN.DropComponent = DropComponent;
  * @description Lier plusieurs composants à plusieurs cicles
  */
 AUN.DropComponents = DropComponents;
-/**
- * InstantiateComponent
- * @description Instancier un composant. Cela permet de garder l'instance courante du composant avec les propriétés définies
- */
-AUN.InstantiateComponent = InstantiateComponent;
+// /**
+//  * InstantiateComponent
+//  * @description Instancier un composant. Cela permet de garder l'instance courante du composant avec les propriétés définies
+//  */
+// static InstantiateComponent = InstantiateComponent;
 /**
  * AsyncComponent
  * @description Utiliser un composant avec une promesse. Composant bloquant en attendant le traitement.

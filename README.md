@@ -20,7 +20,9 @@ interface IHelloProps extends IWProps {
 // Composant
 const myComponent = (props: IHelloProps) =>
   Widget({
-    children: `Hello ${props.name}`,
+    child: TextWidget({
+      child: `Hello ${props.name}`,
+    }),
   });
 
 // Hydrater sur la balise HTML "<HelloWorld name="Me"></HelloWorld>"

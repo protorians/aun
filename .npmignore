@@ -1,5 +1,5 @@
 test.*
-examples*
+example*
 *.js.map
 *.css
 *.ico
@@ -17,3 +17,8 @@ examples*
 *.xml
 *.html
 *.txt
+.DS_Store
+.DS_*
+*lock
+lock*
+*lock*

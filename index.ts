@@ -1,8 +1,8 @@
 
+import CoreAppearance from "@protorians/core/appearance";
 import { 
   AunConstruct,
-  AunElement, 
-  AunAppearance, 
+  AunElement,
   AunState, 
   AunWidget,
   AunView,
@@ -16,7 +16,7 @@ import {
   IComponentConstructor, 
   IHydrateComponent, 
   IKitProps, 
-  ImageWProps, 
+  IImageProps, 
   INode, 
   IStackViewsList, 
   IStackViewsOptions, 
@@ -25,7 +25,9 @@ import {
   IWidget, 
   IWidgetAsyncCallback, 
   IWProps, 
-  IWTarget 
+  IWTarget, 
+  ITextProps,
+  IWidgetProps
 } from "./types";
 
 
@@ -93,13 +95,13 @@ export function DropComponents<P extends IWProps, E extends INode>(
 }
 
 
-/**
- * InstantiateComponent
- * @description Instancier un composant. Cela permet de garder l'instance courante du composant avec les propriétés définies. À utiliser dans les cas l'IDE n'arrive pas typer correctement les variables.
- * @param component Composant cible
- * @example InstantiateComponent( component( props ) )
- */
-export function InstantiateComponent( component : IWidget<any, any> ){ return component; }
+// /**
+//  * InstantiateComponent
+//  * @description Instancier un composant. Cela permet de garder l'instance courante du composant avec les propriétés définies. À utiliser dans les cas l'IDE n'arrive pas typer correctement les variables.
+//  * @param component Composant cible
+//  * @example InstantiateComponent( component( props ) )
+//  */
+// export function InstantiateComponent( component : IWidget<any, any> ){ return component; }
 
 
 /**
@@ -174,15 +176,15 @@ export function UseComponent<P extends IWProps, E extends INode>(
  */
 export function CreateKit( definition : IKitProps ){
   
-  const appearence = new AunAppearance()
-
-  appearence.sheet( definition.appearance ).mount();
-
   return <P extends IWProps, E extends INode>( p : P ) => 
 
     (definition.component( p ) as IWidget<P,E>)
     
-      .layer( element => element.className( appearence.uid ) )
+      .layer( element => element.className( 
+        
+        (new CoreAppearance()).sheet( definition.appearance ).mount().uid 
+        
+      ) )
     
   ;
   
@@ -203,13 +205,13 @@ export function aune<E extends INode>( tagname : string ){
 
 
 /**
- * VWidget
+ * RawWidget
  * @description Instance fonctionnelle d'usage des Widgets AUN
  * @param tagname Nom de la balise HTML
  * @param props Propriétés du widget
- * @example VWidget<PropsType, HTMLSpanElement>( 'span', props )
+ * @example RawWidget<PropsType, HTMLSpanElement>( 'span', props )
  */
-export function VWidget<P extends IWProps, E extends INode>( tagname : string, props : P ){
+export function RawWidget<P extends IWProps, E extends INode>( tagname : string, props : P ){
 
   const widget = (new AunWidget<P, E>( tagname, props ))
   
@@ -227,15 +229,15 @@ export function VWidget<P extends IWProps, E extends INode>( tagname : string, p
 /**
  * Widget
  * @description Créer une couche de calque
- * @param props Propriétés du widget. La propriété `children` représente les enfants du widget (contenu)
+ * @param props Propriétés du widget. La propriété `child` représente les enfants du widget (contenu)
  * @example Widget<PropsType>({
- * children: ...
+ * child: ...
  * otherProp: ...
  * })
  */
-export function Widget<P extends IWProps>( props : P ){
+export function Widget( props : IWidgetProps ) : AunWidget<IWidgetProps, HTMLDivElement>{
 
-  return VWidget<P, HTMLDivElement>( 'div', props )
+  return RawWidget<IWidgetProps, HTMLDivElement>( 'div', props );
   
 }
 
@@ -243,22 +245,30 @@ export function Widget<P extends IWProps>( props : P ){
 /**
  * Textual
  * @description Calque destiné aux textes
- * @param props Propriétés du widget. La propriété `children` représente les enfants du widget (contenu)
+ * @param props Propriétés du widget. La propriété `child` représente contenu de type string
  * @example Textual<PropsType>({
- * children: ...
+ * child: ...
  * otherProp: ...
  * })
  */
-export function TextWidget<P extends IWProps>( props : P ) : AunWidget<P, HTMLSpanElement>{
+export function TextWidget( props : ITextProps ) : AunWidget<ITextProps, HTMLSpanElement>{
 
-  return VWidget<P, HTMLSpanElement>( 'span', props )
+  return RawWidget<ITextProps, HTMLSpanElement>( 'span', props )
   
 }
 
 
-export function ImageWidget( props : ImageWProps ) : AunWidget<ImageWProps, HTMLImageElement>{
+/**
+ * Image
+ * @description Calque aus images
+ * @param props Propriétés du widget.
+ * @example ImageWidget<PropsType>({
+ * src: ...
+ * })
+ */
+export function ImageWidget( props : IImageProps ) : AunWidget<IImageProps, HTMLImageElement>{
 
-  return VWidget<ImageWProps, HTMLImageElement>( 'img', props )
+  return RawWidget<IImageProps, HTMLImageElement>( 'img', props )
 
     .layer( e => {
 
@@ -343,17 +353,17 @@ export function CreateStackViews<Scheme>(
  * AUN Construct
  * @description Construire un composant à partir des enfants
  * @param component Composant cible
- * @param children Enfant à injecter
- * @example Construct<ComponentType>( component, children )
- * Construct( component, children )
+ * @param child Enfant à injecter
+ * @example Construct<ComponentType>( component, child )
+ * Construct( component, child )
  */
 export function Construct<Component extends IWidget<IWProps, INode>>( 
   
   component : Component, 
   
-  children : IChildren
+  child : IChildren
   
-){ return ( new AunConstruct() ).make( component, children ) }
+){ return ( new AunConstruct() ).make( component, child ) }
 
 
 
@@ -440,7 +450,7 @@ export function HydrateComponent<P extends IWProps>(
      */
     const props = ExtractProps<P>( ref.attributes )
 
-    props.children = ref.innerHTML || undefined;
+    props.child = ref.innerHTML || undefined;
     
     /**
      * Mise en place du composant
@@ -547,11 +557,11 @@ export default class AUN {
   static Element = aune;
 
   /**
-   * VWidget
-   * @alias VWidget
+   * RawWidget
+   * @alias RawWidget
    * @description Instance fonctionnelle d'usage des Widgets AUN
    */
-  static VWidget = VWidget;
+  static RawWidget = RawWidget;
 
   /**
    * Construct
@@ -592,11 +602,11 @@ export default class AUN {
    */
   static DropComponents = DropComponents;
 
-  /**
-   * InstantiateComponent
-   * @description Instancier un composant. Cela permet de garder l'instance courante du composant avec les propriétés définies
-   */
-  static InstantiateComponent = InstantiateComponent;
+  // /**
+  //  * InstantiateComponent
+  //  * @description Instancier un composant. Cela permet de garder l'instance courante du composant avec les propriétés définies
+  //  */
+  // static InstantiateComponent = InstantiateComponent;
 
   /**
    * AsyncComponent

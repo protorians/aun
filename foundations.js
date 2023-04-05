@@ -9,15 +9,17 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _AunElement_widget, _AunAttribute_entries, _AunAttribute_element, _AunState_instances, _AunState_mirror, _AunState_recorded, _AunState_current, _AunState_emitters, _AunWidget_instances, _AunWidget__props, _AunWidget_excavation, _AunView__parameters, _AunView__component, _AunStackViews_instances, _AunStackViews_views, _AunStackViews_initializeCanvas, _AunStackViews_defaultMiddleware, _AunNavigation_oldRoute, _AUNTransition_props, _AUNAnimate_instances, _AUNAnimate_target, _AUNAnimate_callback, _AUNAnimate_originOptions, _AUNAnimate_initCallback;
-import { MetricRandom } from "./metric";
-import { AttributesObject, AscendingDOMPath, ObjectToString, UnCamelize, UpdateObject, URLParamsObject } from "./utilities";
+var _AunElement_widget, _AunState_instances, _AunState_mirror, _AunState_recorded, _AunState_current, _AunState_emitters, _AunWidget_instances, _AunWidget__props, _AunWidget_excavation, _AunView__parameters, _AunView__component, _AunStackViews_instances, _AunStackViews_views, _AunStackViews_current, _AunStackViews_initializeCanvas, _AunStackViews_getOldView, _AunStackViews_createViewProps, _AunStackViews_defaultMiddleware;
+import EventDispatcher from "@protorians/core/event-dispatcher";
+import { AttributesObject, UpdateObject } from "@protorians/core/utilities";
+import { Navigation } from "@protorians/core/navigation";
+import CoreAppearance from "@protorians/core/appearance";
 /**
- * fe — Find Element
+ * findElement — Find Element
  * @param find Recherché
  * @param callback Fonction de rappel contenant l'element html en argument
  */
-export function fe(find, callback) {
+export function findElement(find, callback) {
     const fn = callback || new Function();
     let target = undefined;
     if (find) {
@@ -41,76 +43,23 @@ export function fe(find, callback) {
     return target;
 }
 /**
- * AUN EventDispatcher — Emetteur d'émission
- * @description Gestionnaire d'évènements
- * @example new AunEmitter<EmitScheme>()
- */
-export default class AunEmitter {
-    constructor() {
-        /**
-         * Gestion de la propagation
-         */
-        this.propagations = {};
-        /**
-         * Stockage des émissions
-         */
-        this.entries = {};
-    }
-    /**
-     * Ecouter une émission de l'émetteur
-     * @description Ecouteur d'évèvements par rapport à un "SLUG". Utiliser un retour "TRUE" pour stopper la propagation de l'instance déclenchée
-     * @param type Type d'émission déclaré dans le `Scheme` de l'instanciation
-     * @param callback Fonction de rappel content en `argument[0]` les données définit par le dispatcher
-     * @example emitter.listen<ReturnType>( 'emitterNameInKeyOfScheme', ( data : ReturnType ) => ... )
-     */
-    listen(type, callback, force) {
-        this.entries[type] = this.entries[type] || [];
-        this.entries[type].push({ callback, force });
-        this.propagations[type] = false;
-        return this;
-    }
-    /**
-     * Déclencheur un type d'émission de l'émetteur
-     * @description Déclencheur les écouteurs par rapport au `type`
-     * @param type Type d'émission déclaré dans le `Scheme` de l'instanciation
-     * @param data Donnée à renvoyer aux écouteurs d'émission de l'émeteur
-     * @example emitter.dispatch( 'emitterNameInKeyOfScheme', ... )
-     *
-     */
-    dispatch(type, data) {
-        if (this.entries[type]) {
-            this.entries[type].map((entry) => {
-                if (this.propagations[type] === true) {
-                    return;
-                }
-                const stop = entry.callback(data);
-                if (stop === true) {
-                    this.propagations[type] = true;
-                }
-            });
-            this.propagations[type] = false;
-        }
-        return this;
-    }
-}
-/**
  * AUN Element
  * @description Encapscule l'lement HTML pour un usage optimal
  * @example AunElement<HTMLDivElement>('div')
  */
 export class AunElement {
-    constructor(tagname) {
-        /**
-         * Emetteur
-         */
-        this.emitter = new AunEmitter();
-        _AunElement_widget.set(this, undefined);
-        this.instance = document.createElement(tagname);
-    }
     /**
      * Widget associé
      */
     get widget() { return __classPrivateFieldGet(this, _AunElement_widget, "f"); }
+    constructor(tagname) {
+        /**
+         * Emetteur
+         */
+        this.emitter = new EventDispatcher();
+        _AunElement_widget.set(this, undefined);
+        this.instance = document.createElement(tagname);
+    }
     /**
      * own
      * @description Définit le widget propriétaire de l'élément
@@ -149,7 +98,7 @@ export class AunElement {
      * @example element.clean()
      */
     clean() {
-        Object.values(this.instance.children).forEach(child => child.remove());
+        Object.values(this.instance.children).forEach(children => children.remove());
         this.emitter.dispatch('clean', undefined);
         return this;
     }
@@ -193,20 +142,20 @@ export class AunElement {
     /**
      * content
      * @description Ajoute un contenu à l'élément. Ou Retourne les enfants du widget propriétaire.
-     * @param children Enfant à ajouter
+     * @param child Enfant à ajouter
      * @example
      * element.content( undefined ) // Retourne les enfants du widget propriétaire
      * element.content( 'string' )
      * element.content( widget )
      * element.content( [ widget1, widget2, ... ] )
      */
-    content(children) {
-        if (typeof children != 'undefined') {
-            this.widget?.construct.make(this.widget, children);
-            this.emitter.dispatch('content', children);
+    content(child) {
+        if (typeof child != 'undefined') {
+            this.widget?.construct.make(this.widget, child);
+            this.emitter.dispatch('content', child);
             return this;
         }
-        return this.widget?.children;
+        return this.widget?.child;
     }
     /**
      * html
@@ -424,354 +373,14 @@ export class AunElement {
 }
 _AunElement_widget = new WeakMap();
 /**
- * AunrseAppearanceProps
- * @description Analyse la propriété de l'apparence et la réecrit
- * @param name Nom de la propriété
- * @param value Valeur de la propriété
- * @example
- * AunrseAppearanceProps<IAppearanceObject>( { color : '#777' } )
- */
-export function AunrseAppearanceProps(name, value) {
-    const keys = [];
-    const parsed = {};
-    /**
-     * Réecriture
-     */
-    switch (name) {
-        case 'paddingVertical':
-            keys.push('paddingTop');
-            keys.push('paddingBottom');
-            break;
-        case 'paddingHorizontal':
-            keys.push('paddingLeft');
-            keys.push('paddingRight');
-            break;
-        case 'marginVertical':
-            keys.push('marginTop');
-            keys.push('marginBottom');
-            break;
-        case 'marginHorizontal':
-            keys.push('marginLeft');
-            keys.push('marginRight');
-            break;
-        default:
-            keys.push(name);
-            break;
-    }
-    /**
-     * Injection
-     */
-    keys.forEach(key => {
-        parsed[UnCamelize(key)] = AunrseAppearanceValues(value);
-    });
-    return parsed;
-}
-/**
- * AunrseAppearanceValues
- * @description Analyse la valeur d'une propriété de l'apparence
- * @param value Valeur de la propriété
- * @example
- * AunrseAppearanceValues( ... )
- */
-export function AunrseAppearanceValues(value) {
-    if (typeof value == 'number') {
-        return `${value}`;
-    }
-    return value;
-}
-/**
- * AUN Appearance
- * @description Gestionnaire d'apparence des éléments AUN
- */
-export class AunAppearance {
-    constructor() {
-        /**
-         * Instance de l'emetteur
-         */
-        this.emitter = new AunEmitter();
-        /**
-         * Propriétés de l'apparence
-         */
-        this.properties = {};
-        this.instance = document.createElement('style');
-        this.uid = `${MetricRandom.CreateAplpha(4).join('')}-${MetricRandom.Create(12).join('')}`;
-    }
-    /**
-     * sheet
-     * C@description onstruire une feuille de style liée à l'apparence
-     * @param stylesheet Definit la feuille de style
-     * @example
-     * appearance.sheet( {
-     *    'selector' : {
-     *       'property' : 'value',
-     *        ...
-     *    }
-     * } )
-     */
-    sheet(stylesheet) {
-        const styleSheet = [];
-        Object.entries(stylesheet).forEach(({ 0: name, 1: props }) => {
-            const properties = {};
-            const selector = (name.includes('&'))
-                ? name.replace(new RegExp('&', 'g'), `.${this.uid}`)
-                : `.${this.uid} ${name}`;
-            const data = this.insertProperties(properties, props);
-            styleSheet[styleSheet.length] = `${selector}{ ${ObjectToString(data, { joiner: '; ' })} }`;
-        });
-        this.instance.innerHTML = styleSheet.join(' ');
-        this.mountImmediat();
-        return this;
-    }
-    /**
-     * insertProperties
-     * @description Insert des propriétés d'apparence dans un objet support. Analyse les propriétés et les valeurs avant de les insérer
-     * @param properties Propriétés d'apparence support
-     * @param data Données des propriétés à insérer
-     * @example
-     * appearance.insertProperties( objectPropertiesSupport, objectDataToInsert )
-     */
-    insertProperties(properties, data) {
-        Object.entries(data).forEach(({ 0: name, 1: value }) => {
-            Object.entries(AunrseAppearanceProps(name, value)).forEach(({ 0: key, 1: data }) => properties[key] = data);
-        });
-        this.emitter.dispatch('insertProperties', properties);
-        return properties;
-    }
-    /**
-     * removeProperties
-     * @description Supprime des propriétés d'apparence dans un object support.
-     * @param properties Propriétés d'apparence support
-     * @param payload Données des propriétés à supprimer
-     * @example
-     * appearance.removeProperties( objectPropertiesSupport, objectDataToRemove )
-     */
-    removeProperties(properties, payload) {
-        Object.values(payload).forEach(name => {
-            Object.entries(AunrseAppearanceProps(name, undefined)).forEach(({ 0: key }) => properties[key] = undefined);
-        });
-        this.emitter.dispatch('removeProperties', properties);
-        return properties;
-    }
-    /**
-     * set
-     * @description Insert des propriétés d'apparence. Analyse les propriétés et les valeurs avant de les insérer
-     * @param properties Propriétés à insérer
-     * @example
-     * appearance.set( {
-     *    'property' : 'value',
-     *    ...
-     * } )
-     */
-    set(properties) {
-        this.insertProperties(this.properties, properties);
-        this.emitter.dispatch('set', properties);
-        return this.sync();
-    }
-    /**
-     * unset
-     * @description Supprime des propriétés d'apparence. Analyse les propriétés et les valeurs avant.
-     * @param properties Propriétés à supprimer
-     * @example
-     * appearance.unset( {
-     *    'property' : 'value',
-     *    ...
-     * } )
-     */
-    unset(properties) {
-        this.removeProperties(this.properties, properties);
-        this.emitter.dispatch('unset', properties);
-        return this.sync();
-    }
-    /**
-     * mount
-     * @description Monter l'apparence si ce n'est pas fait
-     * @example
-     * appearance.mount()
-     */
-    mount() {
-        const length = Object.values(this.properties).length;
-        if (!this.instance.isConnected && length) {
-            this.mountImmediat();
-        }
-        return this;
-    }
-    /**
-     * mountImmediat
-     * @description Monter l'apparence
-     * @example
-     * appearance.mountImmediat()
-     */
-    mountImmediat() {
-        let head = document.querySelector('head');
-        if (!head) {
-            head = document.createElement('head');
-            document.documentElement.append(head);
-        }
-        head.append(this.instance);
-        this.emitter.dispatch('mount', this);
-        return this;
-    }
-    /**
-     * destroy
-     * @description Détruit l'apparence
-     * @example
-     * appearance.destroy()
-     */
-    destroy() {
-        this.instance.remove();
-        this.emitter.dispatch('destroy', undefined);
-        return this;
-    }
-    /**
-     * sync
-     * @description Synchronise l'apparence
-     * @example
-     * appearance.sync()
-     */
-    sync() {
-        const rendering = [];
-        Object.entries(this.properties).forEach(({ 0: name, 1: value }) => {
-            if (typeof value == 'string' || typeof value == 'number') {
-                rendering[rendering.length] = `${UnCamelize(name)} : ${value}`;
-            }
-        });
-        this.instance.innerHTML = `.${this.uid}{ ${rendering.join(';')} }`;
-        this.emitter.dispatch('sync', this);
-        this.mount();
-        return this;
-    }
-}
-/**
- * AUN Attribute
- * @description Gestionnaire d'attribute dynamique
- */
-export class AunAttribute {
-    constructor(element, attributeName = '') {
-        _AunAttribute_entries.set(this, []);
-        _AunAttribute_element.set(this, null);
-        /**
-         * Nom de lattribut
-         */
-        this.attributeName = '';
-        /**
-         * Emetteur
-         */
-        this.emitter = new AunEmitter();
-        __classPrivateFieldSet(this, _AunAttribute_element, element, "f");
-        this.attributeName = attributeName;
-        this.sync(this.attributeName);
-    }
-    /**
-     * Les entrées
-     */
-    get entries() { return __classPrivateFieldGet(this, _AunAttribute_entries, "f"); }
-    /**
-     * La valeur de l'attribut
-     */
-    get value() { return __classPrivateFieldGet(this, _AunAttribute_entries, "f").filter(value => value.trim().length).join(' ').trim(); }
-    /**
-     * sync
-     * @description Synchronise les attributs
-     * @param attributeName Nom de l'attribut
-     * @description
-     * attribut.sync()
-     */
-    sync(attributeName) {
-        this.attributeName = attributeName || this.attributeName;
-        (__classPrivateFieldGet(this, _AunAttribute_element, "f")?.getAttribute(`${this.attributeName}`) || '').split(' ')
-            .filter(value => value.trim().length)
-            .map(value => this.add(`${value.trim()}`));
-        this.emitter.dispatch('sync', { entries: __classPrivateFieldGet(this, _AunAttribute_entries, "f") });
-        return this;
-    }
-    /**
-     * add
-     * @description Ajout une entrée à l'attribut
-     * @param value Valeur de l'attribut
-     * @example
-     * attribut.add( ... )
-     */
-    add(value) {
-        if (!this.contains(value)) {
-            __classPrivateFieldGet(this, _AunAttribute_entries, "f").push(value);
-            this.emitter.dispatch('add', { added: value });
-        }
-        return this;
-    }
-    /**
-     * remove
-     * @description Supprimer une entrée de l'attribut
-     * @param value Valeur de l'attribut
-     * @example
-     * attribut.remove( ... )
-     */
-    remove(value) {
-        __classPrivateFieldSet(this, _AunAttribute_entries, __classPrivateFieldGet(this, _AunAttribute_entries, "f").filter(entry => entry != value), "f");
-        this.emitter.dispatch('remove', { removed: value });
-        return this;
-    }
-    /**
-     * replace
-     * @description Remplace le valeur dans un attribut
-     * @param older Ancienne valeur de l'attribut
-     * @param value Nouvelle valeur de l'attribut
-     * @example
-     * attribut.replace( 'oldValue', 'newValue' )
-     */
-    replace(older, value) {
-        this.remove(older).add(value);
-        this.emitter.dispatch('replace', { older, newer: value });
-        return this;
-    }
-    /**
-     * contains
-     * @description Recherche l'existence d'une valeur dans l'instance de l'attribut
-     * @param value Valeur dans l'attribut recherché
-     * @example
-     * attribut.contains( 'searchValue' )
-     */
-    contains(value) {
-        return __classPrivateFieldGet(this, _AunAttribute_entries, "f").includes(value, 0);
-    }
-    /**
-     * link
-     * @description Lie un attribut à une instance du DOM
-     * @example
-     * attribut.link()
-     */
-    link() {
-        __classPrivateFieldGet(this, _AunAttribute_element, "f")?.setAttribute(this.attributeName, `${this.value}`);
-        this.emitter.dispatch('link', this);
-        return this;
-    }
-    /**
-     * unlink
-     * @description Supprime la liaison d'un attribut dans  l'instance
-     * @param attributes Nom de l'attribut
-     * @example
-     * attribut.unlink( 'attributName' )
-     */
-    unlink(attributes) {
-        if (attributes) {
-            if (Array.isArray(attributes)) {
-                attributes.map(attribute => this.remove(attribute));
-            }
-            __classPrivateFieldGet(this, _AunAttribute_element, "f")?.setAttribute(this.attributeName, `${this.value}`);
-            this.emitter.dispatch('unlink', { value: attributes || this.value });
-        }
-        else {
-            __classPrivateFieldGet(this, _AunAttribute_element, "f")?.removeAttribute(this.attributeName);
-            this.emitter.dispatch('unlinks', this);
-        }
-        return this;
-    }
-}
-_AunAttribute_entries = new WeakMap(), _AunAttribute_element = new WeakMap();
-/**
  * AUN State
  * @description Gestionnaire d'état
  */
 export class AunState {
+    /**
+     * Retourne la valeur de l'état
+     */
+    get value() { return __classPrivateFieldGet(this, _AunState_mirror, "f"); }
     constructor(state) {
         _AunState_instances.add(this);
         _AunState_mirror.set(this, void 0);
@@ -780,16 +389,12 @@ export class AunState {
         /**
          * Emetteur
          */
-        this.emitter = new AunEmitter();
+        this.emitter = new EventDispatcher();
         this.state = state;
         __classPrivateFieldSet(this, _AunState_mirror, state, "f");
         // this.#store = state;
         __classPrivateFieldGet(this, _AunState_instances, "m", _AunState_emitters).call(this).initialize();
     }
-    /**
-     * Retourne la valeur de l'état
-     */
-    get value() { return __classPrivateFieldGet(this, _AunState_mirror, "f"); }
     /**
      * initialize
      * @description Initialise l'état
@@ -941,13 +546,17 @@ _AunState_mirror = new WeakMap(), _AunState_recorded = new WeakMap(), _AunState_
  * @description Pour les composant HTML de base
  */
 export class AunWidget {
+    /**
+     * Les propriétés
+     */
+    get props() { return __classPrivateFieldGet(this, _AunWidget__props, "f"); }
     constructor(tagname, props) {
         _AunWidget_instances.add(this);
         _AunWidget__props.set(this, void 0);
         /**
          * Emetteur
          */
-        this.emitter = new AunEmitter();
+        this.emitter = new EventDispatcher();
         /**
          * Constructe
          */
@@ -956,10 +565,6 @@ export class AunWidget {
         this.element = (new AunElement(tagname)).own(this);
         __classPrivateFieldGet(this, _AunWidget_instances, "m", _AunWidget_excavation).call(this, this.props);
     }
-    /**
-     * Les propriétés
-     */
-    get props() { return __classPrivateFieldGet(this, _AunWidget__props, "f"); }
     append(...nodes) {
         this.element.instance.append(...nodes);
         return this;
@@ -988,17 +593,17 @@ export class AunWidget {
     /**
      * content
      * @description Definit le contenu du widget
-     * @param children Contenu du widget
+     * @param child Contenu du widget
      * @example
      * widget.content( ... )
      */
-    content(children) {
-        if (this.children) {
+    content(child) {
+        if (this.child) {
             const nchildren = [];
             nchildren.forEach(child => nchildren.push(child));
         }
-        this.construct.make(this, children);
-        this.children = children;
+        this.construct.make(this, child);
+        this.child = child;
         return this;
     }
     /**
@@ -1012,7 +617,7 @@ export class AunWidget {
         if (props) {
             Object.entries(props).forEach(({ 0: name, 1: prop }) => __classPrivateFieldGet(this, _AunWidget__props, "f")[name] = prop);
         }
-        this.content(this.children);
+        this.content(this.child);
         return this;
     }
     /**
@@ -1021,7 +626,7 @@ export class AunWidget {
      */
     render() {
         this.element.className(this.construct.appearance.uid);
-        this.construct.make(this, this.children);
+        this.construct.make(this, this.child);
         return this;
     }
     /**
@@ -1076,8 +681,8 @@ export class AunWidget {
 }
 _AunWidget__props = new WeakMap(), _AunWidget_instances = new WeakSet(), _AunWidget_excavation = function _AunWidget_excavation(props) {
     Object.entries(props).forEach(({ 0: key, 1: value }) => {
-        if (key == 'children') {
-            this.children = value;
+        if (key == 'child') {
+            this.child = value;
         }
         else {
             __classPrivateFieldSet(this, _AunWidget__props, value, "f");
@@ -1095,11 +700,11 @@ export class AunConstruct {
         /**
          * Emetteur
          */
-        this.emitter = new AunEmitter();
+        this.emitter = new EventDispatcher();
         /**
          * Apparence
          */
-        this.appearance = new AunAppearance();
+        this.appearance = new CoreAppearance();
         this.appearance.emitter.listen('sync', appear => {
             this.emitter.dispatch('appearance', appear);
         });
@@ -1109,13 +714,13 @@ export class AunConstruct {
      * make
      * @description Créer le constructeur
      * @param root Racine Widget
-     * @param children Enfants à ajouter
+     * @param child Enfants à ajouter
      */
-    make(root, children) {
+    make(root, child) {
         this.emitter.dispatch('before', root);
-        root.emitter.dispatch('beforeRendering', children);
-        this.makeChildren(root, children);
-        root.emitter.dispatch('afterRendering', children);
+        root.emitter.dispatch('beforeRendering', child);
+        this.makeChildren(root, child);
+        root.emitter.dispatch('afterRendering', child);
         this.emitter.dispatch('after', root);
         root.emitter.dispatch('ready', root);
         return root;
@@ -1124,42 +729,42 @@ export class AunConstruct {
      * makeChildren
      * @description Construire les enfants
      * @param root Racine Widget
-     * @param children Enfants à ajouter
+     * @param child Enfants à ajouter
      */
-    makeChildren(root, children) {
-        if (children instanceof Element) {
-            root.element.instance.append(children);
-            root.emitter.dispatch('elementAdded', children);
-            root.emitter.dispatch('childAdded', children);
+    makeChildren(root, child) {
+        if (child instanceof Element) {
+            root.element.instance.append(child);
+            root.emitter.dispatch('elementAdded', child);
+            root.emitter.dispatch('childAdded', child);
         }
-        else if (children instanceof AunState) {
-            children.records(root);
-            root.emitter.dispatch('stateAdded', children);
-            root.emitter.dispatch('childAdded', children);
+        else if (child instanceof AunState) {
+            child.records(root);
+            root.emitter.dispatch('stateAdded', child);
+            root.emitter.dispatch('childAdded', child);
         }
-        else if (typeof children == 'string' ||
-            typeof children == 'boolean' ||
-            typeof children == 'number') {
-            root.element.instance.innerHTML = (`${children}`);
-            root.emitter.dispatch('htmlAdded', children);
-            root.emitter.dispatch('childAdded', children);
+        else if (typeof child == 'string' ||
+            typeof child == 'boolean' ||
+            typeof child == 'number') {
+            root.element.instance.innerHTML = (`${child}`);
+            root.emitter.dispatch('htmlAdded', child);
+            root.emitter.dispatch('childAdded', child);
         }
-        else if (children instanceof AunWidget) {
-            root.element.instance.append(children.element.instance);
-            root.emitter.dispatch('widgetAdded', children);
-            root.emitter.dispatch('childAdded', children);
-            children.emitter.dispatch('ready', children);
+        else if (child instanceof AunWidget) {
+            root.element.instance.append(child.element.instance);
+            root.emitter.dispatch('widgetAdded', child);
+            root.emitter.dispatch('childAdded', child);
+            child.emitter.dispatch('ready', child);
         }
-        else if (Array.isArray(children)) {
-            children.forEach(child => this.make(root, child));
+        else if (Array.isArray(child)) {
+            child.forEach(child => this.make(root, child));
         }
-        if (children instanceof Promise) {
+        if (child instanceof Promise) {
             const anchor = document.createTextNode('');
             root.element.instance.append(anchor);
-            children.then(component => {
+            child.then(component => {
                 root.element.instance.replaceChild(component.element.instance, anchor);
-                root.emitter.dispatch('promiseAdded', children);
-                root.emitter.dispatch('childAdded', children);
+                root.emitter.dispatch('promiseAdded', child);
+                root.emitter.dispatch('childAdded', child);
             }).catch(er => {
                 throw (`AunConstruct : ${JSON.stringify(er)}`);
             });
@@ -1178,14 +783,14 @@ export class AunConstruct {
     }
 }
 export class AunView {
+    get parameters() { return __classPrivateFieldGet(this, _AunView__parameters, "f"); }
+    get component() { return __classPrivateFieldGet(this, _AunView__component, "f"); }
     constructor(componentConstructor, options) {
         _AunView__parameters.set(this, {});
         _AunView__component.set(this, undefined);
         this.componentConstructor = componentConstructor;
         this.options = options || {};
     }
-    get parameters() { return __classPrivateFieldGet(this, _AunView__parameters, "f"); }
-    get component() { return __classPrivateFieldGet(this, _AunView__component, "f"); }
     show(parameters) {
         __classPrivateFieldSet(this, _AunView__parameters, parameters, "f");
         this.component?.element.removeStyle('display');
@@ -1211,10 +816,23 @@ export class AunView {
 }
 _AunView__parameters = new WeakMap(), _AunView__component = new WeakMap();
 export class AunStackViews {
+    /**
+     * Les vues
+     */
+    get views() { return __classPrivateFieldGet(this, _AunStackViews_views, "f"); }
+    /**
+     * Composant Actuellement utilisé
+     */
+    get current() { return __classPrivateFieldGet(this, _AunStackViews_current, "f"); }
+    ;
     constructor(views, options) {
         _AunStackViews_instances.add(this);
         _AunStackViews_views.set(this, {});
-        this.oldComponent = undefined;
+        _AunStackViews_current.set(this, undefined);
+        /**
+         * Dernier composant utilisé
+         */
+        this.last = undefined;
         /**
          * Options
          */
@@ -1222,8 +840,11 @@ export class AunStackViews {
         /**
          * Système de navigation
          */
-        this.navigation = new AunNavigation();
-        this.emitter = new AunEmitter();
+        this.navigation = new Navigation();
+        /**
+         * Emétteur
+         */
+        this.emitter = new EventDispatcher();
         __classPrivateFieldSet(this, _AunStackViews_views, views, "f");
         this.options = options || {};
         this.navigation.setOptions({
@@ -1240,20 +861,9 @@ export class AunStackViews {
         });
         __classPrivateFieldGet(this, _AunStackViews_instances, "m", _AunStackViews_initializeCanvas).call(this);
     }
-    /**
-     * Les vues
-     */
-    get views() { return __classPrivateFieldGet(this, _AunStackViews_views, "f"); }
     middleware(callback) {
         this.navigation.options.middlewares?.push(callback);
         return this;
-    }
-    currentView() {
-        return __classPrivateFieldGet(this, _AunStackViews_views, "f")[this.navigation.currentRouteName()];
-    }
-    oldView() {
-        const name = this.navigation.oldRouteName();
-        return name ? __classPrivateFieldGet(this, _AunStackViews_views, "f")[name] || undefined : undefined;
     }
     /**
      * Démarrage
@@ -1266,26 +876,38 @@ export class AunStackViews {
         return this;
     }
 }
-_AunStackViews_views = new WeakMap(), _AunStackViews_instances = new WeakSet(), _AunStackViews_initializeCanvas = function _AunStackViews_initializeCanvas() {
-    fe(this.options.canvas, canvas => {
+_AunStackViews_views = new WeakMap(), _AunStackViews_current = new WeakMap(), _AunStackViews_instances = new WeakSet(), _AunStackViews_initializeCanvas = function _AunStackViews_initializeCanvas() {
+    findElement(this.options.canvas, canvas => {
         canvas.style.position = 'relative';
     });
     return this;
-}, _AunStackViews_defaultMiddleware = function _AunStackViews_defaultMiddleware({ args, routeName }) {
+}, _AunStackViews_getOldView = function _AunStackViews_getOldView() {
+    const name = this.navigation.oldRouteName()?.split('?')[0];
+    console.warn('Get old viewname', name);
+    return name ? __classPrivateFieldGet(this, _AunStackViews_views, "f")[name] || undefined : undefined;
+}, _AunStackViews_createViewProps = function _AunStackViews_createViewProps(props) {
+    return {
+        ...(props || {}),
+        stack: this
+    };
+}, _AunStackViews_defaultMiddleware = function _AunStackViews_defaultMiddleware({ props, routeName }) {
     const view = __classPrivateFieldGet(this, _AunStackViews_views, "f")[routeName] || undefined;
     if (view && this.options.canvas) {
-        fe(this.options.canvas, canvas => {
-            const component = view.componentConstructor(args);
+        findElement(this.options.canvas, canvas => {
+            const component = view.componentConstructor(__classPrivateFieldGet(this, _AunStackViews_instances, "m", _AunStackViews_createViewProps).call(this, props));
             const transitionAvailable = view?.options.transitions && component.element.instance;
-            const oldView = this.oldView();
-            // const oldTransitionAvailable = oldView?.options.transitions && this.oldComponent?.element.instance;
+            const oldView = __classPrivateFieldGet(this, _AunStackViews_instances, "m", _AunStackViews_getOldView).call(this);
+            __classPrivateFieldSet(this, _AunStackViews_current, component, "f");
             component.element.style({
                 position: 'absolute',
                 top: '0',
                 left: '0',
                 zIndex: '2'
             });
-            if (this.oldComponent) {
+            if (view.options.title) {
+                document.title = `${view.options.title}`;
+            }
+            if (this.last) {
                 component.element.style({
                     position: 'absolute',
                     top: '0',
@@ -1293,415 +915,28 @@ _AunStackViews_views = new WeakMap(), _AunStackViews_instances = new WeakSet(), 
                     zIndex: '1'
                 });
             }
-            // const route = this.currentView();
-            // console.log('Old routre', routeName, oldView )
             if (transitionAvailable) {
                 component.element.on('transitionend', () => {
                 });
-                view.options.transitions?.entry.in(component.element, () => {
-                    this.oldComponent?.element.remove();
-                    this.oldComponent = component;
+                view.options.transitions?.entry.startIn(component.element.instance, () => {
+                    this.last?.element.remove();
+                    this.last = component;
                 });
-                if (this.oldComponent) {
-                    oldView?.options.transitions?.entry.out(this.oldComponent.element, () => { });
+                if (this.last) {
+                    console.log('Transition', oldView);
+                    oldView?.options.transitions?.exit.startOut(this.last.element.instance, () => { });
                 }
                 canvas.append(component.element.instance);
             }
             if (!transitionAvailable) {
                 canvas.innerText = '';
                 canvas.append(component.element.instance);
-                this.oldComponent = component;
+                this.last = component;
             }
         });
     }
     else {
         this.emitter.dispatch('error', routeName);
     }
-    return this;
-};
-/**
- * Système de navigation
- */
-export class AunNavigation {
-    constructor() {
-        this.options = {};
-        this.emitter = new AunEmitter();
-        _AunNavigation_oldRoute.set(this, void 0);
-        this.options.middlewares = this.options.middlewares || [];
-    }
-    currentRouteName() {
-        return (this.options.useHashtagParser ? location.hash : location.pathname).substring(1);
-    }
-    oldRouteName() {
-        return __classPrivateFieldGet(this, _AunNavigation_oldRoute, "f");
-    }
-    currentQuery() {
-        return URLParamsObject(location.search);
-    }
-    setOption(optionName, value) {
-        this.options[optionName] = value;
-        return this;
-    }
-    setOptions(options) {
-        this.options = UpdateObject(this.options, options);
-        this.emitter.dispatch('options', this);
-        return this;
-    }
-    middleware(middleware) {
-        this.options.middlewares?.push(middleware);
-        return this;
-    }
-    observe() {
-        window.addEventListener('popstate', ev => this.dispatchNavigate(ev));
-        this.capturesActions();
-        return this;
-    }
-    capturesActions() {
-        if (this.options.capture) {
-            document.body.addEventListener('click', (ev) => {
-                const target = this.parseElementCaptured(ev);
-                if (target && !target.hasAttribute('navigate:no-detection')) {
-                    const url = target.getAttribute('href') || target.getAttribute('navigate:view') || target.getAttribute('navigate-view');
-                    const blank = (target.getAttribute('target') || '').toLowerCase() == '_blank';
-                    const external = url ? this.isExternalURL(url) : false;
-                    if (url && !blank && !external) {
-                        ev.preventDefault();
-                        this.navigate(this.parseRouteName(url), {}, ev);
-                    }
-                }
-            }, false);
-        }
-        return this;
-    }
-    parseRouteName(routeName) {
-        const route = routeName.trim();
-        const firstChar = route.substring(0, 1);
-        return (firstChar == '/' || firstChar == '#') ? route.substring(1) : route;
-    }
-    isExternalURL(url) {
-        return (url.match(/^http/gi) || url.match(/^\/\//gi)) ? true : false;
-    }
-    parseElementCaptured(ev) {
-        if (ev.target instanceof HTMLElement) {
-            if (ev.target.hasAttribute('navigate:view') || ev.target.tagName == "A") {
-                return ev.target;
-            }
-            else {
-                return AscendingDOMPath(ev.target, parent => parent.tagName == 'A' || parent.hasAttribute('navigate:view') ? true : false);
-            }
-        }
-        return undefined;
-    }
-    dispatchNavigate(ev) {
-        const routeName = this.currentRouteName();
-        const parser = this.options.useHashtagParser ? 'hashtag' : 'directory';
-        this.options.middlewares?.forEach(middleware => middleware({
-            navigation: this,
-            event: ev,
-            routeName: this.currentRouteName(),
-            args: this.currentQuery() || undefined,
-            parser: this.options.useHashtagParser ? 'hashtag' : 'directory',
-        }));
-        this.emitter.dispatch('navigate', {
-            navigation: this,
-            routeName,
-            parser: parser,
-        });
-        return this;
-    }
-    navigate(route, props, ev) {
-        if (!route) {
-            return this;
-        }
-        const currentRoute = this.currentRouteName();
-        const routeName = route;
-        __classPrivateFieldSet(this, _AunNavigation_oldRoute, routeName, "f");
-        if (currentRoute != routeName) {
-            if (this.options.useHashtagParser) {
-                location.hash = `${routeName}`;
-            }
-            else {
-                history.pushState(props || {}, document.title, `${routeName}`);
-                this.dispatchNavigate(ev || undefined);
-            }
-        }
-        else {
-            this.dispatchNavigate(ev || undefined);
-        }
-        return this;
-    }
-}
-_AunNavigation_oldRoute = new WeakMap();
-/**
- * Transition des éléments
- */
-export class AUNTransition {
-    // emitter: IEmitter<ITransitionEmitterScheme> = new AunEmitter();
-    constructor(props) {
-        _AUNTransition_props.set(this, {});
-        __classPrivateFieldSet(this, _AUNTransition_props, props, "f");
-    }
-    in(target, doneCallback) {
-        const animate = __classPrivateFieldGet(this, _AUNTransition_props, "f").whenEntry(target);
-        animate.emitter.listen('done', () => { doneCallback(this); });
-        return animate;
-    }
-    out(target, doneCallback) {
-        const animate = __classPrivateFieldGet(this, _AUNTransition_props, "f").whenExit(target);
-        animate.emitter.listen('done', () => { doneCallback(this); });
-        return animate;
-    }
-}
-_AUNTransition_props = new WeakMap();
-/**
- * Transitions prédinies des éléments
- */
-export class AUNTransitions {
-}
-AUNTransitions.fade = new AUNTransition({
-    whenEntry: (target) => AUNAnimate.trigger(target, ({ animate, target }) => {
-        animate.element({
-            target,
-            from: [0],
-            to: [100],
-            duration: 1000,
-            properties: ['opacity'],
-            patterns: [
-                (value) => `${value / 100}`,
-            ]
-        });
-        return animate;
-    }),
-    whenExit: (target) => AUNAnimate.trigger(target, ({ animate, target }) => {
-        animate.element({
-            target,
-            from: [100],
-            to: [0],
-            duration: 1000,
-            properties: ['opacity'],
-            patterns: [
-                (value) => `${value / 100}`,
-            ]
-        });
-        return animate;
-    }),
-});
-AUNTransitions.horizontalSlide = new AUNTransition({
-    whenEntry: (target) => AUNAnimate.trigger(target, ({ animate, target }) => {
-        animate.element({
-            target,
-            from: [100],
-            to: [0],
-            duration: 1000,
-            properties: ['transform'],
-            patterns: [
-                (value) => `translateX(-${value}%)`,
-            ]
-        });
-        return animate;
-    }),
-    whenExit: (target) => AUNAnimate.trigger(target, ({ animate, target }) => {
-        animate.element({
-            target,
-            from: [0],
-            to: [100],
-            duration: 1000,
-            properties: ['transform'],
-            patterns: [
-                (value) => `translateX(-${value}%)`,
-            ]
-        });
-        return animate;
-    }),
-});
-/**
- * Animation des éléments
- */
-export class AUNAnimate {
-    constructor(target, callback) {
-        _AUNAnimate_instances.add(this);
-        _AUNAnimate_target.set(this, void 0);
-        _AUNAnimate_callback.set(this, void 0);
-        this.options = {};
-        _AUNAnimate_originOptions.set(this, {});
-        this.interpolarities = [];
-        this.state = 0;
-        this.loopState = 0;
-        this.status = false;
-        this.emitter = new AunEmitter();
-        __classPrivateFieldSet(this, _AUNAnimate_target, target, "f");
-        __classPrivateFieldSet(this, _AUNAnimate_callback, callback, "f");
-    }
-    get defaultFrame() { return 60; }
-    clean() {
-        this.options = __classPrivateFieldGet(this, _AUNAnimate_originOptions, "f");
-        return this;
-    }
-    /**
-     * Anime un élément
-     */
-    element(options) {
-        const properties = options.properties || ['opacity'];
-        const originalTransition = options.target.instance.style.getPropertyValue('transition') || null;
-        const patterns = options.patterns || [(v) => `${v / 100}`];
-        options.target.instance.style.transition = `${properties.join(', ')} 100ms linear`;
-        this.create({
-            duration: options.duration || 500,
-            from: options.from || [0],
-            to: options.to || [100],
-            // start(){ },
-            hit: ({ interpolarity }) => {
-                // console.log('Animae element', interpolarity )
-                interpolarity.forEach((value, k) => {
-                    const property = (properties[k] || undefined);
-                    if (property) {
-                        const style = {};
-                        const pattern = patterns[k] || null;
-                        style[property] = pattern ? `${pattern(value)}` : `${value}`;
-                        options.target.style(style);
-                    }
-                });
-            },
-            done(engine) {
-                engine.clean();
-                if (originalTransition) {
-                    options.target.style({ transition: originalTransition });
-                }
-                else {
-                    setTimeout(() => options.target.removeStyle('transition'), 100);
-                }
-            },
-        });
-        return this;
-    }
-    /**
-     * Remake the animation with new options
-     */
-    reset(options) {
-        this.options = Object.assign({}, this.options, options);
-        return this.restart();
-    }
-    create(options) {
-        this.options = options;
-        __classPrivateFieldSet(this, _AUNAnimate_originOptions, options, "f");
-        /**
-         * Initialize
-         */
-        const interpolarities = [];
-        const frame = this.options.duration / (this.options.frame || (this.defaultFrame || 60));
-        /**
-         * Prepares
-         */
-        this.options.from.map((v, k) => {
-            const delta = (Math.abs(this.options.to[k] - v) / frame);
-            const sens = this.options.to[k] > v;
-            let from = v;
-            let to = sens ? this.options.to[k] + delta : this.options.to[k] - delta;
-            interpolarities[k] = [];
-            if (sens) {
-                for (let x = from; x <= to; x += delta) {
-                    interpolarities[k][interpolarities[k].length] = x >= this.options.to[k] ? this.options.to[k] : x;
-                }
-            }
-            else {
-                for (let x = from; x >= to; x -= delta) {
-                    interpolarities[k][interpolarities[k].length] = (x <= this.options.to[k]) ? this.options.to[k] : x;
-                }
-            }
-        });
-        this.emitter.dispatch('ready', interpolarities);
-        /**
-         * Trigger Engine
-         */
-        this.status = true;
-        this.interpolarities = interpolarities;
-        if (typeof this.options.start == 'function') {
-            this.options.start(this);
-        }
-        this.emitter.dispatch('start', interpolarities[0]);
-        return this;
-    }
-    /**
-     * Stopper
-     */
-    stop() {
-        this.status = false;
-        // this.emitter.dispatch('stop', this)
-        return this;
-    }
-    /**
-     * Redemarrage de l'animation
-     */
-    restart() {
-        this.status = false;
-        this.state = 0;
-        this.loopState = 0;
-        return this.create(this.options);
-    }
-    /**
-     * Lecture de l'animation
-     */
-    play() {
-        if (this.status === false) {
-            return this;
-        }
-        const loop = this.options.loop === true ? true : this.options.loop;
-        const interpolarities = this.interpolarities;
-        if (!interpolarities.length) {
-            throw (`Sensen.Fx.Engine : No Interpolarity Data < ${JSON.stringify(interpolarities)} >`);
-        }
-        const limit = interpolarities[0].length - 1;
-        const couple = interpolarities.map(entry => entry[this.state]);
-        const percent = (this.state / limit) * 100;
-        if (this.state >= limit) {
-            if (typeof this.options.hit == 'function') {
-                this.options.hit({
-                    interpolarity: interpolarities.map(entry => entry[limit]),
-                    animate: this,
-                    percent
-                });
-            }
-            if (typeof this.options.done == 'function') {
-                this.options.done(this);
-            }
-            this.emitter.dispatch('done', interpolarities[interpolarities.length - 1]);
-            /**
-             * Loop
-             */
-            if (loop && (typeof loop == 'number' && loop <= this.loopState)) {
-                this.state = 0;
-                this.loopState++;
-                this.emitter.dispatch('loop', this);
-                globalThis.requestAnimationFrame(this.play.bind(this));
-            }
-        }
-        else {
-            this.state++;
-            if (typeof this.options.hit == 'function') {
-                this.options.hit({
-                    interpolarity: couple,
-                    animate: this,
-                    percent
-                });
-            }
-            this.emitter.dispatch('hit', {
-                interpolate: couple,
-                engine: this,
-                percent
-            });
-            globalThis.requestAnimationFrame(this.play.bind(this));
-        }
-        return this;
-    }
-    static trigger(target, callback) {
-        var _a;
-        return __classPrivateFieldGet((_a = (new this(target, callback))), _AUNAnimate_instances, "m", _AUNAnimate_initCallback).call(_a).play();
-    }
-}
-_AUNAnimate_target = new WeakMap(), _AUNAnimate_callback = new WeakMap(), _AUNAnimate_originOptions = new WeakMap(), _AUNAnimate_instances = new WeakSet(), _AUNAnimate_initCallback = function _AUNAnimate_initCallback() {
-    __classPrivateFieldGet(this, _AUNAnimate_callback, "f").call(this, {
-        animate: this,
-        target: __classPrivateFieldGet(this, _AUNAnimate_target, "f"),
-    });
     return this;
 };
