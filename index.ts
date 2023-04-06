@@ -180,7 +180,7 @@ export function CreateKit( definition : IKitProps ){
 
     (definition.component( p ) as IWidget<P,E>)
     
-      .layer( element => element.className( 
+      .manipulate( element => element.classname( 
         
         (new CoreAppearance()).sheet( definition.appearance ).mount().uid 
         
@@ -270,7 +270,7 @@ export function ImageWidget( props : IImageProps ) : AunWidget<IImageProps, HTML
 
   return RawWidget<IImageProps, HTMLImageElement>( 'img', props )
 
-    .layer( e => {
+    .manipulate( e => {
 
       Object.entries( props ).forEach( ({ 0: name, 1: value }) => {
 

@@ -87,7 +87,7 @@ export function UseComponent(component, target) {
  */
 export function CreateKit(definition) {
     return (p) => definition.component(p)
-        .layer(element => element.className((new CoreAppearance()).sheet(definition.appearance).mount().uid));
+        .manipulate(element => element.classname((new CoreAppearance()).sheet(definition.appearance).mount().uid));
 }
 /**
  * aune — AUN Virtual Element
@@ -146,7 +146,7 @@ export function TextWidget(props) {
  */
 export function ImageWidget(props) {
     return RawWidget('img', props)
-        .layer(e => {
+        .manipulate(e => {
         Object.entries(props).forEach(({ 0: name, 1: value }) => {
             if (name == 'mode') {
                 return;

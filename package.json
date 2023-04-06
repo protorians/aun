@@ -1,6 +1,6 @@
 {
   "name": "@protorians/aun",
-  "version": "0.0.3-beta.0",
+  "version": "0.0.3-beta.1",
   "description": "prototype yourself",
   "main": "index.js",
   "type": "module",

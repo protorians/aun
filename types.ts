@@ -213,11 +213,13 @@ export interface IPhysicalMethods{
   removeStyle( tokens : IElementCSSRemoves ) : this;
 
   
-  toggle( tokens : IElementClassName ) : this;
+  toggleClassname( tokens : IElementClassName ) : this;
 
-  className( tokens : IElementClassName | undefined ) : this | string[];
+  classname( tokens : IElementClassName | undefined ) : this;
 
-  removeClassName( tokens : IElementClassName ) : this;
+  getClassname() : string[];
+  
+  removeClassname( tokens : IElementClassName ) : this;
 
   // replaceClassName( older : IElementClassName, newer : IElementClassName ) : this;
 
@@ -438,7 +440,7 @@ export interface IWidget<P extends IWProps, E extends INode>{
 
   ready( callback : IWidgetReadyCallback<P, E> ) : this;
 
-  layer( callback : IWidgetLayerCallback<E> ) : this;
+  manipulate( callback : IWidgetLayerCallback<E> ) : this;
 
   appear( payload : IAppearanceObject ) : this;
 

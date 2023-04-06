@@ -453,7 +453,7 @@ export class AunElement<E extends INode> implements IElement<E>{
    * element.toggle( '.box' )
    * element.toggle( ['.box', '.card', ... ] )
    */
-  toggle( tokens : IElementClassName ) { 
+  toggleClassname( tokens : IElementClassName ) { 
 
     if( Array.isArray( tokens ) ){
 
@@ -484,7 +484,7 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @description Associé un selecteur CSS
    * @param tokens Selecteur CSS
    */
-  className( tokens : IElementClassName | undefined ) { 
+  classname( tokens : IElementClassName | undefined ) { 
 
     if( tokens ){
 
@@ -504,20 +504,26 @@ export class AunElement<E extends INode> implements IElement<E>{
   
       }
       
-      return this; 
-      
     }
   
+    return this;
+    
+  }
+
+
+  getClassname() : string[] {
+
     return this.instance.className.split(' ')
     
   }
+  
 
   /**
    * removeClassName
    * @description Supprimer un selecteur CSS
    * @param tokens Selecteur CSS
    */
-  removeClassName( tokens : IElementClassName ) { 
+  removeClassname( tokens : IElementClassName ) { 
     
     if( Array.isArray( tokens ) ){
 
@@ -1039,7 +1045,7 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
     
   }
 
-  layer( callback : IWidgetLayerCallback<E> ){
+  manipulate( callback : IWidgetLayerCallback<E> ){
 
     callback( this.element )
 
@@ -1121,7 +1127,7 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
    */
   render() : this{
 
-    this.element.className( this.construct.appearance.uid )
+    this.element.classname( this.construct.appearance.uid )
 
     this.construct.make( this, this.child );
     
@@ -1548,8 +1554,6 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
     const name = (this.navigation.oldRouteName() as (string | undefined))?.split('?')[0] as keyof Scheme | undefined;
 
-    console.warn('Get old viewname', name )
-
     return name ? this.#views[ name ] || undefined : undefined;
     
   }
@@ -1632,8 +1636,6 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
           } )
 
           if( this.last ){
-
-            console.log('Transition', oldView )
             
             oldView?.options.transitions?.exit.startOut( this.last.element.instance, () => {} );
             
