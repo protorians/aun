@@ -1,4 +1,4 @@
-import type { 
+import type {
   IAppearance,
   IAppearanceObject,
   IAppearanceStyleSheet,
@@ -7,14 +7,14 @@ import type {
   INavigation,
   INavigationMiddlewareCallback,
   INavigationOptions,
-  IProps 
+  IProps
 } from "@protorians/core/types";
 import { ICoreTransition } from "@protorians/core/types";
 
-export interface AunNode{
+export interface AunNode {
 
   AUNAOD?: boolean;
-  
+
 }
 
 export type AUNWindow = Partial<Window> & {
@@ -22,37 +22,37 @@ export type AUNWindow = Partial<Window> & {
   /**
    * Stockage des composant crée
    */
-  AUNRC ?: IRegistryComponentConstructorStack
+  AUNRC?: IRegistryComponentConstructorStack
 
   /**
    * Stockage des Observateurs de mutation pour l'hydratation des composants
    */
-  AUNHW ?: MutationObserver
+  AUNHW?: MutationObserver
 
 }
 
-export type IChild = string 
-  | number 
-  | boolean 
-  | IStateManager<IState> 
-  | IWidget<any, any> 
-  | HTMLElement 
+export type IChild = string
+  | number
+  | boolean
+  | IStateManager<IState>
+  | IWidget<any, any>
+  | HTMLElement
   | undefined;
 
-export type IChildren = IChild 
-  | Promise<IWidget<any, any>> 
-  | Array<IChild | Promise<IWidget<any, any>>> 
+export type IChildren = IChild
+  | Promise<IWidget<any, any>>
+  | Array<IChild | Promise<IWidget<any, any>>>
   | Array<IChildren>;
 
 
-export type IChildElement = IStateManager<IState> 
-  | IWidget<any, any> 
-  | HTMLElement 
+export type IChildElement = IStateManager<IState>
+  | IWidget<any, any>
+  | HTMLElement
   | undefined;
 
 export type IChildrenElement = IChildElement
-  | Promise<IWidget<any, any>> 
-  | Array<IChildElement | Promise<IWidget<any, any>>> 
+  | Promise<IWidget<any, any>>
+  | Array<IChildElement | Promise<IWidget<any, any>>>
   | Array<IChildElement>
   | undefined;
 
@@ -69,25 +69,25 @@ export type IWTarget = string | INode | NodeListOf<INode> | IElement<INode>;
 export type IWTargetNode = INode | NodeListOf<INode> | IElement<INode>;
 
 
-export type IFindElementCallback = ( element : HTMLElement ) => void
+export type IFindElementCallback = (element: HTMLElement) => void
 
 
 export interface IRegistryComponentConstructorStack {
 
-  [ K: string ] : ( props: any ) => IWidget<any, any> 
+  [K: string]: (props: any) => IWidget<any, any>
 
 }
 
 export type IObjectToString = {
 
-  eq ?: string | undefined;
+  eq?: string | undefined;
 
-  start ?: string | undefined;
+  start?: string | undefined;
 
-  end ?: string | undefined;
+  end?: string | undefined;
 
-  joiner ?: string | undefined;
-  
+  joiner?: string | undefined;
+
 }
 
 
@@ -95,9 +95,9 @@ export type IObjectToString = {
  * IWProps extends IProps
  * @description Les propriétés d'un widget. Les propriétés iront en attributs html avec le prefix "prop:{KEY}" pour garder la persistence. Les données de type objet seront convetir en JSON
  */
-export interface IWProps extends IProps{
+export interface IWProps extends IProps {
 
-  child ?: IChildren;
+  child?: IChildren;
 
 }
 
@@ -106,20 +106,20 @@ export interface IWProps extends IProps{
  * IWidgetProps extends IWProps
  * @description Propriétés de widget de base
  */
-export interface IWidgetProps extends IWProps{
+export interface IWidgetProps extends IWProps {
 
   child: IChildrenElement;
 
-  style ?: any;
+  style?: any;
 
-  css ?: any;
+  css?: any;
 
-  className ?: any;
+  className?: any;
 
-  data ?: any;
+  data?: any;
 
-  kit ?: any;
-  
+  kit?: any;
+
 }
 
 
@@ -130,15 +130,200 @@ export interface IWidgetProps extends IWProps{
 export interface ITextProps extends Omit<IWidgetProps, 'child'> {
 
   child: string;
-  
+
 }
 
 
 
-export interface IImageProps extends IProps{
+
+export interface IModalProps extends IProps {
+
+  trigger: IWidget<any, any>;
+
+  child: IChildElement;
+
+  isOpen?: boolean;
+
+  color?: string;
+
+  opacity?: number;
+
+  locked?: boolean;
+
+  transition?: ICoreTransition;
+
+  blurred?: boolean;
+
+}
+
+export interface IModalStateProps extends IProps {
+
+  open: boolean;
+
+}
+
+
+
+
+export interface IFormProps extends IProps {
+
+  acceptCharset?: string;
+
+  action?: string;
+
+  autocomplete?: 'on' | 'off';
+
+  enctype?: string;
+
+  method?: 'get' | 'post';
+
+  name?: string;
+
+  novalidate?: boolean;
+
+  rel?: 'external'
+
+  | 'license'
+
+  | 'next'
+
+  | 'nofollow'
+
+  | 'noopener'
+
+  | 'noreferrer'
+
+  | 'opener'
+
+  | 'prev'
+
+  | 'search'
+
+  | 'help';
+
+  target?: '_blank'
+
+  | '_parent'
+
+  | '_top'
+
+  | '_self';
+
+}
+
+
+export interface IInputProps extends IProps {
+
+  type?: 'text'
+
+  | 'button'
+
+  | 'color'
+
+  | 'date'
+
+  | 'datetime-local'
+
+  | 'email'
+
+  | 'file'
+
+  | 'hidden'
+
+  | 'image'
+
+  | 'month'
+
+  | 'number'
+
+  | 'password'
+
+  | 'radio'
+
+  | 'range'
+
+  | 'reset'
+
+  | 'search'
+
+  | 'submit'
+
+  | 'tel'
+
+  | 'time'
+
+  | 'url'
+
+  | 'week'
+
+  | 'checkbox';
+
+  accept?: string;
+
+  alt?: string;
+
+  autocomplete?: 'on' | 'off';
+
+  autofocus?: boolean;
+
+  checked?: boolean;
+
+  dirname?: string;
+
+  disabled?: boolean;
+
+  form?: string;
+
+  formaction?: string;
+
+  formenctype?: string;
+
+  formmethod?: 'get' | 'post';
+
+  formnovalidate?: boolean;
+
+  formtarget?: '_blank' | '_self' | '_parent' | '_top' | string;
+
+  height?: number;
+
+  width?: number;
+
+  list?: string;
+
+  max?: number | string;
+
+  min?: number | string;
+
+  maxlength?: number;
+
+  minlength?: number;
+
+  multiple?: boolean;
+
+  pattern?: RegExp;
+
+  placeholder?: string;
+
+  readonly?: boolean;
+
+  required?: boolean;
+
+  size?: number;
+
+  src?: string;
+
+  step?: number;
+
+  value?: string;
+
+}
+
+
+
+export interface IImageProps extends IProps {
 
   src: string;
-  
+
   mode?: 'cover' | 'contain' | 'auto';
 
   alt?: string;
@@ -168,85 +353,85 @@ export interface IImageProps extends IProps{
 }
 
 
-export interface IPhysicalMethods{
+export interface IPhysicalMethods {
 
-  asyncMeasure() : DOMRect;
+  asyncMeasure(): DOMRect;
 
-  measure( callback : IElementMeasureCallback ) : this;
+  measure(callback: IElementMeasureCallback): this;
 
-  clean() : this;
+  clean(): this;
 
-  remove() : this;
+  remove(): this;
 
-  asyncOffset() : IElementOffset;
+  asyncOffset(): IElementOffset;
 
-  offset( callback : IElementOffsetCallback ) : this;
+  offset(callback: IElementOffsetCallback): this;
 
-  content( child ?: IChildren | undefined ) : this | IChildren;
+  content(child?: IChildren | undefined): this | IChildren;
 
-  html( data ?: string | undefined ) : this | string;
+  html(data?: string | undefined): this | string;
 
-  append( ...nodes: (string | Node)[] ) : this;
+  append(...nodes: (string | Node)[]): this;
 
 
-  listen<L extends keyof IElementEmitterScheme>( 
-    
-    type : L, 
-    
-    callback : IEventDispatcherCallback<IElementEmitterScheme[L]>
-    
-  ) : this;
+  listen<L extends keyof IElementEmitterScheme>(
 
-  on<T extends keyof HTMLElementEventMap>( 
-    
-    type : T, 
-    
-    callback : IElementEventCallback<T>,
+    type: L,
+
+    callback: IEventDispatcherCallback<IElementEmitterScheme[L]>
+
+  ): this;
+
+  on<T extends keyof HTMLElementEventMap>(
+
+    type: T,
+
+    callback: IElementEventCallback<T>,
 
     options?: AddEventListenerOptions | boolean | undefined
-    
-  ) : this;
+
+  ): this;
 
 
-  style( tokens : IElementCSS | undefined ) : this;
+  style(tokens: IElementCSS | undefined): this;
 
-  removeStyle( tokens : IElementCSSRemoves ) : this;
+  removeStyle(tokens: IElementCSSRemoves): this;
 
-  
-  toggleClassname( tokens : IElementClassName ) : this;
 
-  classname( tokens : IElementClassName | undefined ) : this;
+  toggleClassname(tokens: IElementClassName): this;
 
-  getClassname() : string[];
-  
-  removeClassname( tokens : IElementClassName ) : this;
+  classname(tokens: IElementClassName | undefined): this;
+
+  getClassname(): string[];
+
+  removeClassname(tokens: IElementClassName): this;
 
   // replaceClassName( older : IElementClassName, newer : IElementClassName ) : this;
 
 
-  attribute( 
-    tokens ?: IAttributesMap | undefined, 
-    ns?: string | undefined, 
-    separator?: string | undefined 
-  ) : this;
+  attribute(
+    tokens?: IAttributesMap | undefined,
+    ns?: string | undefined,
+    separator?: string | undefined
+  ): this;
 
-  attributeNS( 
-    tokens ?: IAttributesMap | undefined, 
+  attributeNS(
+    tokens?: IAttributesMap | undefined,
     ns?: string | undefined
-  ) : this;
+  ): this;
 
-  removeAttribute( 
-    tokens : IAttributesMap,
-    ns?: string | undefined, 
-    separator?: string | undefined 
-  ) : this;
+  removeAttribute(
+    tokens: IAttributesMap,
+    ns?: string | undefined,
+    separator?: string | undefined
+  ): this;
 
-  toggleAttribute( 
-    tokens : IAttributesMap,
-    ns?: string | undefined, 
-    separator?: string | undefined 
-  ) : this;
-  
+  toggleAttribute(
+    tokens: IAttributesMap,
+    ns?: string | undefined,
+    separator?: string | undefined
+  ): this;
+
 }
 
 
@@ -254,113 +439,113 @@ export interface IPhysicalMethods{
 
 export type IElementCSS = Partial<CSSStyleDeclaration>;
 
-export type IElementCSSRemoves = keyof IElementCSS | Array<keyof IElementCSS>; 
+export type IElementCSSRemoves = keyof IElementCSS | Array<keyof IElementCSS>;
 
 export type IElementListenerCallback = () => void
 
-export type IElementEventCallback<T extends keyof HTMLElementEventMap> = ( args : HTMLElementEventMap[T] ) => void
+export type IElementEventCallback<T extends keyof HTMLElementEventMap> = (args: HTMLElementEventMap[T]) => void
 
 export type IElementClassName = string[] | string;
 
 // export interface IElementClassName{
 
 //   [ C : string ] : string | IElementClassName | undefined;
-  
+
 // }
 
 // export interface IAttribute{
 
 //   [ A : string ] : string | IAttribute | undefined
-  
+
 // }
 
 
 // export interface IAttributesProps extends IAttributesMap{
 
 //   [ A : string ] : IAttributesProps | string  | number | boolean | null
-  
+
 // }
 
 
 
 export interface IElementEmitterScheme {
 
-  own : IWidget<any, any>;
+  own: IWidget<any, any>;
 
-  measure : DOMRect;
+  measure: DOMRect;
 
-  clean : undefined;
+  clean: undefined;
 
-  remove : undefined;
+  remove: undefined;
 
-  offset : IElementOffset;
+  offset: IElementOffset;
 
-  content : IChildren | IChildren[];
+  content: IChildren | IChildren[];
 
-  html : string;
+  html: string;
 
-  on : {
+  on: {
 
     type: keyof HTMLElementEventMap;
-    
+
     callback: IElementEventCallback<any>;
-    
-    options : AddEventListenerOptions | boolean | undefined
-    
+
+    options: AddEventListenerOptions | boolean | undefined
+
   }
 
-  style : IElementCSS;
+  style: IElementCSS;
 
-  removeStyle : IElementCSSRemoves;
+  removeStyle: IElementCSSRemoves;
 
-  toggle : IElementClassName
+  toggle: IElementClassName
 
-  append : Array<string | Node>
+  append: Array<string | Node>
 
-  className : IElementClassName;
+  className: IElementClassName;
 
-  removeClassName : IElementClassName;
+  removeClassName: IElementClassName;
 
   // replaceClassName : {
 
   //   older : IElementClassName;
 
   //   newer : IElementClassName;
-    
+
   // };
-  
+
 }
 
-export type IElementMeasureCallback = ( offset : DOMRect ) => void
+export type IElementMeasureCallback = (offset: DOMRect) => void
 
-export type IElementOffsetCallback = ( offset : IElementOffset ) => void
+export type IElementOffsetCallback = (offset: IElementOffset) => void
 
 export type IElementOffset = {
 
-  height : number
+  height: number
 
-  width : number
+  width: number
 
-  top : number
+  top: number
 
-  left : number
+  left: number
 
-  parent : Element | null
-  
+  parent: Element | null
+
 }
 
 export interface IElement<E extends INode> extends IPhysicalMethods {
 
-  instance : E;
+  instance: E;
 
-  emitter : IEventDispatcher<IElementEmitterScheme>;
+  emitter: IEventDispatcher<IElementEmitterScheme>;
 
-  get widget() : IWidget<any, E> | undefined;
+  get widget(): IWidget<any, E> | undefined;
 
-  own<P extends IWProps>( widget : IWidget<P, E> | undefined ) : this;
+  own<P extends IWProps>(widget: IWidget<P, E> | undefined): this;
 
   // append( ...nodes: (string | Node)[] ) : this;
-  
+
 }
 
 
@@ -369,100 +554,100 @@ export interface IElement<E extends INode> extends IPhysicalMethods {
 
 export type IWidgetTimerCallback = <
 
-  P extends IWProps, 
+  P extends IWProps,
 
   E extends INode
 
-  >( widget : IWidget<P, E>, timer : NodeJS.Timeout ) => void
+>(widget: IWidget<P, E>, timer: NodeJS.Timeout) => void
 
 export type IWidgetRequestAnimationFrameCallback = <
 
-  P extends IWProps, 
+  P extends IWProps,
 
   E extends INode
 
-  >( widget : IWidget<P, E> ) => void
+>(widget: IWidget<P, E>) => void
 
 
-export type IWidgetAsyncCallback = ( 
+export type IWidgetAsyncCallback = (
 
-  resolve: (value: IWidget<any, any> | PromiseLike<IWidget<any, any>>) => void, 
-  
-  reject: (reason?: any) => void 
+  resolve: (value: IWidget<any, any> | PromiseLike<IWidget<any, any>>) => void,
+
+  reject: (reason?: any) => void
 
 ) => void
 
 
-export type IWidgetLayerCallback<E extends INode> = ( element : IElement<E> ) => void
+export type IWidgetLayerCallback<E extends INode> = (element: IElement<E>) => void
 
-export type IWidgetReadyCallback<P extends IWProps,E extends INode> = ( widget : IWidget<P, E> ) => void
+export type IWidgetReadyCallback<P extends IWProps, E extends INode> = (widget: IWidget<P, E>) => void
 
 
 export interface IWidgetEmitterScheme<P extends IWProps, E extends INode> {
 
-  ready : IWidget<P, E>;
+  ready: IWidget<P, E>;
 
-  beforeRendering : IChildren;
+  beforeRendering: IChildren;
 
-  afterRendering : IChildren;
-  
-  property : P[ keyof P ];
+  afterRendering: IChildren;
 
-  excavation : IWidget<P, E>;
+  property: P[keyof P];
 
-  remove : undefined;
+  excavation: IWidget<P, E>;
 
-  childAdded : IChildren;
+  remove: undefined;
 
-  elementAdded : Element;
+  childAdded: IChildren;
 
-  widgetAdded : IWidget<any, any>;
+  elementAdded: Element;
 
-  promiseAdded : Promise<IWidget<any, any>>;
+  widgetAdded: IWidget<any, any>;
 
-  htmlAdded : string | boolean | number;
+  promiseAdded: Promise<IWidget<any, any>>;
 
-  stateAdded : IStateManager<any>;
+  htmlAdded: string | boolean | number;
+
+  stateAdded: IStateManager<any>;
 
 }
 
-export interface IWidget<P extends IWProps, E extends INode>{
+export interface IWidget<P extends IWProps, E extends INode> {
 
-  element : IElement<E>;
+  element: IElement<E>;
 
-  child ?: IChildren | IChildren[] | undefined;
+  child?: IChildren | IChildren[] | undefined;
 
-  get props() : P;
-  
-  emitter : IEventDispatcher<IWidgetEmitterScheme<P, E>>;
-  
-  construct : IConstruct<P, E>;
+  get props(): P;
 
-  ready( callback : IWidgetReadyCallback<P, E> ) : this;
+  emitter: IEventDispatcher<IWidgetEmitterScheme<P, E>>;
 
-  manipulate( callback : IWidgetLayerCallback<E> ) : this;
+  construct: IConstruct<P, E>;
 
-  appear( payload : IAppearanceObject ) : this;
+  ready(callback: IWidgetReadyCallback<P, E>): this;
 
-  content( child ?: IChildren | undefined ) : this | IChildren;
+  manipulate(callback: IWidgetLayerCallback<E>): this;
+
+  appear(payload: IAppearanceObject): this;
+
+  content(child?: IChildren | undefined): this | IChildren;
 
   // append( ...child : IChildren[] ) : this;
 
-  refresh( props ?: Partial<P> | undefined ) : this;
-  
-  render() : this;
+  refresh(props?: Partial<P> | undefined): this;
 
-  remove() : this;
+  render(): this;
+
+  remove(): this;
 
 
-  timeOut( callback : IWidgetTimerCallback, time ?: number ) : this;
+  timeOut(callback: IWidgetTimerCallback, time?: number): this;
 
-  timeInterval( callback : IWidgetTimerCallback, time ?: number ) : this;
+  timeInterval(callback: IWidgetTimerCallback, time?: number): this;
 
-  frameReady( callback : IWidgetRequestAnimationFrameCallback ) : this;
-  
+  frameReady(callback: IWidgetRequestAnimationFrameCallback): this;
+
   // catch<P extends IWProps, E extends INode>( callback : IStateErrorExceptionCallback<P, E> ) : IWidget<P, E>;
-  
+
 }
 
 
@@ -471,9 +656,9 @@ export interface IWidget<P extends IWProps, E extends INode>{
  * IState
  * @description
  */
-export interface IStateObject{
-  
-  [ K: string ] : IState
+export interface IStateObject {
+
+  [K: string]: IState
 
 }
 
@@ -487,69 +672,71 @@ export type IStateRecords<S extends IState> = {
   widget: IWidget<any, any> | undefined;
 
   callback: IStateCallback<S>;
-  
+
 }
 
 
-export type IStateCallback<S extends IState> = ( state : S ) => IWidget<any, any>;
+export type IStateCallback<S extends IState> = (state: S) => IWidget<any, any> | undefined;
+
+export type IStateVoidCallback<S extends IState> = (state: S) => void;
 
 
 export type IStateErrorCallbackAunyload<M> = {
 
-  manager : M;
+  manager: M;
 
   error: any;
-  
+
 }
 
-export type IStateErrorCallback<S extends IState> = ( 
-  
-  payload : IStateErrorCallbackAunyload<IStateManager<S>> 
-  
+export type IStateErrorCallback<S extends IState> = (
+
+  payload: IStateErrorCallbackAunyload<IStateManager<S>>
+
 ) => void;
 
 
 
 export interface IStateManagerEmitterScheme<S extends IState> {
 
-  success : IStateManager<S>;
+  success: IStateManager<S>;
 
-  error : unknown;
+  error: unknown;
 
-  init : S
+  init: S
 
   change: S
-  
+
 }
 
 
-export interface IStateManager<S extends IState>{
+export interface IStateManager<S extends IState> {
 
-  emitter : IEventDispatcher<IStateManagerEmitterScheme<S>>
+  emitter: IEventDispatcher<IStateManagerEmitterScheme<S>>
 
-  get value() : S;
-  
-  records( widget : IWidget<any, any> ) : this;
+  get value(): S;
 
-  record( widget : IWidget<any, any>, record : IStateRecords<any> ) : IStateRecords<any>;
+  records(widget: IWidget<any, any>): this;
 
-  sync() : this;
+  record(widget: IWidget<any, any>, record: IStateRecords<any>): IStateRecords<any>;
 
-  set( value : S | Partial<S> ) : this;
-  
-  use( 
-    
-    callback : IStateCallback<S> 
-    
-  ) : this;
-  
+  sync(): this;
+
+  set(value: S | Partial<S>): this;
+
+  use(
+
+    callback: IStateCallback<S>
+
+  ): this;
+
 }
 
 
 
-export interface IWidgerErrorException{
+export interface IWidgerErrorException {
 
-  messageToString( data : string ) : string;
+  messageToString(data: string): string;
 
 }
 
@@ -560,26 +747,26 @@ export interface IWidgerErrorException{
 
 export interface IConstructEmitterScheme<P extends IWProps, E extends INode> {
 
-  before : IWidget<P, E>;
+  before: IWidget<P, E>;
 
-  after : IWidget<P, E>;
-  
+  after: IWidget<P, E>;
+
   appearance: IAppearance;
 
 }
 
-export interface IConstruct<P extends IWProps, E extends INode>{
+export interface IConstruct<P extends IWProps, E extends INode> {
 
-  emitter : IEventDispatcher<IConstructEmitterScheme<P, E>>;
+  emitter: IEventDispatcher<IConstructEmitterScheme<P, E>>;
 
-  appearance : IAppearance;
+  appearance: IAppearance;
 
-  make( root : IWidget<P, E>, child : IChildren | IChildren[] ) : IWidget<P, E>;
+  make(root: IWidget<P, E>, child: IChildren | IChildren[]): IWidget<P, E>;
 
-  makeChildren( root : IWidget<P, E>, child : IChildren ): IWidget<P, E>;
+  makeChildren(root: IWidget<P, E>, child: IChildren): IWidget<P, E>;
 
-  makeAppearance( root : IWidget<P, E>, payload : IAppearanceObject ): IWidget<P, E>;
-  
+  makeAppearance(root: IWidget<P, E>, payload: IAppearanceObject): IWidget<P, E>;
+
 }
 
 
@@ -591,59 +778,59 @@ export interface IConstruct<P extends IWProps, E extends INode>{
 
 
 export type IHydrateComponent<
-  
-  P extends IWProps, 
-  
+
+  P extends IWProps,
+
   E extends HTMLElement
-  
-> = ( ( props: P ) => IWidget<P, E> )
 
-export type IComponentConstructor = ( ( props: any ) => IWidget<any, any> )
+> = ((props: P) => IWidget<P, E>)
 
-
+export type IComponentConstructor = ((props: any) => IWidget<any, any>)
 
 
 
-export type IAttributesMapValues = IAttributesMap | Array<any> | string  | number | boolean | null | (() => void)
+
+
+export type IAttributesMapValues = IAttributesMap | Array<any> | string | number | boolean | null | (() => void)
 
 export type IAttributesMap = {
 
-  [ A : string ] : IAttributesMapValues
-  
+  [A: string]: IAttributesMapValues
+
 }
 
 export type IAttributesAunrsed = {
 
-    [ A : string ] : string;
-    
+  [A: string]: string;
+
 }
 
 export type IAttributesToggleMap = {
 
-    [ A : string ] : boolean;
-    
+  [A: string]: boolean;
+
 }
 
 export type IAttributeSyncAunyload = {
-  
+
   entries: string[];
 
 }
 
 export type IAttributeAddAunyload = {
-  
+
   added: string;
 
 }
 
 export type IAttributeRemoveAunyload = {
-  
+
   removed: string;
 
 }
 
 export type IAttributeReplaceAunyload = {
-  
+
   older: string;
 
   newer: string;
@@ -651,7 +838,7 @@ export type IAttributeReplaceAunyload = {
 }
 
 export type IAttributeUnlinkAunyload = {
-  
+
   value: string[] | string;
 
 }
@@ -667,35 +854,35 @@ export type IAttributesEmitterScheme = {
   replace: IAttributeReplaceAunyload;
 
   link: IAttribute;
-  
+
   unlink: IAttributeUnlinkAunyload;
 
   unlinks: IAttribute;
 
 }
 
-export interface IAttribute{
+export interface IAttribute {
 
-  attributeName : string;
-  
-  get entries() : string[];
+  attributeName: string;
 
-  get value() : string;
+  get entries(): string[];
 
-  sync( attribute ?: string ) : this;
+  get value(): string;
 
-  add( value : string ) : this;
+  sync(attribute?: string): this;
 
-  remove( value : string ) : this;
+  add(value: string): this;
 
-  replace( older : string, value : string ) : this;
+  remove(value: string): this;
 
-  contains( value : string ) : boolean;
-  
-  link() : this;
+  replace(older: string, value: string): this;
 
-  unlink( property ?: string | string[] ) : this;
-  
+  contains(value: string): boolean;
+
+  link(): this;
+
+  unlink(property?: string | string[]): this;
+
 }
 
 
@@ -705,7 +892,7 @@ export interface IAttribute{
 
 // }
 
-export interface IKitProps{
+export interface IKitProps {
 
   appearance: IAppearanceStyleSheet;
 
@@ -716,11 +903,11 @@ export interface IKitProps{
 // export interface IKit<P extends IWProps, E extends INode>{
 
 //   emitter : IEventDispatcher<IKitEmitterScheme>;
-  
+
 //   props : IKitProps<P, E> | undefined
 
 //   render(): this;
-  
+
 // }
 
 
@@ -732,13 +919,13 @@ export type IViewEmitterCallbackArgument<P extends IWProps> = {
   component: IWidget<P, HTMLDivElement>;
 
   router: IView<P>
-  
+
 }
 
 export type IViewEmitterCallback<P extends IWProps> = (
 
-  payload : IViewEmitterCallbackArgument<P>
-  
+  payload: IViewEmitterCallbackArgument<P>
+
 ) => void
 
 
@@ -747,26 +934,26 @@ export interface IViewEmitters<P extends IWProps> {
   show?: IViewEmitterCallback<P>;
 
   hide?: IViewEmitterCallback<P>;
-  
+
 }
 
 
-export interface IViewOptions<P extends IWProps>{
+export interface IViewOptions<P extends IWProps> {
 
   name: string;
-  
+
   title: string;
 
-  presenter ?: 'normal' | 'modal' | 'overlay' | 'overlaySideLeft' | 'overlaySideRight';
+  presenter?: 'normal' | 'modal' | 'overlay' | 'overlaySideLeft' | 'overlaySideRight';
 
-  emitters ?: IViewEmitters<P>;
+  emitters?: IViewEmitters<P>;
 
-  transitions ?: {
+  transitions?: {
 
     entry: ICoreTransition;
 
     exit: ICoreTransition;
-    
+
   };
 
   // switcher ?: IViewSwitcher;
@@ -775,41 +962,41 @@ export interface IViewOptions<P extends IWProps>{
 
 export interface IViewProps extends IWProps {
 
-  [k:string] : any;
+  [k: string]: any;
 
-  stack : IStackViews<any>;
+  stack: IStackViews<any>;
 
-  child ?: IChildren;
+  child?: IChildren;
 
-  
+
 }
 
-export type IViewWidget<P extends IWProps> = ( ( props: P ) 
+export type IViewWidget<P extends IWProps> = ((props: P)
 
-  => IWidget<any, any> )
+  => IWidget<any, any>)
 
-;
+  ;
 
-export interface IView<P extends IProps>{
-  
-  get parameters() : P;
-  
-  get component() : IWidget<P, HTMLDivElement> | undefined
+export interface IView<P extends IProps> {
 
-  options : IViewOptions<P>;
-  
-  componentConstructor : IViewWidget<P>;
+  get parameters(): P;
+
+  get component(): IWidget<P, HTMLDivElement> | undefined
+
+  options: IViewOptions<P>;
+
+  componentConstructor: IViewWidget<P>;
 
   // componentConstructor : IComponentConstructor;
 
-  show( parameters : P ) : this;
+  show(parameters: P): this;
 
-  hide() : this;
+  hide(): this;
 
-  refresh( parameters ?: Partial<P> | undefined ) : this;
-  
-  render() : IWidget<P, HTMLDivElement>;
-  
+  refresh(parameters?: Partial<P> | undefined): this;
+
+  render(): IWidget<P, HTMLDivElement>;
+
 }
 
 
@@ -817,45 +1004,45 @@ export interface IView<P extends IProps>{
 
 export type IStackViewsOptions<Scheme> = Omit<Partial<INavigationOptions<Scheme>>, 'middlewares'> & {
 
-  index ?: keyof Scheme;
+  index?: keyof Scheme;
 
-  canvas ?: IWTarget
-  
-  errorView ?: keyof Scheme;
+  canvas?: IWTarget
 
-  middlewares ?: INavigationMiddlewareCallback<Scheme>[];
+  errorView?: keyof Scheme;
+
+  middlewares?: INavigationMiddlewareCallback<Scheme>[];
 
 }
 
 export type IStackViewsList<Scheme> = {
 
-  [ K in keyof Scheme ] : IView<any>
-  
+  [K in keyof Scheme]: IView<any>
+
 }
 
-export interface IStackViewsEmitterScheme<Scheme>{
+export interface IStackViewsEmitterScheme<Scheme> {
 
   error: keyof Scheme;
-  
+
 }
 
-export interface IStackViews<Scheme>{
+export interface IStackViews<Scheme> {
 
   get views(): IStackViewsList<Scheme>;
 
-  emitter : IEventDispatcher<IStackViewsEmitterScheme<Scheme>>
+  emitter: IEventDispatcher<IStackViewsEmitterScheme<Scheme>>
 
-  options : IStackViewsOptions<Scheme>;
-  
+  options: IStackViewsOptions<Scheme>;
+
   navigation: INavigation<Scheme>;
 
-  get current() : IWidget<any, any> | undefined;
+  get current(): IWidget<any, any> | undefined;
 
-  last : IWidget<any, any> | undefined;
+  last: IWidget<any, any> | undefined;
 
-  middleware( callback : INavigationMiddlewareCallback<Scheme> ) : this;
-  
+  middleware(callback: INavigationMiddlewareCallback<Scheme>): this;
+
   run(): this;
-  
+
 }
 

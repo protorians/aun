@@ -1,51 +1,52 @@
 
 import EventDispatcher from "@protorians/core/event-dispatcher";
-import type { 
-  IAttributesMap, 
-  IAttributesToggleMap, 
-  IChildren, 
-  IComponentConstructor, 
-  IConstruct, 
-  IConstructEmitterScheme, 
-  IElement, 
-  IElementClassName, 
-  IElementCSS, 
-  IElementCSSRemoves, 
-  IElementEmitterScheme, 
-  IElementEventCallback, 
-  IElementMeasureCallback, 
-  IElementOffsetCallback, 
-  IFindElementCallback, 
-  INode, 
-  IStackViews, 
-  IStackViewsEmitterScheme, 
-  IStackViewsList, 
-  IStackViewsOptions, 
-  IState, 
-  IStateCallback, 
-  IStateErrorCallback, 
-  IStateManager, 
-  IStateManagerEmitterScheme, 
-  IStateRecords, 
-  IView, 
-  IViewOptions, 
-  IWidget, 
-  IWidgetEmitterScheme, 
-  IWidgetLayerCallback, 
-  IWidgetReadyCallback, 
-  IWidgetRequestAnimationFrameCallback, 
-  IWidgetTimerCallback, 
-  IWProps, 
-  IWTarget, 
+import type {
+  IAttributesMap,
+  IAttributesToggleMap,
+  IChildren,
+  IComponentConstructor,
+  IConstruct,
+  IConstructEmitterScheme,
+  IElement,
+  IElementClassName,
+  IElementCSS,
+  IElementCSSRemoves,
+  IElementEmitterScheme,
+  IElementEventCallback,
+  IElementMeasureCallback,
+  IElementOffsetCallback,
+  IFindElementCallback,
+  INode,
+  IStackViews,
+  IStackViewsEmitterScheme,
+  IStackViewsList,
+  IStackViewsOptions,
+  IState,
+  IStateCallback,
+  IStateErrorCallback,
+  IStateManager,
+  IStateManagerEmitterScheme,
+  IStateRecords,
+  IView,
+  IViewOptions,
+  IWidget,
+  IWidgetEmitterScheme,
+  IWidgetLayerCallback,
+  IWidgetReadyCallback,
+  IWidgetRequestAnimationFrameCallback,
+  IWidgetTimerCallback,
+  IWProps,
+  IWTarget,
   IWTargetNode,
   IViewProps,
+  IStateVoidCallback,
 } from "./types";
-import type { 
-  IAppearance, 
-  IAppearanceObject, 
-  IEventDispatcher, 
-  IEventDispatcherCallback, 
-  INavigation, 
+import type {
+  IAppearance,
+  IAppearanceObject,
+  IEventDispatcher,
+  IEventDispatcherCallback,
+  INavigation,
   INavigationMiddlewareCallback,
   INavigationMiddlewareProps
 } from "@protorians/core/types";
@@ -60,56 +61,56 @@ import CoreAppearance from "@protorians/core/appearance";
  * @param find Recherché
  * @param callback Fonction de rappel contenant l'element html en argument
  */
-export function findElement( 
-  
-  find : IWTarget | undefined, 
-  
-  callback ?: IFindElementCallback 
-  
-) : IWTargetNode | undefined {
+export function findElement(
+
+  find: IWTarget | undefined,
+
+  callback?: IFindElementCallback
+
+): IWTargetNode | undefined {
 
   const fn = callback || new Function()
-  
+
   let target = undefined;
 
-  if( find ){
+  if (find) {
 
-    if( typeof find == 'string' ){ 
-      
-      target = document.querySelectorAll<HTMLElement>( find ); 
+    if (typeof find == 'string') {
 
-      target.forEach( element => fn( element ))
-      
+      target = document.querySelectorAll<HTMLElement>(find);
+
+      target.forEach(element => fn(element))
+
     }
 
-    else if( find instanceof NodeList ){ 
-      
-      target = find; 
-      
-      target.forEach( element => fn( element ))
-      
+    else if (find instanceof NodeList) {
+
+      target = find;
+
+      target.forEach(element => fn(element))
+
     }
 
-    else if( find instanceof HTMLElement ){ 
-      
-      target = find; 
-      
-      fn( target )
-      
+    else if (find instanceof HTMLElement) {
+
+      target = find;
+
+      fn(target)
+
     }
 
-    else if( find instanceof AunElement ){ 
-      
-      target = find.instance; 
-      
-      fn( target )
-      
+    else if (find instanceof AunElement) {
+
+      target = find.instance;
+
+      fn(target)
+
     }
 
   }
-  
+
   return target;
-  
+
 }
 
 
@@ -123,7 +124,7 @@ export class AunElement<E extends INode> implements IElement<E>{
   /**
    * Instance contenant le DOM
    */
-  instance : E;
+  instance: E;
 
   /**
    * Emetteur
@@ -133,16 +134,16 @@ export class AunElement<E extends INode> implements IElement<E>{
   /**
    * Widget associé
    */
-  get widget(){ return this.#widget; }
-  
-  #widget : IWidget<any, E> | undefined = undefined
+  get widget() { return this.#widget; }
 
-  
+  #widget: IWidget<any, E> | undefined = undefined
 
-  constructor( tagname : string ){
 
-    this.instance = document.createElement( tagname ) as E;
-    
+
+  constructor(tagname: string) {
+
+    this.instance = document.createElement(tagname) as E;
+
   }
 
   /**
@@ -151,14 +152,14 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param widget Widget Cible
    * @example element.own( widget )
    */
-  own<P extends IWProps>(widget: IWidget<P, E> ): this {
+  own<P extends IWProps>(widget: IWidget<P, E>): this {
 
     this.#widget = widget;
-      
-    this.emitter.dispatch( 'own', widget )
-  
+
+    this.emitter.dispatch('own', widget)
+
     return this;
-    
+
   }
 
   /**
@@ -167,14 +168,14 @@ export class AunElement<E extends INode> implements IElement<E>{
    * Ceci permet d'enchaine avec une autre methode
    * @example element.asyncMeasure()
    */
-  asyncMeasure() { 
-    
-    const data = this.instance.getBoundingClientRect(); 
+  asyncMeasure() {
 
-    this.emitter.dispatch( 'measure', data )
-  
+    const data = this.instance.getBoundingClientRect();
+
+    this.emitter.dispatch('measure', data)
+
     return data;
-    
+
   }
 
   /**
@@ -183,12 +184,12 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param callback Fonction de rappel retournant la valeur en argument
    * @example element.measure( measure => ... )
    */
-  measure( callback : IElementMeasureCallback ) { 
+  measure(callback: IElementMeasureCallback) {
 
-    callback( this.asyncMeasure() )
-    
-    return this; 
-  
+    callback(this.asyncMeasure())
+
+    return this;
+
   }
 
   /**
@@ -196,14 +197,14 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @description Nettoie le contenu de l'instance de l'élément
    * @example element.clean()
    */
-  clean() { 
+  clean() {
 
-    Object.values( this.instance.children ).forEach( children => children.remove() )
-    
-    this.emitter.dispatch( 'clean', undefined )
-  
-    return this; 
-  
+    Object.values(this.instance.children).forEach(children => children.remove())
+
+    this.emitter.dispatch('clean', undefined)
+
+    return this;
+
   }
 
   /**
@@ -211,14 +212,14 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @description Supprime l'élément
    * @example element.remove()
    */
-  remove() { 
+  remove() {
 
     this.instance.remove();
-    
-    this.emitter.dispatch( 'remove', undefined )
-  
-    return this; 
-  
+
+    this.emitter.dispatch('remove', undefined)
+
+    return this;
+
   }
 
   /**
@@ -226,26 +227,26 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @description Retrouve les valeurs de l'`offset` de l'intance de l'élément en les retournant
    * @example element.asyncOffset()
    */
-  asyncOffset() { 
+  asyncOffset() {
 
     const data = {
 
-      height : this.instance.offsetHeight,
+      height: this.instance.offsetHeight,
 
-      width : this.instance.offsetWidth,
+      width: this.instance.offsetWidth,
 
-      top : this.instance.offsetTop,
+      top: this.instance.offsetTop,
 
-      left : this.instance.offsetLeft,
+      left: this.instance.offsetLeft,
 
-      parent : this.instance.offsetParent,
-      
-    }; 
+      parent: this.instance.offsetParent,
 
-    this.emitter.dispatch( 'offset', data )
+    };
+
+    this.emitter.dispatch('offset', data)
 
     return data;
-    
+
   }
 
   /**
@@ -255,12 +256,12 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param callback Fonction de rappel retournant la valeur en argument
    * @example element.offset( offset => ... )
    */
-  offset( callback : IElementOffsetCallback ){
+  offset(callback: IElementOffsetCallback) {
 
-    callback( this.asyncOffset() )
+    callback(this.asyncOffset())
 
     return this;
-    
+
   }
 
   /**
@@ -273,20 +274,20 @@ export class AunElement<E extends INode> implements IElement<E>{
    * element.content( widget )
    * element.content( [ widget1, widget2, ... ] )
    */
-  content( child ?: IChildren | IChildren[] | undefined ) { 
+  content(child?: IChildren | IChildren[] | undefined) {
 
-    if( typeof child != 'undefined' ){
+    if (typeof child != 'undefined') {
 
-      this.widget?.construct.make( this.widget, child )
+      this.widget?.construct.make(this.widget, child)
 
-      this.emitter.dispatch( 'content', child )
+      this.emitter.dispatch('content', child)
 
-      return this; 
+      return this;
 
     }
 
     return this.widget?.child
-      
+
   }
 
   /**
@@ -296,20 +297,20 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @example
    * element.html( 'string' )
    */
-  html( data ?: string | undefined ) { 
+  html(data?: string | undefined) {
 
-    if( typeof data != 'undefined' ){
+    if (typeof data != 'undefined') {
 
       this.instance.innerHTML = data
-      
-      this.emitter.dispatch( 'html', data )
 
-      return this; 
-      
+      this.emitter.dispatch('html', data)
+
+      return this;
+
     }
-    
+
     return this.instance.innerHTML
-  
+
   }
 
   /**
@@ -321,17 +322,17 @@ export class AunElement<E extends INode> implements IElement<E>{
    * element.append( document.querySelector('.box') )
    */
 
-  append( ...nodes: (string | Node)[] ) { 
+  append(...nodes: (string | Node)[]) {
 
-    if( nodes ){
+    if (nodes) {
 
-      nodes.forEach( node => this.instance.append( node ) )
-      
-      this.emitter.dispatch( 'append', nodes )
+      nodes.forEach(node => this.instance.append(node))
+
+      this.emitter.dispatch('append', nodes)
 
     }
 
-    return this; 
+    return this;
 
   }
 
@@ -344,18 +345,18 @@ export class AunElement<E extends INode> implements IElement<E>{
    * element.listen( 'EMITTER_TYPE', data => ... )
    * element.listen<IElementEmitterScheme>( 'EMITTER_TYPE', data => ... )
    */
-  listen<L extends keyof IElementEmitterScheme>( 
-    
-    type : L, 
-    
-    callback : IEventDispatcherCallback<IElementEmitterScheme[L]>
-    
-  ) { 
+  listen<L extends keyof IElementEmitterScheme>(
 
-    this.emitter.listen<L>( type, callback )
-    
-    return this; 
-  
+    type: L,
+
+    callback: IEventDispatcherCallback<IElementEmitterScheme[L]>
+
+  ) {
+
+    this.emitter.listen<L>(type, callback)
+
+    return this;
+
   }
 
   /**
@@ -367,22 +368,22 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @example
    * element.on<PointerEvent>( 'LISTENER_TYPE', ev => ... )
    */
-  on<T extends keyof HTMLElementEventMap>( 
-    
-    type : T, 
-    
-    callback : IElementEventCallback<T>,
+  on<T extends keyof HTMLElementEventMap>(
+
+    type: T,
+
+    callback: IElementEventCallback<T>,
 
     options?: AddEventListenerOptions | boolean | undefined
-    
-  ) { 
 
-    this.instance.addEventListener( type, callback, options )
-    
-    this.emitter.dispatch( 'on', { type, callback, options } )
+  ) {
+
+    this.instance.addEventListener(type, callback, options)
+
+    this.emitter.dispatch('on', { type, callback, options })
 
     return this;
-  
+
   }
 
   /**
@@ -394,22 +395,22 @@ export class AunElement<E extends INode> implements IElement<E>{
    *    'property': 'value'
    * } ) 
    */
-  style( properties : IElementCSS | undefined ) { 
+  style(properties: IElementCSS | undefined) {
 
-    if( properties ){
+    if (properties) {
 
-      Object.entries( properties ).forEach( ({ 0: name, 1: value }) => {
+      Object.entries(properties).forEach(({ 0: name, 1: value }) => {
 
-        this.instance.style[ name as any ] = `${ value }`
-        
-      } )
+        this.instance.style[name as any] = `${value}`
 
-      this.emitter.dispatch( 'style', properties )
+      })
+
+      this.emitter.dispatch('style', properties)
 
     }
-    
-    return this; 
-  
+
+    return this;
+
   }
 
   /**
@@ -419,30 +420,30 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @example
    * element.removeStyle( [ 'color', 'fontSize', ... ]) 
    */
-  removeStyle( properties : IElementCSSRemoves ) { 
-    
-    if( Array.isArray( properties ) ){
+  removeStyle(properties: IElementCSSRemoves) {
 
-      properties.forEach( name => {
+    if (Array.isArray(properties)) {
 
-        this.instance.style.removeProperty( name as string )
-        
-      } )
+      properties.forEach(name => {
 
-      this.emitter.dispatch( 'removeStyle', properties )
+        this.instance.style.removeProperty(name as string)
+
+      })
+
+      this.emitter.dispatch('removeStyle', properties)
+
+    }
+
+    else if (typeof properties == 'string') {
+
+      this.instance.style.removeProperty(properties)
+
+      this.emitter.dispatch('removeStyle', properties)
 
     }
 
-    else if( typeof properties == 'string'){
+    return this;
 
-      this.instance.style.removeProperty( properties )
-      
-      this.emitter.dispatch( 'removeStyle', properties )
-
-    }
-    
-    return this; 
-  
   }
 
   /**
@@ -453,30 +454,30 @@ export class AunElement<E extends INode> implements IElement<E>{
    * element.toggle( '.box' )
    * element.toggle( ['.box', '.card', ... ] )
    */
-  toggleClassname( tokens : IElementClassName ) { 
+  toggleClassname(tokens: IElementClassName) {
 
-    if( Array.isArray( tokens ) ){
+    if (Array.isArray(tokens)) {
 
-      tokens.forEach( name => {
+      tokens.forEach(name => {
 
-        this.instance.classList.toggle( name )
-    
-      } )
+        this.instance.classList.toggle(name)
 
-      this.emitter.dispatch( 'toggle', tokens )
+      })
+
+      this.emitter.dispatch('toggle', tokens)
+
+    }
+
+    else if (typeof tokens == 'string') {
+
+      this.instance.classList.toggle(tokens)
+
+      this.emitter.dispatch('toggle', tokens)
 
     }
 
-    else if( typeof tokens == 'string'){
+    return this;
 
-      this.instance.classList.toggle( tokens )
-      
-      this.emitter.dispatch( 'toggle', tokens )
-
-    }
-  
-    return this; 
-  
   }
 
   /**
@@ -484,69 +485,69 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @description Associé un selecteur CSS
    * @param tokens Selecteur CSS
    */
-  classname( tokens : IElementClassName | undefined ) { 
+  classname(tokens: IElementClassName | undefined) {
 
-    if( tokens ){
+    if (tokens) {
 
-      if( typeof tokens == 'string' ){
+      if (typeof tokens == 'string') {
 
-        this.instance.classList.add( tokens )
+        this.instance.classList.add(tokens)
 
-        this.emitter.dispatch( 'className', tokens )
-  
+        this.emitter.dispatch('className', tokens)
+
       }
-      
-      else if( Array.isArray( tokens ) ){
 
-        tokens.forEach( token => this.instance.classList.add( token ) )
-        
-        this.emitter.dispatch( 'className', tokens )
-  
+      else if (Array.isArray(tokens)) {
+
+        tokens.forEach(token => this.instance.classList.add(token))
+
+        this.emitter.dispatch('className', tokens)
+
       }
-      
+
     }
-  
+
     return this;
-    
+
   }
 
 
-  getClassname() : string[] {
+  getClassname(): string[] {
 
     return this.instance.className.split(' ')
-    
+
   }
-  
+
 
   /**
    * removeClassName
    * @description Supprimer un selecteur CSS
    * @param tokens Selecteur CSS
    */
-  removeClassname( tokens : IElementClassName ) { 
-    
-    if( Array.isArray( tokens ) ){
+  removeClassname(tokens: IElementClassName) {
 
-      tokens.forEach( name => {
+    if (Array.isArray(tokens)) {
 
-        this.instance.classList.remove( name )
-    
-      } )
+      tokens.forEach(name => {
 
-      this.emitter.dispatch( 'removeClassName', tokens )
-  
+        this.instance.classList.remove(name)
+
+      })
+
+      this.emitter.dispatch('removeClassName', tokens)
+
     }
 
-    else if( typeof tokens == 'string'){
+    else if (typeof tokens == 'string') {
 
-      this.instance.classList.remove( tokens )
-      
-      this.emitter.dispatch( 'removeClassName', tokens )
-  
+      this.instance.classList.remove(tokens)
+
+      this.emitter.dispatch('removeClassName', tokens)
+
     }
-    
-    return this; 
-  
+
+    return this;
+
   }
 
   /**
@@ -556,30 +557,30 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param ns Nom de l'espace
    * @param separator Séparateur de nom d'espace
    */
-  attribute( 
-    
-    attributes ?: IAttributesMap | undefined, 
-    
-    ns?: string | undefined, 
-    
-    separator?: string | undefined 
-    
-  ) { 
+  attribute(
 
-    if( attributes ){
+    attributes?: IAttributesMap | undefined,
 
-      Object.entries( AttributesObject<IAttributesMap>( attributes, ns, separator ) )
-      
-      .forEach( ({ 0: name, 1: attribute }) => {
+    ns?: string | undefined,
 
-        this.instance.setAttribute( name, `${ attribute }` )
-        
-      } )
-      
+    separator?: string | undefined
+
+  ) {
+
+    if (attributes) {
+
+      Object.entries(AttributesObject<IAttributesMap>(attributes, ns, separator))
+
+        .forEach(({ 0: name, 1: attribute }) => {
+
+          this.instance.setAttribute(name, `${attribute}`)
+
+        })
+
     }
-    
-    return this; 
-  
+
+    return this;
+
   }
 
   /**
@@ -589,28 +590,28 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param ns Nom de l'espace
    * @param separator Séparateur de nom d'espace
    */
-  attributeNS( 
-    
-    attributes ?: IAttributesMap | undefined, 
-    
+  attributeNS(
+
+    attributes?: IAttributesMap | undefined,
+
     ns?: string | undefined
-    
-  ) { 
 
-    if( attributes ){
+  ) {
 
-      Object.entries( AttributesObject<IAttributesMap>( attributes, ns, ':' ) )
-      
-      .forEach( ({ 0: name, 1: attribute }) => {
+    if (attributes) {
 
-        this.instance.setAttribute( name, `${ attribute }` )
-        
-      } )
-      
+      Object.entries(AttributesObject<IAttributesMap>(attributes, ns, ':'))
+
+        .forEach(({ 0: name, 1: attribute }) => {
+
+          this.instance.setAttribute(name, `${attribute}`)
+
+        })
+
     }
-    
-    return this; 
-  
+
+    return this;
+
   }
 
   /**
@@ -620,26 +621,26 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param ns Nom de l'espace
    * @param separator Séparateur de nom d'espace
    */
-  removeAttribute( 
-    
-    attributes : IAttributesMap,
+  removeAttribute(
 
-    ns?: string | undefined, 
-    
-    separator?: string | undefined 
-    
-    
-  ) { 
+    attributes: IAttributesMap,
 
-    Object.keys( AttributesObject<IAttributesMap>( attributes, ns, separator ) )
-    
-    .forEach( name => {
+    ns?: string | undefined,
 
-      this.instance.removeAttribute( name )
-      
-    } )
-    
-    return this; 
+    separator?: string | undefined
+
+
+  ) {
+
+    Object.keys(AttributesObject<IAttributesMap>(attributes, ns, separator))
+
+      .forEach(name => {
+
+        this.instance.removeAttribute(name)
+
+      })
+
+    return this;
 
   }
 
@@ -650,29 +651,29 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param ns Nom de l'espace
    * @param separator Séparateur de nom d'espace
    */
-  toggleAttribute( 
+  toggleAttribute(
 
-    attributes : IAttributesMap,
+    attributes: IAttributesMap,
 
-    ns?: string | undefined, 
-    
-    separator?: string | undefined 
-    
+    ns?: string | undefined,
 
-  ) { 
+    separator?: string | undefined
 
-    Object.entries( AttributesObject<IAttributesToggleMap>( attributes, ns, separator ) )
-    
-    .forEach( ({ 0: name, 1: forced }) => {
 
-      this.instance.toggleAttribute( name, forced )
-      
-    } )
+  ) {
 
-    return this; 
+    Object.entries(AttributesObject<IAttributesToggleMap>(attributes, ns, separator))
+
+      .forEach(({ 0: name, 1: forced }) => {
+
+        this.instance.toggleAttribute(name, forced)
+
+      })
+
+    return this;
 
   }
-  
+
 }
 
 
@@ -682,30 +683,30 @@ export class AunElement<E extends INode> implements IElement<E>{
  */
 export class AunState<S extends IState> implements IStateManager<S>{
 
-  #mirror : S;
+  #mirror: S;
 
-  #recorded : Array<IStateRecords<S>> = []
+  #recorded: Array<IStateRecords<S>> = []
 
-  #current : IWidget<any, any> | undefined = undefined;
+  #current: IWidget<any, any> | undefined = undefined;
 
   /**
    * Donnée de l'état
    */
-  state : S;
+  state: S;
 
   /**
    * Emetteur
    */
-  emitter = new EventDispatcher<IStateManagerEmitterScheme<S>>(); 
-  
+  emitter = new EventDispatcher<IStateManagerEmitterScheme<S>>();
+
   /**
    * Retourne la valeur de l'état
    */
-  get value(){ return this.#mirror; }
+  get value() { return this.#mirror; }
 
 
 
-  constructor( state : S  ){
+  constructor(state: S) {
 
     this.state = state;
 
@@ -714,102 +715,118 @@ export class AunState<S extends IState> implements IStateManager<S>{
     // this.#store = state;
 
     this.#emitters().initialize();
-    
+
   }
 
 
-  #emitters(){
+  #emitters() {
 
     this.emitter.listen('change', () => {
 
       this.sync()
-      
-    } )
-    
+
+    })
+
     return this;
-    
+
   }
-  
+
   /**
    * initialize
    * @description Initialise l'état
    */
-  initialize(){
+  initialize() {
 
     const driver = this;
 
     /**
      * Initialize le detecteur d'état sur des objets
      */
-    if( this.state && typeof this.state == 'object' ){
-      
-      this.#mirror = ( new Proxy(
+    if (this.state && typeof this.state == 'object') {
 
-        Object.assign( {}, this.state ),
+      this.#mirror = (new Proxy(
+
+        Object.assign({}, this.state),
 
         {
 
-          set( target, prop, newValue ) {
+          set(target, prop, newValue) {
 
-            if(typeof prop == 'string' ){
+            if (typeof prop == 'string') {
 
               //@ts-ignore
-              target[ prop as keyof IStateObject ] = newValue
+              target[prop as keyof IStateObject] = newValue
 
             }
-            
-            driver.emitter.dispatch('change', newValue )
-            
+
+            driver.emitter.dispatch('change', newValue)
+
             return newValue
-            
+
           },
 
         }
-        
-      ) )
 
-      this.emitter.dispatch('init', this.state )
-      
+      ))
+
+      this.emitter.dispatch('init', this.state)
+
     }
 
     /**
      * Initialize le detecteur d'état sur les autres types de données
      */
-    else{
+    else {
 
       Object.defineProperty(
 
         this, 'state', {
 
-          set( value ) {
+        set(value) {
 
-            driver.#mirror = value;
+          driver.#mirror = value;
 
-            driver.emitter.dispatch('change', value )
-              
-          },
+          driver.emitter.dispatch('change', value)
 
-          get(){
+        },
 
-            const value = driver.#mirror
+        get() {
 
-            // driver.emitter.dispatch('change', value )
-            
-            return value;
-            
-          }
-          
+          const value = driver.#mirror
+
+          // driver.emitter.dispatch('change', value )
+
+          return value;
+
         }
-        
+
+      }
+
       )
-      
-      this.emitter.dispatch('init', this.state )
+
+      this.emitter.dispatch('init', this.state)
 
     }
-    
+
     return this;
-    
+
   }
+
+
+
+  change(callback: IStateVoidCallback<S>) {
+
+    this.emitter.listen('change', payload => {
+
+      callback(payload)
+
+    })
+
+    return this;
+
+  }
+
+
 
   /**
    * set
@@ -818,42 +835,42 @@ export class AunState<S extends IState> implements IStateManager<S>{
    * @example
    * state.set( ... )
    */
-  set( value: S): this {
-      
-    if( 
-      
+  set(value: S): this {
+
+    if (
+
       this.state && value &&
-      
-      typeof this.state == 'object' && 
-      
-      typeof value == 'object' 
-      
-    ){
 
-      try{
+      typeof this.state == 'object' &&
 
-        Object.entries( Object.assign({}, value ) ).forEach( ({ 0: prop, 1: data }) => {
+      typeof value == 'object'
 
-          if( this.#mirror && typeof this.#mirror == 'object'){
-            
-            this.#mirror[ prop ] = data;
+    ) {
+
+      try {
+
+        Object.entries(Object.assign({}, value)).forEach(({ 0: prop, 1: data }) => {
+
+          if (this.#mirror && typeof this.#mirror == 'object') {
+
+            this.#mirror[prop] = data;
 
           }
-          
+
         })
 
-      } catch( err ){  }
-      
-    }
-
-    else{
-
-      this.state = value; 
+      } catch (err) { }
 
     }
-    
+
+    else {
+
+      this.state = value;
+
+    }
+
     return this;
-    
+
   }
 
   /**
@@ -863,20 +880,20 @@ export class AunState<S extends IState> implements IStateManager<S>{
    * @example
    * state.use( state => ... )
    */
-  use( callback : IStateCallback<S> ){
+  use(callback: IStateCallback<S>) {
 
-    this.#recorded.push( {
+    this.#recorded.push({
 
       anchor: undefined,
 
       widget: undefined,
 
       callback
-      
-    } )
+
+    })
 
     return this;
-    
+
   }
 
   /**
@@ -888,10 +905,10 @@ export class AunState<S extends IState> implements IStateManager<S>{
    */
   records(widget: IWidget<any, any>): this {
 
-    this.#recorded.forEach( record => this.record( widget, record ) )
-      
+    this.#recorded.forEach(record => this.record(widget, record))
+
     return this;
-    
+
   }
 
   /**
@@ -905,17 +922,17 @@ export class AunState<S extends IState> implements IStateManager<S>{
   record(widget: IWidget<any, HTMLElement>, record: IStateRecords<any>): IStateRecords<any> {
 
     const anchor = document.createTextNode('');
-      
+
     record.anchor = anchor;
 
     record.widget = widget;
-    
-    widget.element.instance.append( record.anchor );
-    
+
+    widget.element.instance.append(record.anchor);
+
     return record
-    
+
   }
-  
+
   /**
    * sync
    * @description Synchronise l'état et les déclarations
@@ -924,29 +941,29 @@ export class AunState<S extends IState> implements IStateManager<S>{
    */
   sync(): this {
 
-    try{
-        
-      this.#recorded.forEach( record => {
+    try {
 
-        if( record.widget && record.anchor ){
+      this.#recorded.forEach(record => {
 
-          this.#current = record.callback( this.value )
+        if (record.widget && record.anchor) {
 
-          record.anchor.parentNode?.replaceChild( this.#current.element.instance, record.anchor )
-          
-          record.anchor = this.#current.element.instance
-          
+          this.#current = record.callback(this.value)
+
+          record.anchor.parentNode?.replaceChild(this.#current?.element.instance, record.anchor)
+
+          record.anchor = this.#current?.element.instance
+
         }
-        
+
       })
-      
+
     }
-    catch( err ){ this.emitter.dispatch('error', err ); }
-    
+    catch (err) { this.emitter.dispatch('error', err); }
+
     return this;
-    
+
   }
-  
+
   /**
    * catch
    * @description Gestion des érreurs
@@ -954,19 +971,19 @@ export class AunState<S extends IState> implements IStateManager<S>{
    * @example
    * state.catch( error => ... )
    */
-  catch( callback : IStateErrorCallback<S> ){
+  catch(callback: IStateErrorCallback<S>) {
 
-    this.emitter.listen<'error'>('error', ( error : unknown )=>
+    this.emitter.listen<'error'>('error', (error: unknown) =>
 
-      callback( { manager : this, error } )
+      callback({ manager: this, error })
 
     )
 
     return this;
-    
+
   }
 
-  
+
 }
 
 /**
@@ -983,14 +1000,14 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
   /**
    * Enfant du widget
    */
-  child ?: IChildren | IChildren[] | undefined;
+  child?: IChildren | IChildren[] | undefined;
 
   /**
    * Les propriétés
    */
   get props() { return this.#_props; }
 
-  #_props : P;
+  #_props: P;
 
 
   /**
@@ -1001,58 +1018,58 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
   /**
    * Constructe
    */
-  construct : IConstruct<P, E> = new AunConstruct<P, E>();
+  construct: IConstruct<P, E> = new AunConstruct<P, E>();
 
-  constructor( tagname : string, props : P ){
+  constructor(tagname: string, props: P) {
 
     this.#_props = props;
 
-    this.element = ( new AunElement<E>( tagname ) ).own<P>( this );
+    this.element = (new AunElement<E>(tagname)).own<P>(this);
 
-    this.#excavation( this.props );
+    this.#excavation(this.props);
 
   }
 
-  append( ...nodes : Array<string | Node> ) : this{
+  append(...nodes: Array<string | Node>): this {
 
-    this.element.instance.append (...nodes )
+    this.element.instance.append(...nodes)
 
     return this;
-    
+
   }
 
-  #excavation( props : P ){
+  #excavation(props: P) {
 
-    Object.entries( props ).forEach( ({ 0 : key , 1 : value }) => {
+    Object.entries(props).forEach(({ 0: key, 1: value }) => {
 
-      if( key == 'child' ){ this.child = value; }
+      if (key == 'child') { this.child = value; }
 
-      else{ this.#_props = value; }
-      
+      else { this.#_props = value; }
+
     })
 
-    this.emitter.dispatch( 'excavation', this )
+    this.emitter.dispatch('excavation', this)
 
     return this;
-    
+
   }
 
-  ready( callback : IWidgetReadyCallback<P, E> ){
+  ready(callback: IWidgetReadyCallback<P, E>) {
 
-    this.emitter.listen('ready', widget => callback( widget ) )
+    this.emitter.listen('ready', widget => callback(widget))
 
     return this;
-    
+
   }
 
-  manipulate( callback : IWidgetLayerCallback<E> ){
+  manipulate(callback: IWidgetLayerCallback<E>) {
 
-    callback( this.element )
+    callback(this.element)
 
     return this;
-    
+
   }
-  
+
   /**
    * appear
    * @description Definit une apparence pour le widget
@@ -1062,14 +1079,14 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
    *    'property' : 'value'
    * } )
    */
-  appear( payload : IAppearanceObject ): this {
+  appear(payload: IAppearanceObject): this {
 
-    this.construct.makeAppearance( this, payload )
+    this.construct.makeAppearance(this, payload)
 
     return this;
-    
+
   }
-  
+
   /**
    * content
    * @description Definit le contenu du widget
@@ -1077,22 +1094,22 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
    * @example
    * widget.content( ... )
    */
-  content( child ?: IChildren | IChildren[] | undefined ) : this | IChildren{
+  content(child?: IChildren | IChildren[] | undefined): this | IChildren {
 
-    if( this.child ){
+    if (this.child) {
 
-      const nchildren : IChildren[] = []
+      const nchildren: IChildren[] = []
 
-      nchildren.forEach( child => nchildren.push( child ) )
-      
+      nchildren.forEach(child => nchildren.push(child))
+
     }
-    
-    this.construct.make( this, child )
+
+    this.construct.make(this, child)
 
     this.child = child
-    
+
     return this;
-    
+
   }
 
   /**
@@ -1101,56 +1118,56 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
    * @example
    * widget.refresh()
    */
-  refresh( props ?: Partial<P> | undefined ) : this{
+  refresh(props?: Partial<P> | undefined): this {
 
     this.element.clean()
 
-    if( props ){
-      
-      Object.entries( props ).forEach( ({0: name, 1: prop}) => 
-        
-        this.#_props[ name as keyof P ] = prop 
-        
+    if (props) {
+
+      Object.entries(props).forEach(({ 0: name, 1: prop }) =>
+
+        this.#_props[name as keyof P] = prop
+
       )
 
     }
 
-    this.content( this.child )
+    this.content(this.child)
 
     return this;
-    
+
   }
 
   /**
    * render
    * @description Rend le widget
    */
-  render() : this{
+  render(): this {
 
-    this.element.classname( this.construct.appearance.uid )
+    this.element.classname(this.construct.appearance.uid)
 
-    this.construct.make( this, this.child );
-    
+    this.construct.make(this, this.child);
+
     return this;
-    
+
   }
-  
+
   /**
    * remove
    * @description Détruit le widget
    */
-  remove() : this{
+  remove(): this {
 
     this.construct.appearance.destroy()
 
     this.element.instance.remove()
-    
-    this.emitter.dispatch( 'remove', undefined )
+
+    this.emitter.dispatch('remove', undefined)
 
     return this;
-    
+
   }
-  
+
   /**
    * timeOut
    * @description Execute une fonction après un temps donnée
@@ -1159,18 +1176,18 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
    * @example
    * widget.timeOut( ( widget, timer ) => ... )
    */
-  timeOut( callback : IWidgetTimerCallback, time ?: number ) {
+  timeOut(callback: IWidgetTimerCallback, time?: number) {
 
-    let timer : NodeJS.Timeout | undefined = undefined;
+    let timer: NodeJS.Timeout | undefined = undefined;
 
-    const handler = () => timer ? callback( this, timer ) : undefined;
+    const handler = () => timer ? callback(this, timer) : undefined;
 
-    timer = setTimeout( handler, time || 500 );
-    
+    timer = setTimeout(handler, time || 500);
+
     return this;
-    
+
   }
-  
+
   /**
    * timeInterval
    * @description Execute une fonction à un interval de temps
@@ -1179,16 +1196,16 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
    * @example
    * widget.timeInterval( ( widget, timer ) => ... )
    */
-  timeInterval( callback : IWidgetTimerCallback, time ?: number ) {
+  timeInterval(callback: IWidgetTimerCallback, time?: number) {
 
-    let timer : NodeJS.Timeout | undefined = undefined;
+    let timer: NodeJS.Timeout | undefined = undefined;
 
-    const handler = () => timer ? callback( this, timer ) : undefined;
+    const handler = () => timer ? callback(this, timer) : undefined;
 
-    timer = setInterval( handler, time || 500 );
-    
+    timer = setInterval(handler, time || 500);
+
     return this;
-    
+
   }
 
   /**
@@ -1198,15 +1215,15 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
    * @example
    * widget.frameReady( widget => ... )
    */
-  frameReady( callback : IWidgetRequestAnimationFrameCallback ){
+  frameReady(callback: IWidgetRequestAnimationFrameCallback) {
 
-    requestAnimationFrame( () => callback( this ) )
+    requestAnimationFrame(() => callback(this))
 
     return this;
-    
+
   }
 
-  
+
 }
 
 /**
@@ -1223,43 +1240,43 @@ export class AunConstruct<P extends IWProps, E extends INode> implements IConstr
   /**
    * Apparence
    */
-  appearance : IAppearance = new CoreAppearance();
+  appearance: IAppearance = new CoreAppearance();
 
 
-  constructor(){
+  constructor() {
 
     this.appearance.emitter.listen('sync', appear => {
 
-      this.emitter.dispatch('appearance', appear )
-      
+      this.emitter.dispatch('appearance', appear)
+
     })
-    
+
     this.appearance.mount();
-    
+
   }
-  
+
   /**
    * make
    * @description Créer le constructeur
    * @param root Racine Widget
    * @param child Enfants à ajouter
    */
-  make( root : IWidget<P, E>, child : IChildren ) {
+  make(root: IWidget<P, E>, child: IChildren) {
 
-    this.emitter.dispatch('before', root )
-      
-      root.emitter.dispatch('beforeRendering', child )
-      
-        this.makeChildren( root, child )
-      
-      root.emitter.dispatch('afterRendering', child )
-    
-    this.emitter.dispatch('after', root )
+    this.emitter.dispatch('before', root)
 
-    root.emitter.dispatch('ready', root )
+    root.emitter.dispatch('beforeRendering', child)
+
+    this.makeChildren(root, child)
+
+    root.emitter.dispatch('afterRendering', child)
+
+    this.emitter.dispatch('after', root)
+
+    root.emitter.dispatch('ready', root)
 
     return root;
-    
+
   }
 
   /**
@@ -1268,89 +1285,89 @@ export class AunConstruct<P extends IWProps, E extends INode> implements IConstr
    * @param root Racine Widget
    * @param child Enfants à ajouter
    */
-  makeChildren( root : IWidget<P, E>, child : IChildren ){
+  makeChildren(root: IWidget<P, E>, child: IChildren) {
 
-    if( child instanceof Element ){
+    if (child instanceof Element) {
 
-      root.element.instance.append( child )
+      root.element.instance.append(child)
 
-      root.emitter.dispatch('elementAdded', child )
-      
-      root.emitter.dispatch('childAdded', child )
-      
+      root.emitter.dispatch('elementAdded', child)
+
+      root.emitter.dispatch('childAdded', child)
+
     }
 
 
-    else if( child instanceof AunState ){
+    else if (child instanceof AunState) {
 
-      child.records( root )
+      child.records(root)
 
-      root.emitter.dispatch('stateAdded', child )
+      root.emitter.dispatch('stateAdded', child)
 
-      root.emitter.dispatch('childAdded', child )
+      root.emitter.dispatch('childAdded', child)
     }
-    
 
-    else if( 
-      
+
+    else if (
+
       typeof child == 'string' ||
 
       typeof child == 'boolean' ||
 
-      typeof child == 'number' 
+      typeof child == 'number'
 
-    ){
+    ) {
 
-      root.element.instance.innerHTML = ( `${ child }` )
-      
-      root.emitter.dispatch('htmlAdded', child )
-      
-      root.emitter.dispatch('childAdded', child )
-      
-    }
+      root.element.instance.innerHTML = (`${child}`)
 
-    else if( child instanceof AunWidget ){
+      root.emitter.dispatch('htmlAdded', child)
 
-      root.element.instance.append( child.element.instance )
-
-      root.emitter.dispatch('widgetAdded', child )
-      
-      root.emitter.dispatch('childAdded', child )
-
-      child.emitter.dispatch('ready', child )
+      root.emitter.dispatch('childAdded', child)
 
     }
 
-    else if( Array.isArray(child) ){
+    else if (child instanceof AunWidget) {
 
-      child.forEach( child => this.make( root, child ) )
-      
+      root.element.instance.append(child.element.instance)
+
+      root.emitter.dispatch('widgetAdded', child)
+
+      root.emitter.dispatch('childAdded', child)
+
+      child.emitter.dispatch('ready', child)
+
     }
 
-    if( child instanceof Promise ){
+    else if (Array.isArray(child)) {
+
+      child.forEach(child => this.make(root, child))
+
+    }
+
+    if (child instanceof Promise) {
 
       const anchor = document.createTextNode('')
 
-      root.element.instance.append( anchor )
-      
-      child.then( component => {
+      root.element.instance.append(anchor)
 
-        root.element.instance.replaceChild( component.element.instance, anchor )
+      child.then(component => {
 
-        root.emitter.dispatch('promiseAdded', child )
+        root.element.instance.replaceChild(component.element.instance, anchor)
 
-        root.emitter.dispatch('childAdded', child )
+        root.emitter.dispatch('promiseAdded', child)
 
-      }).catch( er => {
+        root.emitter.dispatch('childAdded', child)
 
-        throw(`AunConstruct : ${ JSON.stringify(er) }`)
-        
-      } )
-      
+      }).catch(er => {
+
+        throw (`AunConstruct : ${JSON.stringify(er)}`)
+
+      })
+
     }
-        
+
     return root;
-    
+
   }
 
   /**
@@ -1359,68 +1376,68 @@ export class AunConstruct<P extends IWProps, E extends INode> implements IConstr
    * @param root 
    * @param payload 
    */
-  makeAppearance( root : IWidget<P, E>, payload : IAppearanceObject ){
+  makeAppearance(root: IWidget<P, E>, payload: IAppearanceObject) {
 
-    this.appearance.set( payload )
-    
+    this.appearance.set(payload)
+
     return root;
-    
+
   }
 
-  
+
 }
 
 export class AunView<
 
   ComponentProps extends IWProps
-  
+
 > implements IView<ComponentProps>{
 
-  get parameters() : ComponentProps { return this.#_parameters }
+  get parameters(): ComponentProps { return this.#_parameters }
 
-    #_parameters : ComponentProps = {} as ComponentProps;
+  #_parameters: ComponentProps = {} as ComponentProps;
 
-  get component() : IWidget<ComponentProps, HTMLDivElement> | undefined{ return this.#_component }
+  get component(): IWidget<ComponentProps, HTMLDivElement> | undefined { return this.#_component }
 
-    #_component : IWidget<ComponentProps, HTMLDivElement> | undefined = undefined;
+  #_component: IWidget<ComponentProps, HTMLDivElement> | undefined = undefined;
 
-  options : IViewOptions<ComponentProps>;
-    
-  componentConstructor : IComponentConstructor;
+  options: IViewOptions<ComponentProps>;
+
+  componentConstructor: IComponentConstructor;
 
 
-  constructor( componentConstructor : IComponentConstructor, options ?: IViewOptions<ComponentProps> ){
+  constructor(componentConstructor: IComponentConstructor, options?: IViewOptions<ComponentProps>) {
 
     this.componentConstructor = componentConstructor;
 
     this.options = options || {} as IViewOptions<ComponentProps>;
-    
+
   }
 
 
-  show( parameters: ComponentProps ): this {
+  show(parameters: ComponentProps): this {
 
     this.#_parameters = parameters;
 
     this.component?.element.removeStyle('display')
-      
+
     return this;
-    
+
   }
-  
+
 
   hide(): this {
-      
+
     this.component?.element.style({ display: 'none' })
-      
+
     return this;
-    
+
   }
 
-  refresh( parameters?: Partial<ComponentProps> | undefined ): this {
-      
+  refresh(parameters?: Partial<ComponentProps> | undefined): this {
+
     // Mise à jour des paramètre
-    this.#_parameters = UpdateObject<ComponentProps>( this.#_parameters, parameters )
+    this.#_parameters = UpdateObject<ComponentProps>(this.#_parameters, parameters)
 
     // Reconstruit le composant
     const render = this.render()
@@ -1431,21 +1448,21 @@ export class AunView<
       render.element.instance,
 
       this.component?.element.instance
-      
+
     )
-      
+
     return this;
-    
+
   }
-  
-  render(){
-    
-    this.#_component = this.componentConstructor( this.parameters )
+
+  render() {
+
+    this.#_component = this.componentConstructor(this.parameters)
 
     return this.#_component;
-    
+
   }
-  
+
 
 }
 
@@ -1454,49 +1471,49 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
   /**
    * Les vues
    */
-  get views(){ return this.#views }
+  get views() { return this.#views }
 
-  
-  #views : IStackViewsList<Scheme> = {} as IStackViewsList<Scheme>;
 
-  
+  #views: IStackViewsList<Scheme> = {} as IStackViewsList<Scheme>;
+
+
   /**
    * Composant Actuellement utilisé
    */
-  get current(){ return this.#current };
+  get current() { return this.#current };
 
-  #current : IWidget<any, any> | undefined = undefined;
+  #current: IWidget<any, any> | undefined = undefined;
 
   /**
    * Dernier composant utilisé
    */
-  last : IWidget<any, any> | undefined = undefined;
+  last: IWidget<any, any> | undefined = undefined;
 
 
   /**
    * Options
    */
-  options : IStackViewsOptions<Scheme> = {} as IStackViewsOptions<Scheme>
-  
+  options: IStackViewsOptions<Scheme> = {} as IStackViewsOptions<Scheme>
+
 
   /**
    * Système de navigation
    */
   navigation: INavigation<Scheme> = new Navigation<Scheme>();
-  
+
   /**
    * Emétteur
    */
-  emitter : IEventDispatcher<IStackViewsEmitterScheme<Scheme>> = new EventDispatcher<IStackViewsEmitterScheme<Scheme>>()
-  
+  emitter: IEventDispatcher<IStackViewsEmitterScheme<Scheme>> = new EventDispatcher<IStackViewsEmitterScheme<Scheme>>()
 
-  constructor( 
-    
-    views : IStackViewsList<Scheme>, 
-    
-    options : IStackViewsOptions<Scheme>
-    
-  ){
+
+  constructor(
+
+    views: IStackViewsList<Scheme>,
+
+    options: IStackViewsOptions<Scheme>
+
+  ) {
 
     this.#views = views;
 
@@ -1505,197 +1522,208 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
     this.navigation.setOptions({
 
       middlewares: [
-        
-        this.#defaultMiddleware.bind( this ),
+
+        this.#defaultMiddleware.bind(this),
 
         ...(this.options.middlewares || []),
-      
+
       ],
 
-      useHashtagParser: (typeof this.options.useHashtagParser != 'undefined') 
-      
-        ? this.options.useHashtagParser 
-        
+      useHashtagParser: (typeof this.options.useHashtagParser != 'undefined')
+
+        ? this.options.useHashtagParser
+
         : true,
 
-      capture: (typeof this.options.capture != 'undefined') 
-        
-        ? this.options.capture 
-        
+      capture: (typeof this.options.capture != 'undefined')
+
+        ? this.options.capture
+
         : true,
-      
+
     })
-    
+
     this.#initializeCanvas();
-    
+
   }
 
-  #initializeCanvas(){
+  #initializeCanvas() {
 
-    findElement( this.options.canvas, canvas => {
-      
+    findElement(this.options.canvas, canvas => {
+
       canvas.style.position = 'relative';
 
+      canvas.style.width = '100%';
+
+      canvas.style.height = '100%';
+
+      canvas.style.overflow = 'auto';
+
+      canvas.style.maxWidth = '100vw';
+
+      canvas.style.maxHeight = '100vh';
+
     })
-    
-    return this;
-    
-  }
-  
-  middleware(callback: INavigationMiddlewareCallback<Scheme> ): this {
-
-    this.navigation.options.middlewares?.push( callback )
 
     return this;
-    
+
   }
 
-  #getOldView() : IStackViewsList<Scheme>[keyof Scheme] | undefined{
+  middleware(callback: INavigationMiddlewareCallback<Scheme>): this {
+
+    this.navigation.options.middlewares?.push(callback)
+
+    return this;
+
+  }
+
+  #getOldView(): IStackViewsList<Scheme>[keyof Scheme] | undefined {
 
     const name = (this.navigation.oldRouteName() as (string | undefined))?.split('?')[0] as keyof Scheme | undefined;
 
-    return name ? this.#views[ name ] || undefined : undefined;
-    
+    return name ? this.#views[name] || undefined : undefined;
+
   }
-  
-  #createViewProps( 
-    
-    props: IWProps | Scheme[ keyof Scheme ] | undefined
-    
-  ) : IViewProps {
+
+  #createViewProps(
+
+    props: IWProps | Scheme[keyof Scheme] | undefined
+
+  ): IViewProps {
 
     return {
 
-      ...( props || {} ),
+      ...(props || {}),
 
       stack: this
-      
+
     }
 
   }
-  
-  #defaultMiddleware( { props, routeName } : INavigationMiddlewareProps<Scheme> ) : this {
 
-    const view : IStackViewsList<Scheme>[keyof Scheme] | undefined = this.#views[ routeName ] || undefined;
 
-    if( view && this.options.canvas ){
+  #defaultMiddleware({ props, routeName }: INavigationMiddlewareProps<Scheme>): this {
 
-      findElement( this.options.canvas, canvas => {
+    const view: IStackViewsList<Scheme>[keyof Scheme] | undefined = this.#views[routeName] || undefined;
 
-        const component = view.componentConstructor( this.#createViewProps( props ) );
+    if (view && this.options.canvas) {
+
+      findElement(this.options.canvas, canvas => {
+
+        const component = view.componentConstructor(this.#createViewProps(props));
 
         const transitionAvailable = view?.options.transitions && component.element.instance;
 
         const oldView = this.#getOldView();
-        
+
 
         this.#current = component;
 
         component.element.style({
 
           position: 'absolute',
-          
-          top:'0',
-          
-          left:'0',
+
+          top: '0',
+
+          left: '0',
 
           zIndex: '2'
-          
-        })
 
-        if( view.options.title ){ document.title = `${ view.options.title }` }
+        });
 
-        if( this.last ){
+        if (view.options.title) { document.title = `${view.options.title}` }
+
+        if (this.last) {
 
           component.element.style({
 
             position: 'absolute',
-            
-            top:'0',
-            
-            left:'0',
+
+            top: '0',
+
+            left: '0',
 
             zIndex: '1'
-            
+
           })
-          
+
         }
 
-        if( transitionAvailable ){
+        if (transitionAvailable) {
 
-          component.element.on('transitionend', () =>{
+          component.element.on('transitionend', () => {
 
           })
-          
-          view.options.transitions?.entry.startIn( component.element.instance, () => {
+
+          view.options.transitions?.entry.startIn(component.element.instance, () => {
 
             this.last?.element.remove()
 
             this.last = component;
-            
-          } )
 
-          if( this.last ){
-            
-            oldView?.options.transitions?.exit.startOut( this.last.element.instance, () => {} );
-            
+          })
+
+          if (this.last) {
+
+            oldView?.options.transitions?.exit.startOut(this.last.element.instance, () => { });
+
           }
-          
-          canvas.append( component.element.instance )
+
+          canvas.append(component.element.instance)
 
         }
-        
-        if( !transitionAvailable ){
+
+        if (!transitionAvailable) {
 
           canvas.innerText = '';
 
-          canvas.append( component.element.instance )
+          canvas.append(component.element.instance)
 
           this.last = component;
 
         }
-        
 
-      } )
+
+      })
 
 
     }
 
-    else{
+    else {
 
-      this.emitter.dispatch('error', routeName )
-      
+      this.emitter.dispatch('error', routeName)
+
     }
-    
+
     return this;
-    
+
   }
-  
+
   /**
    * Démarrage
    */
   run(): this {
 
     this.navigation.observe()
-    
-    if( this.options.index ){
 
-      this.navigation.navigate( 
-        
+    if (this.options.index) {
+
+      this.navigation.navigate(
+
         this.navigation.currentRouteName() || this.options.index,
 
         this.navigation.currentQuery() || undefined,
 
         undefined
-        
+
       )
 
     }
-    
+
     return this;
-    
+
   }
-  
-  
+
+
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@protorians/aun",
-  "version": "0.0.3-beta.1",
+  "version": "0.0.5",
   "description": "prototype yourself",
   "main": "index.js",
   "type": "module",
@@ -46,6 +46,6 @@
     "node": ">=18.8.0"
   },
   "dependencies": {
-    "@protorians/core": "0.0.1-beta.5"
+    "@protorians/core": "0.0.3"
   }
 }

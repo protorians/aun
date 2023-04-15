@@ -1,40 +1,47 @@
 
 import CoreAppearance from "@protorians/core/appearance";
-import { 
+import {
   AunConstruct,
   AunElement,
-  AunState, 
+  AunState,
   AunWidget,
   AunView,
   AunStackViews
 } from "./foundations";
 
-import { 
-  AUNWindow, 
-  IAttributesMap, 
-  IChildren, 
-  IComponentConstructor, 
-  IHydrateComponent, 
-  IKitProps, 
-  IImageProps, 
-  INode, 
-  IStackViewsList, 
-  IStackViewsOptions, 
-  IState, 
-  IViewOptions, 
-  IWidget, 
-  IWidgetAsyncCallback, 
-  IWProps, 
-  IWTarget, 
+import {
+  AUNWindow,
+  IAttributesMap,
+  IChildren,
+  IComponentConstructor,
+  IHydrateComponent,
+  IKitProps,
+  IImageProps,
+  INode,
+  IStackViewsList,
+  IStackViewsOptions,
+  IState,
+  IViewOptions,
+  IWidget,
+  IWidgetAsyncCallback,
+  IWProps,
+  IWTarget,
   ITextProps,
-  IWidgetProps
+  IWidgetProps,
+  IInputProps,
+  IFormProps,
+  IModalProps,
+  IModalStateProps
 } from "./types";
+import { IPresenterModalProps, IPresenters, IProps } from "@protorians/core/types";
+import { UnCamelize } from "@protorians/core/utilities";
+import Presenters, { ModalPresenter } from "@protorians/core/presenters";
 
 
-const aunWindow : AUNWindow = { ...window }
+const aunWindow: AUNWindow = { ...window }
 
 aunWindow.AUNRC = aunWindow.AUNRC || {}
-  
+
 
 
 /**
@@ -43,10 +50,10 @@ aunWindow.AUNRC = aunWindow.AUNRC || {}
  * @param state Valeur par default de l'état
  * @example CreateState<StateType>( stateValue )
  */
-export function CreateState<S extends IState>( state : S ){
+export function CreateState<S extends IState>(state: S) {
 
-  return new AunState<S>( state );
-  
+  return new AunState<S>(state);
+
 }
 
 
@@ -58,18 +65,18 @@ export function CreateState<S extends IState>( state : S ){
  * @example DropComponent<PropsType>( '#root', Component( { ... } ) )
  * DropComponent<PropsType>( document.getElementById('root'), Component( { ... } ) )
  */
-export function DropComponent<P extends IWProps, E extends INode>( 
-  
-  component : IWidget<P, E>,
-  
-  target : INode,
-  
-){
+export function DropComponent<P extends IWProps, E extends INode>(
 
-  target.append( component.element.instance )
+  component: IWidget<P, E>,
+
+  target: INode,
+
+) {
+
+  target.append(component.element.instance)
 
   return component
-  
+
 }
 
 
@@ -80,15 +87,15 @@ export function DropComponent<P extends IWProps, E extends INode>(
  * @param component Composant à deposer dans l'élément HTML
  * @example DropComponents<PropsType, HTMLDivElement>( '.drop-target', ( props : Props ) => ... )
  */
-export function DropComponents<P extends IWProps, E extends INode>( 
-  
-  component : IWidget<P, E>,
-  
-  targets : NodeListOf<INode>,
-  
-){
+export function DropComponents<P extends IWProps, E extends INode>(
 
-  targets.forEach( target => DropComponent( component, target ) )
+  component: IWidget<P, E>,
+
+  targets: NodeListOf<INode>,
+
+) {
+
+  targets.forEach(target => DropComponent(component, target))
 
   return component;
 
@@ -112,10 +119,10 @@ export function DropComponents<P extends IWProps, E extends INode>(
  *    setTimeout( () => resolve( component() ), 3000 )
  * })
  */
-export async function AsyncComponent<P extends IWProps, E extends INode>( callback : IWidgetAsyncCallback ) : Promise<IWidget<P,E>>{
+export async function AsyncComponent<P extends IWProps, E extends INode>(callback: IWidgetAsyncCallback): Promise<IWidget<P, E>> {
 
-  return (new Promise<IWidget<any, any>>( callback ))
-  
+  return (new Promise<IWidget<any, any>>(callback))
+
 }
 
 
@@ -127,40 +134,40 @@ export async function AsyncComponent<P extends IWProps, E extends INode>( callba
  * @example UseComponent<PropsType>( '#root', component( props ) ) // Requête de selecteur pour la cible
  * UseComponent<PropsType>( document.getElementById('root'), component( props ) ) // Instance de type HTMLElement pour la cible
  */
-export function UseComponent<P extends IWProps, E extends INode>( 
-  
-  component : IWidget<any, any>,
-  
-  target : IWTarget,
-  
-){
+export function UseComponent<P extends IWProps, E extends INode>(
 
-  if( typeof target == 'string' ){
+  component: IWidget<any, any>,
 
-    DropComponents<P, E>( component, document.querySelectorAll( target ) )
-    
-  }
+  target: IWTarget,
 
-  else if( target instanceof NodeList ){
+) {
 
-    DropComponents<P, E>( component, target )
-    
-  }
+  if (typeof target == 'string') {
 
-  else if ( target instanceof HTMLElement ){
-
-    DropComponent<P, E>( component, target )
+    DropComponents<P, E>(component, document.querySelectorAll(target))
 
   }
 
-  else if( target instanceof AunElement ){
+  else if (target instanceof NodeList) {
 
-    DropComponent<P, E>( component, target.instance )
- 
+    DropComponents<P, E>(component, target)
+
+  }
+
+  else if (target instanceof HTMLElement) {
+
+    DropComponent<P, E>(component, target)
+
+  }
+
+  else if (target instanceof AunElement) {
+
+    DropComponent<P, E>(component, target.instance)
+
   }
 
   return component as IWidget<P, E>;
-  
+
 }
 
 
@@ -174,20 +181,20 @@ export function UseComponent<P extends IWProps, E extends INode>(
  *    component: ( props : Props ) => ...
  * } )
  */
-export function CreateKit( definition : IKitProps ){
-  
-  return <P extends IWProps, E extends INode>( p : P ) => 
+export function CreateKit(definition: IKitProps) {
 
-    (definition.component( p ) as IWidget<P,E>)
-    
-      .manipulate( element => element.classname( 
-        
-        (new CoreAppearance()).sheet( definition.appearance ).mount().uid 
-        
-      ) )
-    
-  ;
-  
+  return <P extends IWProps, E extends INode>(p: P) =>
+
+    (definition.component(p) as IWidget<P, E>)
+
+      .manipulate(element => element.classname(
+
+        (new CoreAppearance()).sheet(definition.appearance).mount().uid
+
+      ))
+
+    ;
+
 }
 
 
@@ -197,10 +204,10 @@ export function CreateKit( definition : IKitProps ){
  * @param tagname Nom de la balise HTML
  * @example aun<HTMLSpanElement>( 'span' )
  */
-export function aune<E extends INode>( tagname : string ){
+export function aune<E extends INode>(tagname: string) {
 
-  return (new AunElement<E>( tagname ))
-  
+  return (new AunElement<E>(tagname))
+
 }
 
 
@@ -211,15 +218,15 @@ export function aune<E extends INode>( tagname : string ){
  * @param props Propriétés du widget
  * @example RawWidget<PropsType, HTMLSpanElement>( 'span', props )
  */
-export function RawWidget<P extends IWProps, E extends INode>( tagname : string, props : P ){
+export function RawWidget<P extends IWProps, E extends INode>(tagname: string, props: P) {
 
-  const widget = (new AunWidget<P, E>( tagname, props ))
-  
-  widget.emitter.dispatch( 'beforeRendering', widget );
+  const widget = (new AunWidget<P, E>(tagname, props))
+
+  widget.emitter.dispatch('beforeRendering', widget);
 
   widget.render();
 
-  widget.emitter.dispatch( 'afterRendering', widget );
+  widget.emitter.dispatch('afterRendering', widget);
 
   return widget;
 
@@ -235,10 +242,10 @@ export function RawWidget<P extends IWProps, E extends INode>( tagname : string,
  * otherProp: ...
  * })
  */
-export function Widget( props : IWidgetProps ) : AunWidget<IWidgetProps, HTMLDivElement>{
+export function Widget(props: IWidgetProps): AunWidget<IWidgetProps, HTMLDivElement> {
 
-  return RawWidget<IWidgetProps, HTMLDivElement>( 'div', props );
-  
+  return RawWidget<IWidgetProps, HTMLDivElement>('div', props);
+
 }
 
 
@@ -251,10 +258,10 @@ export function Widget( props : IWidgetProps ) : AunWidget<IWidgetProps, HTMLDiv
  * otherProp: ...
  * })
  */
-export function TextWidget( props : ITextProps ) : AunWidget<ITextProps, HTMLSpanElement>{
+export function TextWidget(props: ITextProps): AunWidget<ITextProps, HTMLSpanElement> {
 
-  return RawWidget<ITextProps, HTMLSpanElement>( 'span', props )
-  
+  return RawWidget<ITextProps, HTMLSpanElement>('span', props)
+
 }
 
 
@@ -266,58 +273,171 @@ export function TextWidget( props : ITextProps ) : AunWidget<ITextProps, HTMLSpa
  * src: ...
  * })
  */
-export function ImageWidget( props : IImageProps ) : AunWidget<IImageProps, HTMLImageElement>{
+export function ImageWidget(props: IImageProps): AunWidget<IImageProps, HTMLImageElement> {
 
-  return RawWidget<IImageProps, HTMLImageElement>( 'img', props )
+  return RawWidget<IImageProps, HTMLImageElement>('img', props)
 
-    .manipulate( e => {
+    .manipulate(e => {
 
-      Object.entries( props ).forEach( ({ 0: name, 1: value }) => {
+      Object.entries(props).forEach(({ 0: name, 1: value }) => {
 
-        if( name == 'mode'){ return ; }
+        if (name == 'mode') { return; }
 
-        const attr : IAttributesMap = {};
+        const attr: IAttributesMap = {};
 
-        attr[ name ] = value;
+        attr[name] = value;
 
-        e.attribute( attr );
-        
+        e.attribute(attr);
+
       });
 
-      if( props.mode ){
+      if (props.mode) {
 
         e.style({ objectFit: props.mode || '' });
-        
+
       }
-      
+
     })
-  
-  ;
-  
+
+    ;
+
 }
 
 
 
-export function View<C extends IWProps>( component : IComponentConstructor, options ?: IViewOptions<C> | undefined  ){
+/**
+ * setWidgetProperty
+ * @param widget Widget cible
+ * @param props Propriété à analyser
+ */
+export function setWidgetProperty<
 
-  return new AunView<C>( component, options )
-  
+  P extends IProps,
+
+  H extends HTMLElement
+
+>(widget: IWidget<P, H>, props: IProps): IWidget<P, H> {
+
+  Object.entries(props).forEach(({ 0: name, 1: value }) => {
+
+    name = UnCamelize(name);
+
+    switch (typeof value) {
+
+      case 'number':
+
+      case 'string':
+
+        widget.element.instance.setAttribute(`${name}`, `${value}`)
+
+        break;
+
+
+      case 'boolean':
+
+        if (value)
+
+          widget.element.instance.setAttribute(`${name}`, `${name}`)
+
+        break;
+
+    }
+
+  })
+
+  return widget;
+
 }
 
-export function CreateStackViews<Scheme>( 
-  
-  views : IStackViewsList<Scheme>, 
-  
-  options : IStackViewsOptions<Scheme> = {}
-  
-){
 
-  return new AunStackViews<Scheme>( views, options )
-  
+
+/**
+ * InputWidget
+ * @description Calque de champs de texte
+ * @param props Propriétés de champs de texte
+ * @example
+ * InputWidget({
+ *    type: 'text',
+ *    value: 'content',
+ *    ... 
+ * })
+ */
+export function InputWidget(props: IInputProps): IWidget<IInputProps, HTMLInputElement> {
+
+  const widget = RawWidget<IInputProps, HTMLInputElement>('input', props)
+
+  setWidgetProperty<IInputProps, HTMLInputElement>(widget, props);
+
+  return widget;
+
 }
 
 
-// export function ModalWidget(){}
+/**
+ * FormWidget
+ * @description Calque de Formulaire
+ * @param props Propriétés de formulaire
+ * @example
+ * FormWidget({
+ *    method: 'post',
+ *    action: 'publish',
+ * })
+ */
+export function FormWidget(props: IFormProps) {
+
+  const widget = RawWidget<IFormProps, HTMLFormElement>('form', props)
+
+  setWidgetProperty<IFormProps, HTMLFormElement>(widget, props);
+
+  return widget;
+
+}
+
+
+
+
+export function ModalWidget(props: IModalProps) {
+
+
+  let modal: IPresenters<IPresenterModalProps> | undefined = undefined;
+
+  const toggle = (open: boolean) => {
+
+    if (open) modal?.open()
+
+    else modal?.close()
+
+  }
+
+  const state = CreateState<IModalStateProps>({
+
+    open: props.isOpen || false,
+
+  }).change(state => toggle(state.open));
+
+  const widget = Widget({
+
+    child: props.child
+
+  }).ready(() => {
+
+    modal = Presenters.context(
+
+      new ModalPresenter(widget.element.instance, {
+
+        host: widget.element.instance.parentElement,
+
+      })
+
+    );
+
+    toggle(state.value.open)
+
+  })
+
+  return state.use(state => state.open ? widget : props.trigger);
+
+}
 
 
 // export function SheetWidget(){}
@@ -344,7 +464,31 @@ export function CreateStackViews<Scheme>(
 // export function FormWidget(){}
 
 
-// export function InputWidget(){}
+
+
+/**
+ * View
+ * @param component Composant utilisé pour la vue
+ * @param options Options de la vue
+ */
+export function View<C extends IWProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined) {
+
+  return new AunView<C>(component, options)
+
+}
+
+export function CreateStackViews<Scheme>(
+
+  views: IStackViewsList<Scheme>,
+
+  options: IStackViewsOptions<Scheme> = {}
+
+) {
+
+  return new AunStackViews<Scheme>(views, options)
+
+}
+
 
 
 
@@ -357,13 +501,13 @@ export function CreateStackViews<Scheme>(
  * @example Construct<ComponentType>( component, child )
  * Construct( component, child )
  */
-export function Construct<Component extends IWidget<IWProps, INode>>( 
-  
-  component : Component, 
-  
-  child : IChildren
-  
-){ return ( new AunConstruct() ).make( component, child ) }
+export function Construct<Component extends IWidget<IWProps, INode>>(
+
+  component: Component,
+
+  child: IChildren
+
+) { return (new AunConstruct()).make(component, child) }
 
 
 
@@ -374,24 +518,24 @@ export function Construct<Component extends IWidget<IWProps, INode>>(
  * @param widgetConstructor 
  * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWProps ) => ... )
  */
-export function CreateComponent<P extends IWProps>( 
-  
-  name : string, 
-  
-  widgetConstructor : IHydrateComponent<any, HTMLElement> 
-  
-) : IHydrateComponent<P, HTMLElement> {
+export function CreateComponent<P extends IWProps>(
 
-  if( !( aunWindow.AUNHW instanceof MutationObserver ) ){
+  name: string,
+
+  widgetConstructor: IHydrateComponent<any, HTMLElement>
+
+): IHydrateComponent<P, HTMLElement> {
+
+  if (!(aunWindow.AUNHW instanceof MutationObserver)) {
 
     ActiveAutoHydrateComponents()
 
   }
-  
-  HydrateComponentQueue<P>( name, widgetConstructor )
+
+  HydrateComponentQueue<P>(name, widgetConstructor)
 
   return widgetConstructor
-  
+
 }
 
 
@@ -403,24 +547,24 @@ export function CreateComponent<P extends IWProps>(
  * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponentQueue<WidgetPropsType>( 'ComponentName', ( props : WidgetProps ) => ... )
  */
-export function HydrateComponentQueue<P extends IWProps>( 
-  
-  name : string, 
-  
-  widgetConstructor : IHydrateComponent<any, HTMLElement> 
-  
-){
+export function HydrateComponentQueue<P extends IWProps>(
 
-  if( aunWindow.AUNRC ) {
+  name: string,
 
-    aunWindow.AUNRC[ (name).toUpperCase() ] = widgetConstructor
-    
+  widgetConstructor: IHydrateComponent<any, HTMLElement>
+
+) {
+
+  if (aunWindow.AUNRC) {
+
+    aunWindow.AUNRC[(name).toUpperCase()] = widgetConstructor
+
   }
 
-  HydrateComponent<P>( name, widgetConstructor )
+  HydrateComponent<P>(name, widgetConstructor)
 
   return widgetConstructor;
-  
+
 }
 
 
@@ -430,41 +574,41 @@ export function HydrateComponentQueue<P extends IWProps>(
  * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponent<PropsType>( 'Hello', HelloComponent )
  */
-export function HydrateComponent<P extends IWProps>( 
-  
-  name : string, 
-  
-  widgetConstructor : IHydrateComponent<any, HTMLElement> 
-  
-){
+export function HydrateComponent<P extends IWProps>(
 
-  const refs = document.querySelectorAll<Element>(`${ name }`)
+  name: string,
+
+  widgetConstructor: IHydrateComponent<any, HTMLElement>
+
+) {
+
+  const refs = document.querySelectorAll<Element>(`${name}`)
 
   /**
    * Références liste
    */
-  refs.forEach( ref => {
+  refs.forEach(ref => {
 
     /**
      * Extraction des props
      */
-    const props = ExtractProps<P>( ref.attributes )
+    const props = ExtractProps<P>(ref.attributes)
 
     props.child = ref.innerHTML || undefined;
-    
+
     /**
      * Mise en place du composant
      */
-    const widget = widgetConstructor( props )
+    const widget = widgetConstructor(props)
 
     /**
      * Remplacement
      */
-    ref.parentNode?.replaceChild( widget.element.instance, ref )
-    
+    ref.parentNode?.replaceChild(widget.element.instance, ref)
+
   })
 
-  
+
   return widgetConstructor;
 
 }
@@ -475,18 +619,18 @@ export function HydrateComponent<P extends IWProps>(
  * @param attributes Contenu de la propriété "HTMLElement.attributes"
  * @example ExtractProps<PropsType>( element.attributes )
  */
-export function ExtractProps<P extends IWProps>( attributes : NamedNodeMap ) : P{
+export function ExtractProps<P extends IWProps>(attributes: NamedNodeMap): P {
 
-  const props : P = {} as P
+  const props: P = {} as P
 
-  Object.values( attributes ).forEach( attribute => {
-    
-      props[ attribute.name as keyof P ] = attribute.value as P[ keyof P ]
-      
+  Object.values(attributes).forEach(attribute => {
+
+    props[attribute.name as keyof P] = attribute.value as P[keyof P]
+
   })
-  
+
   return props;
-  
+
 }
 
 
@@ -496,40 +640,40 @@ export function ExtractProps<P extends IWProps>( attributes : NamedNodeMap ) : P
  * @description Active l'hydratation automatique des composants
  * @example ActiveAutoHydrateComponents()
  */
-export function ActiveAutoHydrateComponents(){
+export function ActiveAutoHydrateComponents() {
 
-  aunWindow.AUNHW = aunWindow.AUNHW || new MutationObserver( mutations => {
+  aunWindow.AUNHW = aunWindow.AUNHW || new MutationObserver(mutations => {
 
-    const storeKeys = Object.keys( aunWindow.AUNRC || {} )
+    const storeKeys = Object.keys(aunWindow.AUNRC || {})
 
-    mutations.forEach( mutation => {
-      
-      if( 
-        
-        mutation.type == 'childList' && 
-        
+    mutations.forEach(mutation => {
+
+      if (
+
+        mutation.type == 'childList' &&
+
         mutation.target instanceof HTMLElement
 
-      ){
+      ) {
 
-        mutation.addedNodes.forEach( target => {
+        mutation.addedNodes.forEach(target => {
 
-          if( target instanceof HTMLElement && storeKeys.includes( target.tagName.toUpperCase() ) ){
+          if (target instanceof HTMLElement && storeKeys.includes(target.tagName.toUpperCase())) {
 
-            HydrateComponent( target.tagName, (aunWindow.AUNRC || {})[ target.tagName ] )
+            HydrateComponent(target.tagName, (aunWindow.AUNRC || {})[target.tagName])
 
           }
-          
+
         })
 
       }
-      
+
     })
-    
+
   })
 
-  aunWindow.AUNHW.observe( document.body, {
-    
+  aunWindow.AUNHW.observe(document.body, {
+
     subtree: true,
 
     childList: true,
@@ -537,7 +681,7 @@ export function ActiveAutoHydrateComponents(){
   })
 
   return aunWindow.AUNHW;
-  
+
 }
 
 
@@ -547,7 +691,7 @@ export function ActiveAutoHydrateComponents(){
  * AUN
  * @description Exportations des fonctionnalités de base du framework 
  */
-export default class AUN { 
+export default class AUN {
 
   /**
    * aune — AUN Virtual Element
@@ -578,12 +722,17 @@ export default class AUN {
   static Widget = Widget;
 
   /**
+   * 
+   */
+  static InputWidget = InputWidget;
+
+  /**
    * Textual
    * @alias TextWidget
    * @description Calque destiné aux textes
    */
   static Textual = TextWidget;
-  
+
   /**
    * CreateState
    * @description Instance fonctionnelle d'usage de gestion des états AUN
@@ -619,7 +768,7 @@ export default class AUN {
    * @description Utiliser un composant dans une / plusieurs cibles
    */
   static UseComponent = UseComponent;
-  
+
 
 }
 

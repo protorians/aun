@@ -1,5 +1,7 @@
 import CoreAppearance from "@protorians/core/appearance";
 import { AunConstruct, AunElement, AunState, AunWidget, AunView, AunStackViews } from "./foundations";
+import { UnCamelize } from "@protorians/core/utilities";
+import Presenters, { ModalPresenter } from "@protorians/core/presenters";
 const aunWindow = { ...window };
 aunWindow.AUNRC = aunWindow.AUNRC || {};
 /**
@@ -160,13 +162,79 @@ export function ImageWidget(props) {
         }
     });
 }
-export function View(component, options) {
-    return new AunView(component, options);
+/**
+ * setWidgetProperty
+ * @param widget Widget cible
+ * @param props Propriété à analyser
+ */
+export function setWidgetProperty(widget, props) {
+    Object.entries(props).forEach(({ 0: name, 1: value }) => {
+        name = UnCamelize(name);
+        switch (typeof value) {
+            case 'number':
+            case 'string':
+                widget.element.instance.setAttribute(`${name}`, `${value}`);
+                break;
+            case 'boolean':
+                if (value)
+                    widget.element.instance.setAttribute(`${name}`, `${name}`);
+                break;
+        }
+    });
+    return widget;
 }
-export function CreateStackViews(views, options = {}) {
-    return new AunStackViews(views, options);
+/**
+ * InputWidget
+ * @description Calque de champs de texte
+ * @param props Propriétés de champs de texte
+ * @example
+ * InputWidget({
+ *    type: 'text',
+ *    value: 'content',
+ *    ...
+ * })
+ */
+export function InputWidget(props) {
+    const widget = RawWidget('input', props);
+    setWidgetProperty(widget, props);
+    return widget;
 }
-// export function ModalWidget(){}
+/**
+ * FormWidget
+ * @description Calque de Formulaire
+ * @param props Propriétés de formulaire
+ * @example
+ * FormWidget({
+ *    method: 'post',
+ *    action: 'publish',
+ * })
+ */
+export function FormWidget(props) {
+    const widget = RawWidget('form', props);
+    setWidgetProperty(widget, props);
+    return widget;
+}
+export function ModalWidget(props) {
+    let modal = undefined;
+    const toggle = (open) => {
+        if (open)
+            modal?.open();
+        else
+            modal?.close();
+    };
+    const state = CreateState({
+        open: props.isOpen || false,
+    }).change(state => toggle(state.open));
+    const widget = Widget({
+        child: props.child
+    }).ready(() => {
+        modal = Presenters.context(new ModalPresenter(widget.element.instance, {
+            host: widget.element.instance.parentElement,
+        }));
+        toggle(state.value.open);
+    });
+    return state.use(state => state.open ? widget : props.trigger);
+}
 // export function SheetWidget(){}
 // export function ActionSheetWidget(){}
 // export function ListSheetWidget(){}
@@ -175,7 +243,17 @@ export function CreateStackViews(views, options = {}) {
 // export function ImageWidget(){}
 // export function ScrollWidget(){}
 // export function FormWidget(){}
-// export function InputWidget(){}
+/**
+ * View
+ * @param component Composant utilisé pour la vue
+ * @param options Options de la vue
+ */
+export function View(component, options) {
+    return new AunView(component, options);
+}
+export function CreateStackViews(views, options = {}) {
+    return new AunStackViews(views, options);
+}
 /**
  * AUN Construct
  * @description Construire un composant à partir des enfants
@@ -309,6 +387,10 @@ AUN.Construct = Construct;
  * @description Créer une couche de calque
  */
 AUN.Widget = Widget;
+/**
+ *
+ */
+AUN.InputWidget = InputWidget;
 /**
  * Textual
  * @alias TextWidget

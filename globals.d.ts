@@ -9,7 +9,7 @@ declare module '@protorians/aun/exceptions' {
 }
 declare module '@protorians/aun/foundations' {
   import EventDispatcher from "@protorians/core/event-dispatcher";
-  import type { IAttributesMap, IChildren, IComponentConstructor, IConstruct, IConstructEmitterScheme, IElement, IElementClassName, IElementCSS, IElementCSSRemoves, IElementEmitterScheme, IElementEventCallback, IElementMeasureCallback, IElementOffsetCallback, IFindElementCallback, INode, IStackViews, IStackViewsEmitterScheme, IStackViewsList, IStackViewsOptions, IState, IStateCallback, IStateErrorCallback, IStateManager, IStateManagerEmitterScheme, IStateRecords, IView, IViewOptions, IWidget, IWidgetEmitterScheme, IWidgetLayerCallback, IWidgetReadyCallback, IWidgetRequestAnimationFrameCallback, IWidgetTimerCallback, IWProps, IWTarget, IWTargetNode } from "@protorians/aun/types";
+  import type { IAttributesMap, IChildren, IComponentConstructor, IConstruct, IConstructEmitterScheme, IElement, IElementClassName, IElementCSS, IElementCSSRemoves, IElementEmitterScheme, IElementEventCallback, IElementMeasureCallback, IElementOffsetCallback, IFindElementCallback, INode, IStackViews, IStackViewsEmitterScheme, IStackViewsList, IStackViewsOptions, IState, IStateCallback, IStateErrorCallback, IStateManager, IStateManagerEmitterScheme, IStateRecords, IView, IViewOptions, IWidget, IWidgetEmitterScheme, IWidgetLayerCallback, IWidgetReadyCallback, IWidgetRequestAnimationFrameCallback, IWidgetTimerCallback, IWProps, IWTarget, IWTargetNode, IStateVoidCallback } from "@protorians/aun/types";
   import type { IAppearance, IAppearanceObject, IEventDispatcher, IEventDispatcherCallback, INavigation, INavigationMiddlewareCallback } from "@protorians/core/types";
   /**
    * findElement — Find Element
@@ -235,6 +235,7 @@ declare module '@protorians/aun/foundations' {
        * @description Initialise l'état
        */
       initialize(): this;
+      change(callback: IStateVoidCallback<S>): this;
       /**
        * set
        * @description Modifit l'état
@@ -461,7 +462,8 @@ declare module '@protorians/aun/foundations' {
 }
 declare module '@protorians/aun/index' {
   import { AunElement, AunState, AunWidget, AunView, AunStackViews } from "@protorians/aun/foundations";
-  import { IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWProps, IWTarget, ITextProps, IWidgetProps } from "@protorians/aun/types";
+  import { IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWProps, IWTarget, ITextProps, IWidgetProps, IInputProps, IFormProps, IModalProps, IModalStateProps } from "@protorians/aun/types";
+  import { IProps } from "@protorians/core/types";
   /**
    * CreateState
    * @description Instance fonctionnelle d'usage de gestion des états AUN
@@ -559,6 +561,41 @@ declare module '@protorians/aun/index' {
    * })
    */
   export function ImageWidget(props: IImageProps): AunWidget<IImageProps, HTMLImageElement>;
+  /**
+   * setWidgetProperty
+   * @param widget Widget cible
+   * @param props Propriété à analyser
+   */
+  export function setWidgetProperty<P extends IProps, H extends HTMLElement>(widget: IWidget<P, H>, props: IProps): IWidget<P, H>;
+  /**
+   * InputWidget
+   * @description Calque de champs de texte
+   * @param props Propriétés de champs de texte
+   * @example
+   * InputWidget({
+   *    type: 'text',
+   *    value: 'content',
+   *    ...
+   * })
+   */
+  export function InputWidget(props: IInputProps): IWidget<IInputProps, HTMLInputElement>;
+  /**
+   * FormWidget
+   * @description Calque de Formulaire
+   * @param props Propriétés de formulaire
+   * @example
+   * FormWidget({
+   *    method: 'post',
+   *    action: 'publish',
+   * })
+   */
+  export function FormWidget(props: IFormProps): AunWidget<IFormProps, HTMLFormElement>;
+  export function ModalWidget(props: IModalProps): AunState<IModalStateProps>;
+  /**
+   * View
+   * @param component Composant utilisé pour la vue
+   * @param options Options de la vue
+   */
   export function View<C extends IWProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined): AunView<C>;
   export function CreateStackViews<Scheme>(views: IStackViewsList<Scheme>, options?: IStackViewsOptions<Scheme>): AunStackViews<Scheme>;
   /**
@@ -635,6 +672,10 @@ declare module '@protorians/aun/index' {
        * @description Créer une couche de calque
        */
       static Widget: typeof Widget;
+      /**
+       *
+       */
+      static InputWidget: typeof InputWidget;
       /**
        * Textual
        * @alias TextWidget
@@ -730,6 +771,62 @@ declare module '@protorians/aun/types' {
    */
   export interface ITextProps extends Omit<IWidgetProps, 'child'> {
       child: string;
+  }
+  export interface IModalProps extends IProps {
+      trigger: IWidget<any, any>;
+      child: IChildElement;
+      isOpen?: boolean;
+      color?: string;
+      opacity?: number;
+      locked?: boolean;
+      transition?: ICoreTransition;
+      blurred?: boolean;
+  }
+  export interface IModalStateProps extends IProps {
+      open: boolean;
+  }
+  export interface IFormProps extends IProps {
+      acceptCharset?: string;
+      action?: string;
+      autocomplete?: 'on' | 'off';
+      enctype?: string;
+      method?: 'get' | 'post';
+      name?: string;
+      novalidate?: boolean;
+      rel?: 'external' | 'license' | 'next' | 'nofollow' | 'noopener' | 'noreferrer' | 'opener' | 'prev' | 'search' | 'help';
+      target?: '_blank' | '_parent' | '_top' | '_self';
+  }
+  export interface IInputProps extends IProps {
+      type?: 'text' | 'button' | 'color' | 'date' | 'datetime-local' | 'email' | 'file' | 'hidden' | 'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit' | 'tel' | 'time' | 'url' | 'week' | 'checkbox';
+      accept?: string;
+      alt?: string;
+      autocomplete?: 'on' | 'off';
+      autofocus?: boolean;
+      checked?: boolean;
+      dirname?: string;
+      disabled?: boolean;
+      form?: string;
+      formaction?: string;
+      formenctype?: string;
+      formmethod?: 'get' | 'post';
+      formnovalidate?: boolean;
+      formtarget?: '_blank' | '_self' | '_parent' | '_top' | string;
+      height?: number;
+      width?: number;
+      list?: string;
+      max?: number | string;
+      min?: number | string;
+      maxlength?: number;
+      minlength?: number;
+      multiple?: boolean;
+      pattern?: RegExp;
+      placeholder?: string;
+      readonly?: boolean;
+      required?: boolean;
+      size?: number;
+      src?: string;
+      step?: number;
+      value?: string;
   }
   export interface IImageProps extends IProps {
       src: string;
@@ -859,7 +956,8 @@ declare module '@protorians/aun/types' {
       widget: IWidget<any, any> | undefined;
       callback: IStateCallback<S>;
   };
-  export type IStateCallback<S extends IState> = (state: S) => IWidget<any, any>;
+  export type IStateCallback<S extends IState> = (state: S) => IWidget<any, any> | undefined;
+  export type IStateVoidCallback<S extends IState> = (state: S) => void;
   export type IStateErrorCallbackAunyload<M> = {
       manager: M;
       error: any;
