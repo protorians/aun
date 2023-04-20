@@ -48,10 +48,6 @@ export function findElement(find, callback) {
  * @example AunElement<HTMLDivElement>('div')
  */
 export class AunElement {
-    /**
-     * Widget associé
-     */
-    get widget() { return __classPrivateFieldGet(this, _AunElement_widget, "f"); }
     constructor(tagname) {
         /**
          * Emetteur
@@ -60,6 +56,10 @@ export class AunElement {
         _AunElement_widget.set(this, undefined);
         this.instance = document.createElement(tagname);
     }
+    /**
+     * Widget associé
+     */
+    get widget() { return __classPrivateFieldGet(this, _AunElement_widget, "f"); }
     /**
      * own
      * @description Définit le widget propriétaire de l'élément
@@ -90,6 +90,10 @@ export class AunElement {
      */
     measure(callback) {
         callback(this.asyncMeasure());
+        return this;
+    }
+    data(key, value) {
+        this.instance.dataset[key] = value;
         return this;
     }
     /**
@@ -273,6 +277,15 @@ export class AunElement {
         }
         return this;
     }
+    addInlineClassname(tokens) {
+        tokens.split(' ').forEach(token => {
+            if (token) {
+                this.instance.classList.add(token);
+                this.emitter.dispatch('className', token);
+            }
+        });
+        return this;
+    }
     /**
      * className
      * @description Associé un selecteur CSS
@@ -281,12 +294,12 @@ export class AunElement {
     classname(tokens) {
         if (tokens) {
             if (typeof tokens == 'string') {
-                this.instance.classList.add(tokens);
-                this.emitter.dispatch('className', tokens);
+                this.addInlineClassname(tokens);
             }
             else if (Array.isArray(tokens)) {
-                tokens.forEach(token => this.instance.classList.add(token));
-                this.emitter.dispatch('className', tokens);
+                tokens.forEach(token => {
+                    this.addInlineClassname(token);
+                });
             }
         }
         return this;
@@ -379,10 +392,6 @@ _AunElement_widget = new WeakMap();
  * @description Gestionnaire d'état
  */
 export class AunState {
-    /**
-     * Retourne la valeur de l'état
-     */
-    get value() { return __classPrivateFieldGet(this, _AunState_mirror, "f"); }
     constructor(state) {
         _AunState_instances.add(this);
         _AunState_mirror.set(this, void 0);
@@ -397,6 +406,10 @@ export class AunState {
         // this.#store = state;
         __classPrivateFieldGet(this, _AunState_instances, "m", _AunState_emitters).call(this).initialize();
     }
+    /**
+     * Retourne la valeur de l'état
+     */
+    get value() { return __classPrivateFieldGet(this, _AunState_mirror, "f"); }
     /**
      * initialize
      * @description Initialise l'état
@@ -554,10 +567,6 @@ _AunState_mirror = new WeakMap(), _AunState_recorded = new WeakMap(), _AunState_
  * @description Pour les composant HTML de base
  */
 export class AunWidget {
-    /**
-     * Les propriétés
-     */
-    get props() { return __classPrivateFieldGet(this, _AunWidget__props, "f"); }
     constructor(tagname, props) {
         _AunWidget_instances.add(this);
         _AunWidget__props.set(this, void 0);
@@ -569,10 +578,13 @@ export class AunWidget {
          * Constructe
          */
         this.construct = new AunConstruct();
-        __classPrivateFieldSet(this, _AunWidget__props, props, "f");
+        __classPrivateFieldSet(this, _AunWidget__props, __classPrivateFieldGet(this, _AunWidget_instances, "m", _AunWidget_excavation).call(this, props), "f");
         this.element = (new AunElement(tagname)).own(this);
-        __classPrivateFieldGet(this, _AunWidget_instances, "m", _AunWidget_excavation).call(this, this.props);
     }
+    /**
+     * Les propriétés
+     */
+    get props() { return __classPrivateFieldGet(this, _AunWidget__props, "f"); }
     append(...nodes) {
         this.element.instance.append(...nodes);
         return this;
@@ -688,16 +700,17 @@ export class AunWidget {
     }
 }
 _AunWidget__props = new WeakMap(), _AunWidget_instances = new WeakSet(), _AunWidget_excavation = function _AunWidget_excavation(props) {
+    const p = {};
     Object.entries(props).forEach(({ 0: key, 1: value }) => {
         if (key == 'child') {
             this.child = value;
         }
         else {
-            __classPrivateFieldSet(this, _AunWidget__props, value, "f");
+            p[key] = value;
         }
     });
     this.emitter.dispatch('excavation', this);
-    return this;
+    return p;
 };
 /**
  * AUN Construct
@@ -729,9 +742,105 @@ export class AunConstruct {
         root.emitter.dispatch('beforeRendering', child);
         this.makeChildren(root, child);
         root.emitter.dispatch('afterRendering', child);
+        this.makeRoot(root);
         this.emitter.dispatch('after', root);
         root.emitter.dispatch('ready', root);
         return root;
+    }
+    makeRoot(root) {
+        if (typeof root.props == 'object') {
+            Object.entries(root.props).forEach(({ 0: slug, 1: value }) => {
+                this.propertyBuilder(root, slug, value);
+            });
+        }
+        return root;
+    }
+    propertyBuilder(root, slug, value) {
+        if (slug != 'child') {
+            switch (slug) {
+                case 'style':
+                    root.element.style(value);
+                    break;
+                case 'removeStyle':
+                    root.element.removeStyle(value);
+                    break;
+                case 'toggleClassname':
+                    root.element.toggleClassname(value);
+                    break;
+                case 'classname':
+                    root.element.classname(value);
+                    break;
+                case 'removeClassname':
+                    root.element.removeClassname(value);
+                    break;
+                case 'inlineClassname':
+                    root.element.addInlineClassname(value);
+                    break;
+                case 'measure':
+                    root.element.measure(value);
+                    break;
+                case 'offset':
+                    root.element.offset(value);
+                    break;
+                case 'html':
+                    root.element.html(value);
+                    break;
+                case 'append':
+                    root.element.append(value);
+                    break;
+                case 'append':
+                    root.element.append(value);
+                    break;
+                case 'data':
+                    Object.entries(value).forEach(({ 0: key, 1: value }) => root.element.data(key, typeof value == 'object' ? JSON.stringify(value) : `${value}`));
+                    break;
+                case 'attribute':
+                    if (Array.isArray(value)) {
+                        value.forEach(prop => {
+                            root.element.attribute(prop.attributes, prop.ns, prop.separator);
+                        });
+                    }
+                    else if (typeof value == 'object') {
+                        const props = value;
+                        root.element.attribute(props.attributes, props.ns, props.separator);
+                    }
+                    break;
+                case 'removeAttribute':
+                    if (Array.isArray(value)) {
+                        value.forEach(prop => {
+                            root.element.removeAttribute(prop.attributes, prop.ns, prop.separator);
+                        });
+                    }
+                    else if (typeof value == 'object') {
+                        const props = value;
+                        root.element.removeAttribute(props.attributes, props.ns, props.separator);
+                    }
+                    break;
+                case 'toggleAttribute':
+                    if (Array.isArray(value)) {
+                        value.forEach(prop => {
+                            root.element.toggleAttribute(prop.attributes, prop.ns, prop.separator);
+                        });
+                    }
+                    else if (typeof value == 'object') {
+                        const props = value;
+                        root.element.toggleAttribute(props.attributes, props.ns, props.separator);
+                    }
+                    break;
+                case 'attributeNS':
+                    if (Array.isArray(value)) {
+                        value.forEach(prop => {
+                            root.element.attributeNS(prop.attributes, prop.ns);
+                        });
+                    }
+                    else if (typeof value == 'object') {
+                        const props = value;
+                        root.element.attributeNS(props.attributes, props.ns);
+                    }
+                    break;
+            }
+        }
+        return this;
     }
     /**
      * makeChildren
@@ -791,14 +900,14 @@ export class AunConstruct {
     }
 }
 export class AunView {
-    get parameters() { return __classPrivateFieldGet(this, _AunView__parameters, "f"); }
-    get component() { return __classPrivateFieldGet(this, _AunView__component, "f"); }
     constructor(componentConstructor, options) {
         _AunView__parameters.set(this, {});
         _AunView__component.set(this, undefined);
         this.componentConstructor = componentConstructor;
         this.options = options || {};
     }
+    get parameters() { return __classPrivateFieldGet(this, _AunView__parameters, "f"); }
+    get component() { return __classPrivateFieldGet(this, _AunView__component, "f"); }
     show(parameters) {
         __classPrivateFieldSet(this, _AunView__parameters, parameters, "f");
         this.component?.element.removeStyle('display');
@@ -824,15 +933,6 @@ export class AunView {
 }
 _AunView__parameters = new WeakMap(), _AunView__component = new WeakMap();
 export class AunStackViews {
-    /**
-     * Les vues
-     */
-    get views() { return __classPrivateFieldGet(this, _AunStackViews_views, "f"); }
-    /**
-     * Composant Actuellement utilisé
-     */
-    get current() { return __classPrivateFieldGet(this, _AunStackViews_current, "f"); }
-    ;
     constructor(views, options) {
         _AunStackViews_instances.add(this);
         _AunStackViews_views.set(this, {});
@@ -869,6 +969,15 @@ export class AunStackViews {
         });
         __classPrivateFieldGet(this, _AunStackViews_instances, "m", _AunStackViews_initializeCanvas).call(this);
     }
+    /**
+     * Les vues
+     */
+    get views() { return __classPrivateFieldGet(this, _AunStackViews_views, "f"); }
+    /**
+     * Composant Actuellement utilisé
+     */
+    get current() { return __classPrivateFieldGet(this, _AunStackViews_current, "f"); }
+    ;
     middleware(callback) {
         this.navigation.options.middlewares?.push(callback);
         return this;
@@ -889,7 +998,7 @@ _AunStackViews_views = new WeakMap(), _AunStackViews_current = new WeakMap(), _A
         canvas.style.position = 'relative';
         canvas.style.width = '100%';
         canvas.style.height = '100%';
-        canvas.style.overflow = 'auto';
+        canvas.style.overflow = 'hidden';
         canvas.style.maxWidth = '100vw';
         canvas.style.maxHeight = '100vh';
     });

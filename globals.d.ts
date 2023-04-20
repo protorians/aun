@@ -9,7 +9,7 @@ declare module '@protorians/aun/exceptions' {
 }
 declare module '@protorians/aun/foundations' {
   import EventDispatcher from "@protorians/core/event-dispatcher";
-  import type { IAttributesMap, IChildren, IComponentConstructor, IConstruct, IConstructEmitterScheme, IElement, IElementClassName, IElementCSS, IElementCSSRemoves, IElementEmitterScheme, IElementEventCallback, IElementMeasureCallback, IElementOffsetCallback, IFindElementCallback, INode, IStackViews, IStackViewsEmitterScheme, IStackViewsList, IStackViewsOptions, IState, IStateCallback, IStateErrorCallback, IStateManager, IStateManagerEmitterScheme, IStateRecords, IView, IViewOptions, IWidget, IWidgetEmitterScheme, IWidgetLayerCallback, IWidgetReadyCallback, IWidgetRequestAnimationFrameCallback, IWidgetTimerCallback, IWProps, IWTarget, IWTargetNode, IStateVoidCallback } from "@protorians/aun/types";
+  import type { IAttributesMap, IChildren, IComponentConstructor, IConstruct, IConstructEmitterScheme, IElement, IElementClassName, IElementCSS, IElementCSSRemoves, IElementEmitterScheme, IElementEventCallback, IElementMeasureCallback, IElementOffsetCallback, IFindElementCallback, INode, IStackViews, IStackViewsEmitterScheme, IStackViewsList, IStackViewsOptions, IState, IStateCallback, IStateErrorCallback, IStateManager, IStateManagerEmitterScheme, IStateRecords, IView, IViewOptions, IWidget, IWidgetEmitterScheme, IWidgetLayerCallback, IWidgetReadyCallback, IWidgetRequestAnimationFrameCallback, IWidgetTimerCallback, IWTarget, IWTargetNode, IStateVoidCallback, IWidgetProps } from "@protorians/aun/types";
   import type { IAppearance, IAppearanceObject, IEventDispatcher, IEventDispatcherCallback, INavigation, INavigationMiddlewareCallback } from "@protorians/core/types";
   /**
    * findElement — Find Element
@@ -43,7 +43,7 @@ declare module '@protorians/aun/foundations' {
        * @param widget Widget Cible
        * @example element.own( widget )
        */
-      own<P extends IWProps>(widget: IWidget<P, E>): this;
+      own<P extends IWidgetProps>(widget: IWidget<P, E>): this;
       /**
        * asyncMeasure
        * @description Retrouve les dimension et le position de l'instance de l'élément en retournant les valeurs.
@@ -58,6 +58,7 @@ declare module '@protorians/aun/foundations' {
        * @example element.measure( measure => ... )
        */
       measure(callback: IElementMeasureCallback): this;
+      data(key: string, value: string): this;
       /**
        * clean
        * @description Nettoie le contenu de l'instance de l'élément
@@ -165,6 +166,7 @@ declare module '@protorians/aun/foundations' {
        * element.toggle( ['.box', '.card', ... ] )
        */
       toggleClassname(tokens: IElementClassName): this;
+      addInlineClassname(tokens: string): this;
       /**
        * className
        * @description Associé un selecteur CSS
@@ -289,7 +291,7 @@ declare module '@protorians/aun/foundations' {
    * AUN Widget
    * @description Pour les composant HTML de base
    */
-  export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P, E> {
+  export class AunWidget<P extends IWidgetProps, E extends INode> implements IWidget<P, E> {
       #private;
       /**
        * Instance de l'élément
@@ -381,7 +383,7 @@ declare module '@protorians/aun/foundations' {
    * AUN Construct
    * @description Constructeur de Widget
    */
-  export class AunConstruct<P extends IWProps, E extends INode> implements IConstruct<P, E> {
+  export class AunConstruct<P extends IWidgetProps, E extends INode> implements IConstruct<P, E> {
       /**
        * Emetteur
        */
@@ -398,6 +400,8 @@ declare module '@protorians/aun/foundations' {
        * @param child Enfants à ajouter
        */
       make(root: IWidget<P, E>, child: IChildren): IWidget<P, E>;
+      makeRoot(root: IWidget<P, E>): IWidget<P, E>;
+      propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetProps, value: any): this;
       /**
        * makeChildren
        * @description Construire les enfants
@@ -413,7 +417,7 @@ declare module '@protorians/aun/foundations' {
        */
       makeAppearance(root: IWidget<P, E>, payload: IAppearanceObject): IWidget<P, E>;
   }
-  export class AunView<ComponentProps extends IWProps> implements IView<ComponentProps> {
+  export class AunView<ComponentProps extends IWidgetProps> implements IView<ComponentProps> {
       #private;
       get parameters(): ComponentProps;
       get component(): IWidget<ComponentProps, HTMLDivElement> | undefined;
@@ -462,7 +466,7 @@ declare module '@protorians/aun/foundations' {
 }
 declare module '@protorians/aun/index' {
   import { AunElement, AunState, AunWidget, AunView, AunStackViews } from "@protorians/aun/foundations";
-  import { IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWProps, IWTarget, ITextProps, IWidgetProps, IInputProps, IFormProps, IModalProps, IModalStateProps } from "@protorians/aun/types";
+  import { IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWTarget, ITextProps, IWidgetProps, IInputProps, IFormProps, IModalProps, IButtonProps } from "@protorians/aun/types";
   import { IProps } from "@protorians/core/types";
   /**
    * CreateState
@@ -479,7 +483,7 @@ declare module '@protorians/aun/index' {
    * @example DropComponent<PropsType>( '#root', Component( { ... } ) )
    * DropComponent<PropsType>( document.getElementById('root'), Component( { ... } ) )
    */
-  export function DropComponent<P extends IWProps, E extends INode>(component: IWidget<P, E>, target: INode): IWidget<P, E>;
+  export function DropComponent<P extends IWidgetProps, E extends INode>(component: IWidget<P, E>, target: INode): IWidget<P, E>;
   /**
    * DropComponents
    * @description Lier plusieurs composants à plusieurs cicles.
@@ -487,7 +491,7 @@ declare module '@protorians/aun/index' {
    * @param component Composant à deposer dans l'élément HTML
    * @example DropComponents<PropsType, HTMLDivElement>( '.drop-target', ( props : Props ) => ... )
    */
-  export function DropComponents<P extends IWProps, E extends INode>(component: IWidget<P, E>, targets: NodeListOf<INode>): IWidget<P, E>;
+  export function DropComponents<P extends IWidgetProps, E extends INode>(component: IWidget<P, E>, targets: NodeListOf<INode>): IWidget<P, E>;
   /**
    * AsyncComponent
    * @description Utiliser un composant avec une promesse. Composant bloquant en attendant le traitement. Il peut être ajouter aux enfants d'un widget
@@ -496,7 +500,7 @@ declare module '@protorians/aun/index' {
    *    setTimeout( () => resolve( component() ), 3000 )
    * })
    */
-  export function AsyncComponent<P extends IWProps, E extends INode>(callback: IWidgetAsyncCallback): Promise<IWidget<P, E>>;
+  export function AsyncComponent<P extends IWidgetProps, E extends INode>(callback: IWidgetAsyncCallback): Promise<IWidget<P, E>>;
   /**
    * UseComponent
    * @description Utiliser un composant dans une / plusieurs cibles
@@ -505,7 +509,7 @@ declare module '@protorians/aun/index' {
    * @example UseComponent<PropsType>( '#root', component( props ) ) // Requête de selecteur pour la cible
    * UseComponent<PropsType>( document.getElementById('root'), component( props ) ) // Instance de type HTMLElement pour la cible
    */
-  export function UseComponent<P extends IWProps, E extends INode>(component: IWidget<any, any>, target: IWTarget): IWidget<P, E>;
+  export function UseComponent<P extends IWidgetProps, E extends INode>(component: IWidget<any, any>, target: IWTarget): IWidget<P, E>;
   /**
    * CreateKit
    * @description Créer un Kit Composant
@@ -516,7 +520,7 @@ declare module '@protorians/aun/index' {
    *    component: ( props : Props ) => ...
    * } )
    */
-  export function CreateKit(definition: IKitProps): <P extends IWProps, E extends HTMLElement>(p: P) => IWidget<P, E>;
+  export function CreateKit(definition: IKitProps): <P extends IWidgetProps, E extends HTMLElement>(p: P) => IWidget<P, E>;
   /**
    * aune — AUN Virtual Element
    * @description Instance fonctionnelle d'usage des éléments AUN
@@ -531,7 +535,7 @@ declare module '@protorians/aun/index' {
    * @param props Propriétés du widget
    * @example RawWidget<PropsType, HTMLSpanElement>( 'span', props )
    */
-  export function RawWidget<P extends IWProps, E extends INode>(tagname: string, props: P): AunWidget<P, E>;
+  export function RawWidget<P extends IWidgetProps, E extends INode>(tagname: string, props: P): AunWidget<P, E>;
   /**
    * Widget
    * @description Créer une couche de calque
@@ -566,7 +570,7 @@ declare module '@protorians/aun/index' {
    * @param widget Widget cible
    * @param props Propriété à analyser
    */
-  export function setWidgetProperty<P extends IProps, H extends HTMLElement>(widget: IWidget<P, H>, props: IProps): IWidget<P, H>;
+  export function setWidgetProperty<P extends IWidgetProps, H extends HTMLElement>(widget: IWidget<P, H>, props: IProps): IWidget<P, H>;
   /**
    * InputWidget
    * @description Calque de champs de texte
@@ -579,6 +583,7 @@ declare module '@protorians/aun/index' {
    * })
    */
   export function InputWidget(props: IInputProps): IWidget<IInputProps, HTMLInputElement>;
+  export function ButtonWidget(props: IButtonProps): AunWidget<IButtonProps, HTMLButtonElement>;
   /**
    * FormWidget
    * @description Calque de Formulaire
@@ -589,14 +594,14 @@ declare module '@protorians/aun/index' {
    *    action: 'publish',
    * })
    */
-  export function FormWidget(props: IFormProps): AunWidget<IFormProps, HTMLFormElement>;
-  export function ModalWidget(props: IModalProps): AunState<IModalStateProps>;
+  export function FormWidget(props: IFormProps): IWidget<IFormProps, HTMLFormElement>;
+  export function ModalWidget(props: IModalProps): IWidget<any, any>;
   /**
    * View
    * @param component Composant utilisé pour la vue
    * @param options Options de la vue
    */
-  export function View<C extends IWProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined): AunView<C>;
+  export function View<C extends IWidgetProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined): AunView<C>;
   export function CreateStackViews<Scheme>(views: IStackViewsList<Scheme>, options?: IStackViewsOptions<Scheme>): AunStackViews<Scheme>;
   /**
    * AUN Construct
@@ -606,15 +611,15 @@ declare module '@protorians/aun/index' {
    * @example Construct<ComponentType>( component, child )
    * Construct( component, child )
    */
-  export function Construct<Component extends IWidget<IWProps, INode>>(component: Component, child: IChildren): IWidget<IWProps, HTMLElement>;
+  export function Construct<Component extends IWidget<IWidgetProps, INode>>(component: Component, child: IChildren): IWidget<IWidgetProps, HTMLElement>;
   /**
    * CreateComponent
    * @description Créer un composant en ajoutant immédiatement à la fil d'attente hydratation tout en permetant de l'exporter avec un nom d'emprunt.
    * @param name
    * @param widgetConstructor
-   * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWProps ) => ... )
+   * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetProps ) => ... )
    */
-  export function CreateComponent<P extends IWProps>(name: string, widgetConstructor: IHydrateComponent<any, HTMLElement>): IHydrateComponent<P, HTMLElement>;
+  export function CreateComponent<P extends IWidgetProps>(name: string, widgetConstructor: IHydrateComponent<any, HTMLElement>): IHydrateComponent<P, HTMLElement>;
   /**
    * HydrateComponentQueue
    * @description Fil d'attente des hydration des composants AUN
@@ -622,21 +627,21 @@ declare module '@protorians/aun/index' {
    * @param widgetConstructor Constructeur du composant AUN
    * @example HydrateComponentQueue<WidgetPropsType>( 'ComponentName', ( props : WidgetProps ) => ... )
    */
-  export function HydrateComponentQueue<P extends IWProps>(name: string, widgetConstructor: IHydrateComponent<any, HTMLElement>): IHydrateComponent<any, HTMLElement>;
+  export function HydrateComponentQueue<P extends IWidgetProps>(name: string, widgetConstructor: IHydrateComponent<any, HTMLElement>): IHydrateComponent<any, HTMLElement>;
   /**
    * HydrateComponent
    * @param name Chaine de caratère représentant le nom du composant. Sensible à la case
    * @param widgetConstructor Constructeur du composant AUN
    * @example HydrateComponent<PropsType>( 'Hello', HelloComponent )
    */
-  export function HydrateComponent<P extends IWProps>(name: string, widgetConstructor: IHydrateComponent<any, HTMLElement>): IHydrateComponent<any, HTMLElement>;
+  export function HydrateComponent<P extends IWidgetProps>(name: string, widgetConstructor: IHydrateComponent<any, HTMLElement>): IHydrateComponent<any, HTMLElement>;
   /**
    * ExtractProps
    * @description Extraction des propriétés dans le constructeur d'un composant
    * @param attributes Contenu de la propriété "HTMLElement.attributes"
    * @example ExtractProps<PropsType>( element.attributes )
    */
-  export function ExtractProps<P extends IWProps>(attributes: NamedNodeMap): P;
+  export function ExtractProps<P extends IWidgetProps>(attributes: NamedNodeMap): P;
   /**
    * ActiveAutoHydrateComponents
    * @description Active l'hydratation automatique des composants
@@ -746,24 +751,36 @@ declare module '@protorians/aun/types' {
       end?: string | undefined;
       joiner?: string | undefined;
   };
-  /**
-   * IWProps extends IProps
-   * @description Les propriétés d'un widget. Les propriétés iront en attributs html avec le prefix "prop:{KEY}" pour garder la persistence. Les données de type objet seront convetir en JSON
-   */
-  export interface IWProps extends IProps {
-      child?: IChildren;
+  export interface IWidgetAttributeProps {
+      attributes: IAttributesMap;
+      ns?: string | undefined;
+      separator?: string | undefined;
+  }
+  export interface IWidgetAttributeNSProps {
+      attributes: IAttributesMap;
+      ns?: string | undefined;
   }
   /**
-   * IWidgetProps extends IWProps
+   * IWidgetProps extends IWidgetProps
    * @description Propriétés de widget de base
    */
-  export interface IWidgetProps extends IWProps {
-      child: IChildrenElement;
-      style?: any;
-      css?: any;
-      className?: any;
-      data?: any;
-      kit?: any;
+  export interface IWidgetProps extends IProps {
+      child?: IChildren;
+      measure?: IElementMeasureCallback;
+      offset?: IElementOffsetCallback;
+      html?: string | undefined;
+      append?: string | Node | (string | Node)[];
+      style?: IElementCSS | undefined;
+      removeStyle?: IElementCSSRemoves;
+      toggleClassname?: IElementClassName;
+      classname?: IElementClassName;
+      removeClassname?: IElementClassName;
+      inlineClassname?: string;
+      attribute?: IWidgetAttributeProps | IWidgetAttributeProps[];
+      attributeNS?: IWidgetAttributeNSProps | IWidgetAttributeNSProps[];
+      removeAttribute?: IWidgetAttributeProps | IWidgetAttributeProps[];
+      toggleAttribute?: IWidgetAttributeProps | IWidgetAttributeProps[];
+      data?: IProps;
   }
   /**
    * ITextProps extends Omit<IWidgetProps, 'child'>
@@ -785,7 +802,7 @@ declare module '@protorians/aun/types' {
   export interface IModalStateProps extends IProps {
       open: boolean;
   }
-  export interface IFormProps extends IProps {
+  export interface IFormProps extends Omit<IWidgetProps, 'child'> {
       acceptCharset?: string;
       action?: string;
       autocomplete?: 'on' | 'off';
@@ -795,8 +812,13 @@ declare module '@protorians/aun/types' {
       novalidate?: boolean;
       rel?: 'external' | 'license' | 'next' | 'nofollow' | 'noopener' | 'noreferrer' | 'opener' | 'prev' | 'search' | 'help';
       target?: '_blank' | '_parent' | '_top' | '_self';
+      child: IChildElement;
   }
-  export interface IInputProps extends IProps {
+  export interface IButtonProps extends Omit<IWidgetProps, 'child'> {
+      type?: 'button' | 'submit' | 'reset';
+      child: IChildren;
+  }
+  export interface IInputProps extends IWidgetProps {
       type?: 'text' | 'button' | 'color' | 'date' | 'datetime-local' | 'email' | 'file' | 'hidden' | 'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit' | 'tel' | 'time' | 'url' | 'week' | 'checkbox';
       accept?: string;
       alt?: string;
@@ -854,11 +876,13 @@ declare module '@protorians/aun/types' {
       content(child?: IChildren | undefined): this | IChildren;
       html(data?: string | undefined): this | string;
       append(...nodes: (string | Node)[]): this;
+      data(key: string, value: string): this;
       listen<L extends keyof IElementEmitterScheme>(type: L, callback: IEventDispatcherCallback<IElementEmitterScheme[L]>): this;
       on<T extends keyof HTMLElementEventMap>(type: T, callback: IElementEventCallback<T>, options?: AddEventListenerOptions | boolean | undefined): this;
       style(tokens: IElementCSS | undefined): this;
       removeStyle(tokens: IElementCSSRemoves): this;
       toggleClassname(tokens: IElementClassName): this;
+      addInlineClassname(tokens: string): this;
       classname(tokens: IElementClassName | undefined): this;
       getClassname(): string[];
       removeClassname(tokens: IElementClassName): this;
@@ -905,14 +929,14 @@ declare module '@protorians/aun/types' {
       instance: E;
       emitter: IEventDispatcher<IElementEmitterScheme>;
       get widget(): IWidget<any, E> | undefined;
-      own<P extends IWProps>(widget: IWidget<P, E> | undefined): this;
+      own<P extends IWidgetProps>(widget: IWidget<P, E> | undefined): this;
   }
-  export type IWidgetTimerCallback = <P extends IWProps, E extends INode>(widget: IWidget<P, E>, timer: NodeJS.Timeout) => void;
-  export type IWidgetRequestAnimationFrameCallback = <P extends IWProps, E extends INode>(widget: IWidget<P, E>) => void;
+  export type IWidgetTimerCallback = <P extends IWidgetProps, E extends INode>(widget: IWidget<P, E>, timer: NodeJS.Timeout) => void;
+  export type IWidgetRequestAnimationFrameCallback = <P extends IWidgetProps, E extends INode>(widget: IWidget<P, E>) => void;
   export type IWidgetAsyncCallback = (resolve: (value: IWidget<any, any> | PromiseLike<IWidget<any, any>>) => void, reject: (reason?: any) => void) => void;
   export type IWidgetLayerCallback<E extends INode> = (element: IElement<E>) => void;
-  export type IWidgetReadyCallback<P extends IWProps, E extends INode> = (widget: IWidget<P, E>) => void;
-  export interface IWidgetEmitterScheme<P extends IWProps, E extends INode> {
+  export type IWidgetReadyCallback<P extends IWidgetProps, E extends INode> = (widget: IWidget<P, E>) => void;
+  export interface IWidgetEmitterScheme<P extends IWidgetProps, E extends INode> {
       ready: IWidget<P, E>;
       beforeRendering: IChildren;
       afterRendering: IChildren;
@@ -926,7 +950,7 @@ declare module '@protorians/aun/types' {
       htmlAdded: string | boolean | number;
       stateAdded: IStateManager<any>;
   }
-  export interface IWidget<P extends IWProps, E extends INode> {
+  export interface IWidget<P extends IWidgetProps, E extends INode> {
       element: IElement<E>;
       child?: IChildren | IChildren[] | undefined;
       get props(): P;
@@ -981,19 +1005,21 @@ declare module '@protorians/aun/types' {
   export interface IWidgerErrorException {
       messageToString(data: string): string;
   }
-  export interface IConstructEmitterScheme<P extends IWProps, E extends INode> {
+  export interface IConstructEmitterScheme<P extends IWidgetProps, E extends INode> {
       before: IWidget<P, E>;
       after: IWidget<P, E>;
       appearance: IAppearance;
   }
-  export interface IConstruct<P extends IWProps, E extends INode> {
+  export interface IConstruct<P extends IWidgetProps, E extends INode> {
       emitter: IEventDispatcher<IConstructEmitterScheme<P, E>>;
       appearance: IAppearance;
       make(root: IWidget<P, E>, child: IChildren | IChildren[]): IWidget<P, E>;
+      makeRoot(root: IWidget<P, E>): IWidget<P, E>;
       makeChildren(root: IWidget<P, E>, child: IChildren): IWidget<P, E>;
       makeAppearance(root: IWidget<P, E>, payload: IAppearanceObject): IWidget<P, E>;
+      propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetProps, value: any): this;
   }
-  export type IHydrateComponent<P extends IWProps, E extends HTMLElement> = ((props: P) => IWidget<P, E>);
+  export type IHydrateComponent<P extends IWidgetProps, E extends HTMLElement> = ((props: P) => IWidget<P, E>);
   export type IComponentConstructor = ((props: any) => IWidget<any, any>);
   export type IAttributesMapValues = IAttributesMap | Array<any> | string | number | boolean | null | (() => void);
   export type IAttributesMap = {
@@ -1046,16 +1072,16 @@ declare module '@protorians/aun/types' {
       appearance: IAppearanceStyleSheet;
       component: IComponentConstructor;
   }
-  export type IViewEmitterCallbackArgument<P extends IWProps> = {
+  export type IViewEmitterCallbackArgument<P extends IWidgetProps> = {
       component: IWidget<P, HTMLDivElement>;
       router: IView<P>;
   };
-  export type IViewEmitterCallback<P extends IWProps> = (payload: IViewEmitterCallbackArgument<P>) => void;
-  export interface IViewEmitters<P extends IWProps> {
+  export type IViewEmitterCallback<P extends IWidgetProps> = (payload: IViewEmitterCallbackArgument<P>) => void;
+  export interface IViewEmitters<P extends IWidgetProps> {
       show?: IViewEmitterCallback<P>;
       hide?: IViewEmitterCallback<P>;
   }
-  export interface IViewOptions<P extends IWProps> {
+  export interface IViewOptions<P extends IWidgetProps> {
       name: string;
       title: string;
       presenter?: 'normal' | 'modal' | 'overlay' | 'overlaySideLeft' | 'overlaySideRight';
@@ -1065,13 +1091,13 @@ declare module '@protorians/aun/types' {
           exit: ICoreTransition;
       };
   }
-  export interface IViewProps extends IWProps {
+  export interface IViewProps extends IProps {
       [k: string]: any;
       stack: IStackViews<any>;
       child?: IChildren;
   }
-  export type IViewWidget<P extends IWProps> = ((props: P) => IWidget<any, any>);
-  export interface IView<P extends IProps> {
+  export type IViewWidget<P extends IWidgetProps> = ((props: P) => IWidget<any, any>);
+  export interface IView<P extends IWidgetProps> {
       get parameters(): P;
       get component(): IWidget<P, HTMLDivElement> | undefined;
       options: IViewOptions<P>;

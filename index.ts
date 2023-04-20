@@ -24,14 +24,14 @@ import {
   IViewOptions,
   IWidget,
   IWidgetAsyncCallback,
-  IWProps,
   IWTarget,
   ITextProps,
   IWidgetProps,
   IInputProps,
   IFormProps,
   IModalProps,
-  IModalStateProps
+  IModalStateProps,
+  IButtonProps
 } from "./types";
 import { IPresenterModalProps, IPresenters, IProps } from "@protorians/core/types";
 import { UnCamelize } from "@protorians/core/utilities";
@@ -65,7 +65,7 @@ export function CreateState<S extends IState>(state: S) {
  * @example DropComponent<PropsType>( '#root', Component( { ... } ) )
  * DropComponent<PropsType>( document.getElementById('root'), Component( { ... } ) )
  */
-export function DropComponent<P extends IWProps, E extends INode>(
+export function DropComponent<P extends IWidgetProps, E extends INode>(
 
   component: IWidget<P, E>,
 
@@ -87,7 +87,7 @@ export function DropComponent<P extends IWProps, E extends INode>(
  * @param component Composant à deposer dans l'élément HTML
  * @example DropComponents<PropsType, HTMLDivElement>( '.drop-target', ( props : Props ) => ... )
  */
-export function DropComponents<P extends IWProps, E extends INode>(
+export function DropComponents<P extends IWidgetProps, E extends INode>(
 
   component: IWidget<P, E>,
 
@@ -119,7 +119,7 @@ export function DropComponents<P extends IWProps, E extends INode>(
  *    setTimeout( () => resolve( component() ), 3000 )
  * })
  */
-export async function AsyncComponent<P extends IWProps, E extends INode>(callback: IWidgetAsyncCallback): Promise<IWidget<P, E>> {
+export async function AsyncComponent<P extends IWidgetProps, E extends INode>(callback: IWidgetAsyncCallback): Promise<IWidget<P, E>> {
 
   return (new Promise<IWidget<any, any>>(callback))
 
@@ -134,7 +134,7 @@ export async function AsyncComponent<P extends IWProps, E extends INode>(callbac
  * @example UseComponent<PropsType>( '#root', component( props ) ) // Requête de selecteur pour la cible
  * UseComponent<PropsType>( document.getElementById('root'), component( props ) ) // Instance de type HTMLElement pour la cible
  */
-export function UseComponent<P extends IWProps, E extends INode>(
+export function UseComponent<P extends IWidgetProps, E extends INode>(
 
   component: IWidget<any, any>,
 
@@ -183,7 +183,7 @@ export function UseComponent<P extends IWProps, E extends INode>(
  */
 export function CreateKit(definition: IKitProps) {
 
-  return <P extends IWProps, E extends INode>(p: P) =>
+  return <P extends IWidgetProps, E extends INode>(p: P) =>
 
     (definition.component(p) as IWidget<P, E>)
 
@@ -218,7 +218,7 @@ export function aune<E extends INode>(tagname: string) {
  * @param props Propriétés du widget
  * @example RawWidget<PropsType, HTMLSpanElement>( 'span', props )
  */
-export function RawWidget<P extends IWProps, E extends INode>(tagname: string, props: P) {
+export function RawWidget<P extends IWidgetProps, E extends INode>(tagname: string, props: P) {
 
   const widget = (new AunWidget<P, E>(tagname, props))
 
@@ -312,7 +312,7 @@ export function ImageWidget(props: IImageProps): AunWidget<IImageProps, HTMLImag
  */
 export function setWidgetProperty<
 
-  P extends IProps,
+  P extends IWidgetProps,
 
   H extends HTMLElement
 
@@ -364,13 +364,24 @@ export function setWidgetProperty<
  */
 export function InputWidget(props: IInputProps): IWidget<IInputProps, HTMLInputElement> {
 
-  const widget = RawWidget<IInputProps, HTMLInputElement>('input', props)
+  return setWidgetProperty<IInputProps, HTMLInputElement>(
 
-  setWidgetProperty<IInputProps, HTMLInputElement>(widget, props);
+    RawWidget<IInputProps, HTMLInputElement>('input', props),
 
-  return widget;
+    props
+
+  );
 
 }
+
+
+
+export function ButtonWidget(props: IButtonProps) {
+
+  return RawWidget<IButtonProps, HTMLButtonElement>('button', props);
+
+}
+
 
 
 /**
@@ -385,11 +396,13 @@ export function InputWidget(props: IInputProps): IWidget<IInputProps, HTMLInputE
  */
 export function FormWidget(props: IFormProps) {
 
-  const widget = RawWidget<IFormProps, HTMLFormElement>('form', props)
+  return setWidgetProperty<IFormProps, HTMLFormElement>(
 
-  setWidgetProperty<IFormProps, HTMLFormElement>(widget, props);
+    RawWidget<IFormProps, HTMLFormElement>('form', props),
 
-  return widget;
+    props
+
+  );
 
 }
 
@@ -398,28 +411,21 @@ export function FormWidget(props: IFormProps) {
 
 export function ModalWidget(props: IModalProps) {
 
-
   let modal: IPresenters<IPresenterModalProps> | undefined = undefined;
-
-  const toggle = (open: boolean) => {
-
-    if (open) modal?.open()
-
-    else modal?.close()
-
-  }
 
   const state = CreateState<IModalStateProps>({
 
     open: props.isOpen || false,
 
-  }).change(state => toggle(state.open));
+  });
 
   const widget = Widget({
 
     child: props.child
 
-  }).ready(() => {
+  });
+
+  props.trigger.ready(() => {
 
     modal = Presenters.context(
 
@@ -431,11 +437,25 @@ export function ModalWidget(props: IModalProps) {
 
     );
 
-    toggle(state.value.open)
+    props.trigger.element.on('click', () => {
+
+      console.log('Modal toggle', modal)
+
+      if (state.value.open) modal?.open()
+
+      else modal?.close()
+
+      state.set({ open: !state.value.open });
+
+    })
+
+
+    if (props.isOpen) { modal?.open() }
+
 
   })
 
-  return state.use(state => state.open ? widget : props.trigger);
+  return props.trigger;
 
 }
 
@@ -471,7 +491,7 @@ export function ModalWidget(props: IModalProps) {
  * @param component Composant utilisé pour la vue
  * @param options Options de la vue
  */
-export function View<C extends IWProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined) {
+export function View<C extends IWidgetProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined) {
 
   return new AunView<C>(component, options)
 
@@ -501,7 +521,7 @@ export function CreateStackViews<Scheme>(
  * @example Construct<ComponentType>( component, child )
  * Construct( component, child )
  */
-export function Construct<Component extends IWidget<IWProps, INode>>(
+export function Construct<Component extends IWidget<IWidgetProps, INode>>(
 
   component: Component,
 
@@ -516,9 +536,9 @@ export function Construct<Component extends IWidget<IWProps, INode>>(
  * @description Créer un composant en ajoutant immédiatement à la fil d'attente hydratation tout en permetant de l'exporter avec un nom d'emprunt. 
  * @param name 
  * @param widgetConstructor 
- * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWProps ) => ... )
+ * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetProps ) => ... )
  */
-export function CreateComponent<P extends IWProps>(
+export function CreateComponent<P extends IWidgetProps>(
 
   name: string,
 
@@ -547,7 +567,7 @@ export function CreateComponent<P extends IWProps>(
  * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponentQueue<WidgetPropsType>( 'ComponentName', ( props : WidgetProps ) => ... )
  */
-export function HydrateComponentQueue<P extends IWProps>(
+export function HydrateComponentQueue<P extends IWidgetProps>(
 
   name: string,
 
@@ -574,7 +594,7 @@ export function HydrateComponentQueue<P extends IWProps>(
  * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponent<PropsType>( 'Hello', HelloComponent )
  */
-export function HydrateComponent<P extends IWProps>(
+export function HydrateComponent<P extends IWidgetProps>(
 
   name: string,
 
@@ -619,7 +639,7 @@ export function HydrateComponent<P extends IWProps>(
  * @param attributes Contenu de la propriété "HTMLElement.attributes"
  * @example ExtractProps<PropsType>( element.attributes )
  */
-export function ExtractProps<P extends IWProps>(attributes: NamedNodeMap): P {
+export function ExtractProps<P extends IWidgetProps>(attributes: NamedNodeMap): P {
 
   const props: P = {} as P
 

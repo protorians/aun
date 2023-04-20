@@ -91,34 +91,62 @@ export type IObjectToString = {
 }
 
 
-/**
- * IWProps extends IProps
- * @description Les propriétés d'un widget. Les propriétés iront en attributs html avec le prefix "prop:{KEY}" pour garder la persistence. Les données de type objet seront convetir en JSON
- */
-export interface IWProps extends IProps {
 
-  child?: IChildren;
+export interface IWidgetAttributeProps {
+
+  attributes: IAttributesMap,
+
+  ns?: string | undefined,
+
+  separator?: string | undefined
 
 }
 
+export interface IWidgetAttributeNSProps {
+
+  attributes: IAttributesMap,
+
+  ns?: string | undefined
+
+}
 
 /**
- * IWidgetProps extends IWProps
+ * IWidgetProps extends IWidgetProps
  * @description Propriétés de widget de base
  */
-export interface IWidgetProps extends IWProps {
+export interface IWidgetProps extends IProps {
 
-  child: IChildrenElement;
+  child?: IChildren;
 
-  style?: any;
+  measure?: IElementMeasureCallback;
 
-  css?: any;
+  offset?: IElementOffsetCallback;
 
-  className?: any;
+  html?: string | undefined;
 
-  data?: any;
+  append?: string | Node | (string | Node)[];
 
-  kit?: any;
+  style?: IElementCSS | undefined;
+
+  removeStyle?: IElementCSSRemoves;
+
+  toggleClassname?: IElementClassName;
+
+  classname?: IElementClassName;
+
+  removeClassname?: IElementClassName;
+
+  inlineClassname?: string;
+
+  attribute?: IWidgetAttributeProps | IWidgetAttributeProps[];
+
+  attributeNS?: IWidgetAttributeNSProps | IWidgetAttributeNSProps[];
+
+  removeAttribute?: IWidgetAttributeProps | IWidgetAttributeProps[];
+
+  toggleAttribute?: IWidgetAttributeProps | IWidgetAttributeProps[];
+
+  data?: IProps;
 
 }
 
@@ -165,7 +193,7 @@ export interface IModalStateProps extends IProps {
 
 
 
-export interface IFormProps extends IProps {
+export interface IFormProps extends Omit<IWidgetProps, 'child'> {
 
   acceptCharset?: string;
 
@@ -209,10 +237,22 @@ export interface IFormProps extends IProps {
 
   | '_self';
 
+  child: IChildElement
+
 }
 
 
-export interface IInputProps extends IProps {
+
+export interface IButtonProps extends Omit<IWidgetProps, 'child'> {
+
+  type?: 'button' | 'submit' | 'reset';
+
+  child: IChildren
+
+}
+
+
+export interface IInputProps extends IWidgetProps {
 
   type?: 'text'
 
@@ -373,6 +413,7 @@ export interface IPhysicalMethods {
 
   append(...nodes: (string | Node)[]): this;
 
+  data(key: string, value: string): this;
 
   listen<L extends keyof IElementEmitterScheme>(
 
@@ -399,6 +440,8 @@ export interface IPhysicalMethods {
 
 
   toggleClassname(tokens: IElementClassName): this;
+
+  addInlineClassname(tokens: string): this;
 
   classname(tokens: IElementClassName | undefined): this;
 
@@ -542,7 +585,7 @@ export interface IElement<E extends INode> extends IPhysicalMethods {
 
   get widget(): IWidget<any, E> | undefined;
 
-  own<P extends IWProps>(widget: IWidget<P, E> | undefined): this;
+  own<P extends IWidgetProps>(widget: IWidget<P, E> | undefined): this;
 
   // append( ...nodes: (string | Node)[] ) : this;
 
@@ -554,7 +597,7 @@ export interface IElement<E extends INode> extends IPhysicalMethods {
 
 export type IWidgetTimerCallback = <
 
-  P extends IWProps,
+  P extends IWidgetProps,
 
   E extends INode
 
@@ -562,7 +605,7 @@ export type IWidgetTimerCallback = <
 
 export type IWidgetRequestAnimationFrameCallback = <
 
-  P extends IWProps,
+  P extends IWidgetProps,
 
   E extends INode
 
@@ -580,10 +623,10 @@ export type IWidgetAsyncCallback = (
 
 export type IWidgetLayerCallback<E extends INode> = (element: IElement<E>) => void
 
-export type IWidgetReadyCallback<P extends IWProps, E extends INode> = (widget: IWidget<P, E>) => void
+export type IWidgetReadyCallback<P extends IWidgetProps, E extends INode> = (widget: IWidget<P, E>) => void
 
 
-export interface IWidgetEmitterScheme<P extends IWProps, E extends INode> {
+export interface IWidgetEmitterScheme<P extends IWidgetProps, E extends INode> {
 
   ready: IWidget<P, E>;
 
@@ -611,7 +654,7 @@ export interface IWidgetEmitterScheme<P extends IWProps, E extends INode> {
 
 }
 
-export interface IWidget<P extends IWProps, E extends INode> {
+export interface IWidget<P extends IWidgetProps, E extends INode> {
 
   element: IElement<E>;
 
@@ -646,7 +689,7 @@ export interface IWidget<P extends IWProps, E extends INode> {
 
   frameReady(callback: IWidgetRequestAnimationFrameCallback): this;
 
-  // catch<P extends IWProps, E extends INode>( callback : IStateErrorExceptionCallback<P, E> ) : IWidget<P, E>;
+  // catch<P extends IWidgetProps, E extends INode>( callback : IStateErrorExceptionCallback<P, E> ) : IWidget<P, E>;
 
 }
 
@@ -745,7 +788,7 @@ export interface IWidgerErrorException {
 
 
 
-export interface IConstructEmitterScheme<P extends IWProps, E extends INode> {
+export interface IConstructEmitterScheme<P extends IWidgetProps, E extends INode> {
 
   before: IWidget<P, E>;
 
@@ -755,7 +798,7 @@ export interface IConstructEmitterScheme<P extends IWProps, E extends INode> {
 
 }
 
-export interface IConstruct<P extends IWProps, E extends INode> {
+export interface IConstruct<P extends IWidgetProps, E extends INode> {
 
   emitter: IEventDispatcher<IConstructEmitterScheme<P, E>>;
 
@@ -763,10 +806,13 @@ export interface IConstruct<P extends IWProps, E extends INode> {
 
   make(root: IWidget<P, E>, child: IChildren | IChildren[]): IWidget<P, E>;
 
+  makeRoot(root: IWidget<P, E>): IWidget<P, E>;
+
   makeChildren(root: IWidget<P, E>, child: IChildren): IWidget<P, E>;
 
   makeAppearance(root: IWidget<P, E>, payload: IAppearanceObject): IWidget<P, E>;
 
+  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetProps, value: any): this;
 }
 
 
@@ -779,7 +825,7 @@ export interface IConstruct<P extends IWProps, E extends INode> {
 
 export type IHydrateComponent<
 
-  P extends IWProps,
+  P extends IWidgetProps,
 
   E extends HTMLElement
 
@@ -900,7 +946,7 @@ export interface IKitProps {
 
 }
 
-// export interface IKit<P extends IWProps, E extends INode>{
+// export interface IKit<P extends IWidgetProps, E extends INode>{
 
 //   emitter : IEventDispatcher<IKitEmitterScheme>;
 
@@ -914,7 +960,7 @@ export interface IKitProps {
 
 
 
-export type IViewEmitterCallbackArgument<P extends IWProps> = {
+export type IViewEmitterCallbackArgument<P extends IWidgetProps> = {
 
   component: IWidget<P, HTMLDivElement>;
 
@@ -922,14 +968,14 @@ export type IViewEmitterCallbackArgument<P extends IWProps> = {
 
 }
 
-export type IViewEmitterCallback<P extends IWProps> = (
+export type IViewEmitterCallback<P extends IWidgetProps> = (
 
   payload: IViewEmitterCallbackArgument<P>
 
 ) => void
 
 
-export interface IViewEmitters<P extends IWProps> {
+export interface IViewEmitters<P extends IWidgetProps> {
 
   show?: IViewEmitterCallback<P>;
 
@@ -938,7 +984,7 @@ export interface IViewEmitters<P extends IWProps> {
 }
 
 
-export interface IViewOptions<P extends IWProps> {
+export interface IViewOptions<P extends IWidgetProps> {
 
   name: string;
 
@@ -960,7 +1006,7 @@ export interface IViewOptions<P extends IWProps> {
 
 }
 
-export interface IViewProps extends IWProps {
+export interface IViewProps extends IProps {
 
   [k: string]: any;
 
@@ -971,13 +1017,13 @@ export interface IViewProps extends IWProps {
 
 }
 
-export type IViewWidget<P extends IWProps> = ((props: P)
+export type IViewWidget<P extends IWidgetProps> = ((props: P)
 
   => IWidget<any, any>)
 
   ;
 
-export interface IView<P extends IProps> {
+export interface IView<P extends IWidgetProps> {
 
   get parameters(): P;
 

@@ -195,9 +195,10 @@ export function setWidgetProperty(widget, props) {
  * })
  */
 export function InputWidget(props) {
-    const widget = RawWidget('input', props);
-    setWidgetProperty(widget, props);
-    return widget;
+    return setWidgetProperty(RawWidget('input', props), props);
+}
+export function ButtonWidget(props) {
+    return RawWidget('button', props);
 }
 /**
  * FormWidget
@@ -210,30 +211,33 @@ export function InputWidget(props) {
  * })
  */
 export function FormWidget(props) {
-    const widget = RawWidget('form', props);
-    setWidgetProperty(widget, props);
-    return widget;
+    return setWidgetProperty(RawWidget('form', props), props);
 }
 export function ModalWidget(props) {
     let modal = undefined;
-    const toggle = (open) => {
-        if (open)
-            modal?.open();
-        else
-            modal?.close();
-    };
     const state = CreateState({
         open: props.isOpen || false,
-    }).change(state => toggle(state.open));
+    });
     const widget = Widget({
         child: props.child
-    }).ready(() => {
+    });
+    props.trigger.ready(() => {
         modal = Presenters.context(new ModalPresenter(widget.element.instance, {
             host: widget.element.instance.parentElement,
         }));
-        toggle(state.value.open);
+        props.trigger.element.on('click', () => {
+            console.log('Modal toggle', modal);
+            if (state.value.open)
+                modal?.open();
+            else
+                modal?.close();
+            state.set({ open: !state.value.open });
+        });
+        if (props.isOpen) {
+            modal?.open();
+        }
     });
-    return state.use(state => state.open ? widget : props.trigger);
+    return props.trigger;
 }
 // export function SheetWidget(){}
 // export function ActionSheetWidget(){}
@@ -268,7 +272,7 @@ export function Construct(component, child) { return (new AunConstruct()).make(c
  * @description Créer un composant en ajoutant immédiatement à la fil d'attente hydratation tout en permetant de l'exporter avec un nom d'emprunt.
  * @param name
  * @param widgetConstructor
- * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWProps ) => ... )
+ * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetProps ) => ... )
  */
 export function CreateComponent(name, widgetConstructor) {
     if (!(aunWindow.AUNHW instanceof MutationObserver)) {

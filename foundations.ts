@@ -35,11 +35,13 @@ import type {
   IWidgetReadyCallback,
   IWidgetRequestAnimationFrameCallback,
   IWidgetTimerCallback,
-  IWProps,
   IWTarget,
   IWTargetNode,
   IViewProps,
   IStateVoidCallback,
+  IWidgetProps,
+  IWidgetAttributeProps,
+  IWidgetAttributeNSProps,
 } from "./types";
 import type {
   IAppearance,
@@ -152,7 +154,7 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param widget Widget Cible
    * @example element.own( widget )
    */
-  own<P extends IWProps>(widget: IWidget<P, E>): this {
+  own<P extends IWidgetProps>(widget: IWidget<P, E>): this {
 
     this.#widget = widget;
 
@@ -187,6 +189,15 @@ export class AunElement<E extends INode> implements IElement<E>{
   measure(callback: IElementMeasureCallback) {
 
     callback(this.asyncMeasure())
+
+    return this;
+
+  }
+
+
+  data(key: string, value: string): this {
+
+    this.instance.dataset[key] = value;
 
     return this;
 
@@ -480,6 +491,27 @@ export class AunElement<E extends INode> implements IElement<E>{
 
   }
 
+
+
+  addInlineClassname(tokens: string) {
+
+    tokens.split(' ').forEach(token => {
+
+      if (token) {
+
+        this.instance.classList.add(token)
+
+        this.emitter.dispatch('className', token)
+
+      }
+
+    })
+
+    return this;
+
+  }
+
+
   /**
    * className
    * @description Associé un selecteur CSS
@@ -491,17 +523,17 @@ export class AunElement<E extends INode> implements IElement<E>{
 
       if (typeof tokens == 'string') {
 
-        this.instance.classList.add(tokens)
-
-        this.emitter.dispatch('className', tokens)
+        this.addInlineClassname(tokens)
 
       }
 
       else if (Array.isArray(tokens)) {
 
-        tokens.forEach(token => this.instance.classList.add(token))
+        tokens.forEach(token => {
 
-        this.emitter.dispatch('className', tokens)
+          this.addInlineClassname(token)
+
+        })
 
       }
 
@@ -990,7 +1022,7 @@ export class AunState<S extends IState> implements IStateManager<S>{
  * AUN Widget
  * @description Pour les composant HTML de base
  */
-export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P, E>{
+export class AunWidget<P extends IWidgetProps, E extends INode> implements IWidget<P, E>{
 
   /**
    * Instance de l'élément
@@ -1022,11 +1054,9 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
 
   constructor(tagname: string, props: P) {
 
-    this.#_props = props;
+    this.#_props = this.#excavation(props);
 
     this.element = (new AunElement<E>(tagname)).own<P>(this);
-
-    this.#excavation(this.props);
 
   }
 
@@ -1040,17 +1070,19 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
 
   #excavation(props: P) {
 
+    const p: P = {} as P
+
     Object.entries(props).forEach(({ 0: key, 1: value }) => {
 
       if (key == 'child') { this.child = value; }
 
-      else { this.#_props = value; }
+      else { p[key as keyof P] = value as P[keyof P]; }
 
     })
 
     this.emitter.dispatch('excavation', this)
 
-    return this;
+    return p;
 
   }
 
@@ -1230,7 +1262,7 @@ export class AunWidget<P extends IWProps, E extends INode> implements IWidget<P,
  * AUN Construct
  * @description Constructeur de Widget
  */
-export class AunConstruct<P extends IWProps, E extends INode> implements IConstruct<P, E>{
+export class AunConstruct<P extends IWidgetProps, E extends INode> implements IConstruct<P, E>{
 
   /**
    * Emetteur
@@ -1267,9 +1299,11 @@ export class AunConstruct<P extends IWProps, E extends INode> implements IConstr
 
     root.emitter.dispatch('beforeRendering', child)
 
-    this.makeChildren(root, child)
+    this.makeChildren(root, child);
 
     root.emitter.dispatch('afterRendering', child)
+
+    this.makeRoot(root);
 
     this.emitter.dispatch('after', root)
 
@@ -1278,6 +1312,162 @@ export class AunConstruct<P extends IWProps, E extends INode> implements IConstr
     return root;
 
   }
+
+
+  makeRoot(root: IWidget<P, E>): IWidget<P, E> {
+
+    if (typeof root.props == 'object') {
+
+      Object.entries(root.props).forEach(({ 0: slug, 1: value }) => {
+
+        this.propertyBuilder(root, slug, value);
+
+      })
+
+    }
+
+    return root;
+
+  }
+
+
+
+  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetProps, value: any) {
+
+    if (slug != 'child') {
+
+      switch (slug) {
+
+        case 'style': root.element.style(value as IElementCSS); break;
+
+        case 'removeStyle': root.element.removeStyle(value as IElementCSSRemoves); break;
+
+        case 'toggleClassname': root.element.toggleClassname(value as IElementClassName); break;
+
+        case 'classname': root.element.classname(value as IElementClassName); break;
+
+        case 'removeClassname': root.element.removeClassname(value as IElementClassName); break;
+
+        case 'inlineClassname': root.element.addInlineClassname(value as string); break;
+
+        case 'measure': root.element.measure(value as IElementMeasureCallback); break;
+
+        case 'offset': root.element.offset(value as IElementOffsetCallback); break;
+
+        case 'html': root.element.html(value as (string | undefined)); break;
+
+        case 'append': root.element.append(value as string | Node); break;
+
+        case 'append': root.element.append(value as string | Node); break;
+
+        case 'data':
+
+          Object.entries(value).forEach(({ 0: key, 1: value }) =>
+
+            root.element.data(key, typeof value == 'object' ? JSON.stringify(value) : `${value}`)
+
+          )
+
+          break;
+
+        case 'attribute':
+
+          if (Array.isArray(value)) {
+
+            (value as IWidgetAttributeProps[]).forEach(prop => {
+
+              root.element.attribute(prop.attributes, prop.ns, prop.separator);
+
+            })
+
+          }
+
+          else if (typeof value == 'object') {
+
+            const props: IWidgetAttributeProps = value;
+
+            root.element.attribute(props.attributes, props.ns, props.separator);
+
+          }
+
+          break;
+
+        case 'removeAttribute':
+
+          if (Array.isArray(value)) {
+
+            (value as IWidgetAttributeProps[]).forEach(prop => {
+
+              root.element.removeAttribute(prop.attributes, prop.ns, prop.separator);
+
+            })
+
+          }
+
+          else if (typeof value == 'object') {
+
+            const props: IWidgetAttributeProps = value;
+
+            root.element.removeAttribute(props.attributes, props.ns, props.separator);
+
+          }
+
+          break;
+
+        case 'toggleAttribute':
+
+          if (Array.isArray(value)) {
+
+            (value as IWidgetAttributeProps[]).forEach(prop => {
+
+              root.element.toggleAttribute(prop.attributes, prop.ns, prop.separator);
+
+            })
+
+          }
+
+          else if (typeof value == 'object') {
+
+            const props: IWidgetAttributeProps = value;
+
+            root.element.toggleAttribute(props.attributes, props.ns, props.separator);
+
+          }
+
+          break;
+
+        case 'attributeNS':
+
+          if (Array.isArray(value)) {
+
+            (value as IWidgetAttributeNSProps[]).forEach(prop => {
+
+              root.element.attributeNS(prop.attributes, prop.ns);
+
+            })
+
+          }
+
+          else if (typeof value == 'object') {
+
+            const props: IWidgetAttributeNSProps = value;
+
+            root.element.attributeNS(props.attributes, props.ns);
+
+          }
+
+          break;
+
+      }
+
+    }
+
+    return this;
+
+  }
+
+
+
 
   /**
    * makeChildren
@@ -1389,7 +1579,7 @@ export class AunConstruct<P extends IWProps, E extends INode> implements IConstr
 
 export class AunView<
 
-  ComponentProps extends IWProps
+  ComponentProps extends IWidgetProps
 
 > implements IView<ComponentProps>{
 
@@ -1557,7 +1747,7 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
       canvas.style.height = '100%';
 
-      canvas.style.overflow = 'auto';
+      canvas.style.overflow = 'hidden';
 
       canvas.style.maxWidth = '100vw';
 
@@ -1587,7 +1777,7 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   #createViewProps(
 
-    props: IWProps | Scheme[keyof Scheme] | undefined
+    props: IWidgetProps | Scheme[keyof Scheme] | undefined
 
   ): IViewProps {
 
