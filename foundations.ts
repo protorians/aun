@@ -1747,7 +1747,7 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
       canvas.style.height = '100%';
 
-      canvas.style.overflow = 'hidden';
+      canvas.style.overflow = 'auto';
 
       canvas.style.maxWidth = '100vw';
 

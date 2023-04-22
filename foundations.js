@@ -998,7 +998,7 @@ _AunStackViews_views = new WeakMap(), _AunStackViews_current = new WeakMap(), _A
         canvas.style.position = 'relative';
         canvas.style.width = '100%';
         canvas.style.height = '100%';
-        canvas.style.overflow = 'hidden';
+        canvas.style.overflow = 'auto';
         canvas.style.maxWidth = '100vw';
         canvas.style.maxHeight = '100vh';
     });
