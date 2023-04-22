@@ -27,7 +27,10 @@ export type AUNWindow = Partial<Window> & {
   /**
    * Stockage des Observateurs de mutation pour l'hydratation des composants
    */
-  AUNHW?: MutationObserver
+  AUNHW?: MutationObserver;
+
+
+  CurrentStackViews?: IStackViews<any> | undefined;
 
 }
 
@@ -111,12 +114,12 @@ export interface IWidgetAttributeNSProps {
 }
 
 /**
- * IWidgetProps extends IWidgetProps
+ * IWidgetBaseProps extends IProps
  * @description Propriétés de widget de base
  */
-export interface IWidgetProps extends IProps {
+export interface IWidgetBaseProps extends IProps {
 
-  child?: IChildren;
+  child?: IChildren | IChildrenElement;
 
   measure?: IElementMeasureCallback;
 
@@ -151,11 +154,19 @@ export interface IWidgetProps extends IProps {
 }
 
 
+export interface IWidgetProps extends Omit<IWidgetBaseProps, 'child'> {
+
+  child?: IChildrenElement;
+
+}
+
+
+
 /**
- * ITextProps extends Omit<IWidgetProps, 'child'>
+ * ITextProps extends Omit<IWidgetBaseProps, 'child'>
  * @description Propriétés des textes de widget
  */
-export interface ITextProps extends Omit<IWidgetProps, 'child'> {
+export interface ITextProps extends Omit<IWidgetBaseProps, 'child'> {
 
   child: string;
 
@@ -193,7 +204,7 @@ export interface IModalStateProps extends IProps {
 
 
 
-export interface IFormProps extends Omit<IWidgetProps, 'child'> {
+export interface IFormProps extends Omit<IWidgetBaseProps, 'child'> {
 
   acceptCharset?: string;
 
@@ -243,7 +254,7 @@ export interface IFormProps extends Omit<IWidgetProps, 'child'> {
 
 
 
-export interface IButtonProps extends Omit<IWidgetProps, 'child'> {
+export interface IButtonProps extends Omit<IWidgetBaseProps, 'child'> {
 
   type?: 'button' | 'submit' | 'reset';
 
@@ -252,7 +263,7 @@ export interface IButtonProps extends Omit<IWidgetProps, 'child'> {
 }
 
 
-export interface IInputProps extends IWidgetProps {
+export interface IInputProps extends IWidgetBaseProps {
 
   type?: 'text'
 
@@ -585,7 +596,7 @@ export interface IElement<E extends INode> extends IPhysicalMethods {
 
   get widget(): IWidget<any, E> | undefined;
 
-  own<P extends IWidgetProps>(widget: IWidget<P, E> | undefined): this;
+  own<P extends IWidgetBaseProps>(widget: IWidget<P, E> | undefined): this;
 
   // append( ...nodes: (string | Node)[] ) : this;
 
@@ -597,7 +608,7 @@ export interface IElement<E extends INode> extends IPhysicalMethods {
 
 export type IWidgetTimerCallback = <
 
-  P extends IWidgetProps,
+  P extends IWidgetBaseProps,
 
   E extends INode
 
@@ -605,7 +616,7 @@ export type IWidgetTimerCallback = <
 
 export type IWidgetRequestAnimationFrameCallback = <
 
-  P extends IWidgetProps,
+  P extends IWidgetBaseProps,
 
   E extends INode
 
@@ -623,10 +634,10 @@ export type IWidgetAsyncCallback = (
 
 export type IWidgetLayerCallback<E extends INode> = (element: IElement<E>) => void
 
-export type IWidgetReadyCallback<P extends IWidgetProps, E extends INode> = (widget: IWidget<P, E>) => void
+export type IWidgetReadyCallback<P extends IWidgetBaseProps, E extends INode> = (widget: IWidget<P, E>) => void
 
 
-export interface IWidgetEmitterScheme<P extends IWidgetProps, E extends INode> {
+export interface IWidgetEmitterScheme<P extends IWidgetBaseProps, E extends INode> {
 
   ready: IWidget<P, E>;
 
@@ -654,7 +665,7 @@ export interface IWidgetEmitterScheme<P extends IWidgetProps, E extends INode> {
 
 }
 
-export interface IWidget<P extends IWidgetProps, E extends INode> {
+export interface IWidget<P extends IWidgetBaseProps, E extends INode> {
 
   element: IElement<E>;
 
@@ -689,7 +700,7 @@ export interface IWidget<P extends IWidgetProps, E extends INode> {
 
   frameReady(callback: IWidgetRequestAnimationFrameCallback): this;
 
-  // catch<P extends IWidgetProps, E extends INode>( callback : IStateErrorExceptionCallback<P, E> ) : IWidget<P, E>;
+  // catch<P extends IWidgetBaseProps, E extends INode>( callback : IStateErrorExceptionCallback<P, E> ) : IWidget<P, E>;
 
 }
 
@@ -788,7 +799,7 @@ export interface IWidgerErrorException {
 
 
 
-export interface IConstructEmitterScheme<P extends IWidgetProps, E extends INode> {
+export interface IConstructEmitterScheme<P extends IWidgetBaseProps, E extends INode> {
 
   before: IWidget<P, E>;
 
@@ -798,7 +809,7 @@ export interface IConstructEmitterScheme<P extends IWidgetProps, E extends INode
 
 }
 
-export interface IConstruct<P extends IWidgetProps, E extends INode> {
+export interface IConstruct<P extends IWidgetBaseProps, E extends INode> {
 
   emitter: IEventDispatcher<IConstructEmitterScheme<P, E>>;
 
@@ -812,7 +823,7 @@ export interface IConstruct<P extends IWidgetProps, E extends INode> {
 
   makeAppearance(root: IWidget<P, E>, payload: IAppearanceObject): IWidget<P, E>;
 
-  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetProps, value: any): this;
+  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetBaseProps, value: any): this;
 }
 
 
@@ -825,7 +836,7 @@ export interface IConstruct<P extends IWidgetProps, E extends INode> {
 
 export type IHydrateComponent<
 
-  P extends IWidgetProps,
+  P extends IWidgetBaseProps,
 
   E extends HTMLElement
 
@@ -946,7 +957,7 @@ export interface IKitProps {
 
 }
 
-// export interface IKit<P extends IWidgetProps, E extends INode>{
+// export interface IKit<P extends IWidgetBaseProps, E extends INode>{
 
 //   emitter : IEventDispatcher<IKitEmitterScheme>;
 
@@ -960,7 +971,7 @@ export interface IKitProps {
 
 
 
-export type IViewEmitterCallbackArgument<P extends IWidgetProps> = {
+export type IViewEmitterCallbackArgument<P extends IWidgetBaseProps> = {
 
   component: IWidget<P, HTMLDivElement>;
 
@@ -968,14 +979,14 @@ export type IViewEmitterCallbackArgument<P extends IWidgetProps> = {
 
 }
 
-export type IViewEmitterCallback<P extends IWidgetProps> = (
+export type IViewEmitterCallback<P extends IWidgetBaseProps> = (
 
   payload: IViewEmitterCallbackArgument<P>
 
 ) => void
 
 
-export interface IViewEmitters<P extends IWidgetProps> {
+export interface IViewEmitters<P extends IWidgetBaseProps> {
 
   show?: IViewEmitterCallback<P>;
 
@@ -984,7 +995,7 @@ export interface IViewEmitters<P extends IWidgetProps> {
 }
 
 
-export interface IViewOptions<P extends IWidgetProps> {
+export interface IViewOptions<P extends IWidgetBaseProps> {
 
   name: string;
 
@@ -1017,13 +1028,13 @@ export interface IViewProps extends IProps {
 
 }
 
-export type IViewWidget<P extends IWidgetProps> = ((props: P)
+export type IViewWidget<P extends IWidgetBaseProps> = ((props: P)
 
   => IWidget<any, any>)
 
   ;
 
-export interface IView<P extends IWidgetProps> {
+export interface IView<P extends IWidgetBaseProps> {
 
   get parameters(): P;
 

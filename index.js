@@ -2,7 +2,9 @@ import CoreAppearance from "@protorians/core/appearance";
 import { AunConstruct, AunElement, AunState, AunWidget, AunView, AunStackViews } from "./foundations";
 import { UnCamelize } from "@protorians/core/utilities";
 import Presenters, { ModalPresenter } from "@protorians/core/presenters";
-const aunWindow = { ...window };
+const aunWindow = Object.assign({}, {
+    _CurrentStackViews: undefined,
+}, window);
 aunWindow.AUNRC = aunWindow.AUNRC || {};
 /**
  * CreateState
@@ -221,21 +223,20 @@ export function ModalWidget(props) {
     const widget = Widget({
         child: props.child
     });
+    modal = Presenters.context(new ModalPresenter(widget.element.instance, {
+        host: widget.element.instance.parentElement,
+    }));
     props.trigger.ready(() => {
-        modal = Presenters.context(new ModalPresenter(widget.element.instance, {
-            host: widget.element.instance.parentElement,
-        }));
+        console.log('Ready Modal->', modal);
         props.trigger.element.on('click', () => {
-            console.log('Modal toggle', modal);
             if (state.value.open)
                 modal?.open();
             else
                 modal?.close();
             state.set({ open: !state.value.open });
         });
-        if (props.isOpen) {
+        if (props.isOpen)
             modal?.open();
-        }
     });
     return props.trigger;
 }
@@ -256,7 +257,15 @@ export function View(component, options) {
     return new AunView(component, options);
 }
 export function CreateStackViews(views, options = {}) {
-    return new AunStackViews(views, options);
+    aunWindow.CurrentStackViews = aunWindow.CurrentStackViews || new AunStackViews(views, options);
+    return aunWindow.CurrentStackViews;
+}
+/**
+ * CurrentStackViews
+ * @description Obtenir la pile de vues actuelle
+ */
+export function CurrentStackViews() {
+    return aunWindow.CurrentStackViews;
 }
 /**
  * AUN Construct
@@ -272,7 +281,7 @@ export function Construct(component, child) { return (new AunConstruct()).make(c
  * @description Créer un composant en ajoutant immédiatement à la fil d'attente hydratation tout en permetant de l'exporter avec un nom d'emprunt.
  * @param name
  * @param widgetConstructor
- * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetProps ) => ... )
+ * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetBaseProps ) => ... )
  */
 export function CreateComponent(name, widgetConstructor) {
     if (!(aunWindow.AUNHW instanceof MutationObserver)) {
@@ -367,6 +376,11 @@ export function ActiveAutoHydrateComponents() {
  */
 export default class AUN {
 }
+/**
+ * Instance
+ * @alias Window aslias de l'object window avec le types des données de AUN
+ */
+AUN.Instance = aunWindow;
 /**
  * aune — AUN Virtual Element
  * @alias aune

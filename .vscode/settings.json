@@ -6,6 +6,5 @@
   },
   "editor.codeActionsOnSave": {
     "source.fixAll": true
-  },
-  "terminal.integrated.defaultProfile.osx": "bash"
+  }
 }

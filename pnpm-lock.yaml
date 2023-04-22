@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@protorians/core':
-    specifier: 0.0.3
-    version: 0.0.3
+    specifier: ^0.0.9
+    version: 0.0.9
 
 devDependencies:
   '@types/node':
@@ -174,8 +174,8 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@protorians/core@0.0.3:
-    resolution: {integrity: sha512-6aaz8xnAPB4ODEshJS6kaJ/Q4y5Qo/1D4H9Qu3EYhR5ukkb6tSilWcAR1hiT/jW7qderLdKX9WfjBzEkwQRXoA==}
+  /@protorians/core@0.0.9:
+    resolution: {integrity: sha512-nS1RAHkzAhUB/ZGM0gUMMtQneCaHMt2vjjrp0Uz5JNBmtv0RvsgQHZyO2obP3eu6KNmb0n9hEBK6vZTircb2Ag==}
     dev: false
 
   /@tsconfig/node10@1.0.9:

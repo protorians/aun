@@ -26,19 +26,25 @@ import {
   IWidgetAsyncCallback,
   IWTarget,
   ITextProps,
-  IWidgetProps,
+  IWidgetBaseProps,
   IInputProps,
   IFormProps,
   IModalProps,
   IModalStateProps,
-  IButtonProps
+  IButtonProps,
+  IWidgetProps,
+  IStackViews
 } from "./types";
 import { IPresenterModalProps, IPresenters, IProps } from "@protorians/core/types";
 import { UnCamelize } from "@protorians/core/utilities";
 import Presenters, { ModalPresenter } from "@protorians/core/presenters";
 
 
-const aunWindow: AUNWindow = { ...window }
+const aunWindow: AUNWindow = Object.assign({}, {
+
+  _CurrentStackViews: undefined,
+
+}, window)
 
 aunWindow.AUNRC = aunWindow.AUNRC || {}
 
@@ -65,7 +71,7 @@ export function CreateState<S extends IState>(state: S) {
  * @example DropComponent<PropsType>( '#root', Component( { ... } ) )
  * DropComponent<PropsType>( document.getElementById('root'), Component( { ... } ) )
  */
-export function DropComponent<P extends IWidgetProps, E extends INode>(
+export function DropComponent<P extends IWidgetBaseProps, E extends INode>(
 
   component: IWidget<P, E>,
 
@@ -87,7 +93,7 @@ export function DropComponent<P extends IWidgetProps, E extends INode>(
  * @param component Composant à deposer dans l'élément HTML
  * @example DropComponents<PropsType, HTMLDivElement>( '.drop-target', ( props : Props ) => ... )
  */
-export function DropComponents<P extends IWidgetProps, E extends INode>(
+export function DropComponents<P extends IWidgetBaseProps, E extends INode>(
 
   component: IWidget<P, E>,
 
@@ -119,7 +125,7 @@ export function DropComponents<P extends IWidgetProps, E extends INode>(
  *    setTimeout( () => resolve( component() ), 3000 )
  * })
  */
-export async function AsyncComponent<P extends IWidgetProps, E extends INode>(callback: IWidgetAsyncCallback): Promise<IWidget<P, E>> {
+export async function AsyncComponent<P extends IWidgetBaseProps, E extends INode>(callback: IWidgetAsyncCallback): Promise<IWidget<P, E>> {
 
   return (new Promise<IWidget<any, any>>(callback))
 
@@ -134,7 +140,7 @@ export async function AsyncComponent<P extends IWidgetProps, E extends INode>(ca
  * @example UseComponent<PropsType>( '#root', component( props ) ) // Requête de selecteur pour la cible
  * UseComponent<PropsType>( document.getElementById('root'), component( props ) ) // Instance de type HTMLElement pour la cible
  */
-export function UseComponent<P extends IWidgetProps, E extends INode>(
+export function UseComponent<P extends IWidgetBaseProps, E extends INode>(
 
   component: IWidget<any, any>,
 
@@ -183,7 +189,7 @@ export function UseComponent<P extends IWidgetProps, E extends INode>(
  */
 export function CreateKit(definition: IKitProps) {
 
-  return <P extends IWidgetProps, E extends INode>(p: P) =>
+  return <P extends IWidgetBaseProps, E extends INode>(p: P) =>
 
     (definition.component(p) as IWidget<P, E>)
 
@@ -218,7 +224,7 @@ export function aune<E extends INode>(tagname: string) {
  * @param props Propriétés du widget
  * @example RawWidget<PropsType, HTMLSpanElement>( 'span', props )
  */
-export function RawWidget<P extends IWidgetProps, E extends INode>(tagname: string, props: P) {
+export function RawWidget<P extends IWidgetBaseProps, E extends INode>(tagname: string, props: P) {
 
   const widget = (new AunWidget<P, E>(tagname, props))
 
@@ -312,7 +318,7 @@ export function ImageWidget(props: IImageProps): AunWidget<IImageProps, HTMLImag
  */
 export function setWidgetProperty<
 
-  P extends IWidgetProps,
+  P extends IWidgetBaseProps,
 
   H extends HTMLElement
 
@@ -425,21 +431,21 @@ export function ModalWidget(props: IModalProps) {
 
   });
 
+  modal = Presenters.context(
+
+    new ModalPresenter(widget.element.instance, {
+
+      host: widget.element.instance.parentElement,
+
+    })
+
+  );
+
   props.trigger.ready(() => {
 
-    modal = Presenters.context(
-
-      new ModalPresenter(widget.element.instance, {
-
-        host: widget.element.instance.parentElement,
-
-      })
-
-    );
+    console.log('Ready Modal->', modal)
 
     props.trigger.element.on('click', () => {
-
-      console.log('Modal toggle', modal)
 
       if (state.value.open) modal?.open()
 
@@ -449,9 +455,7 @@ export function ModalWidget(props: IModalProps) {
 
     })
 
-
-    if (props.isOpen) { modal?.open() }
-
+    if (props.isOpen) modal?.open()
 
   })
 
@@ -491,7 +495,7 @@ export function ModalWidget(props: IModalProps) {
  * @param component Composant utilisé pour la vue
  * @param options Options de la vue
  */
-export function View<C extends IWidgetProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined) {
+export function View<C extends IWidgetBaseProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined) {
 
   return new AunView<C>(component, options)
 
@@ -505,9 +509,26 @@ export function CreateStackViews<Scheme>(
 
 ) {
 
-  return new AunStackViews<Scheme>(views, options)
+  aunWindow.CurrentStackViews = aunWindow.CurrentStackViews || new AunStackViews<Scheme>(views, options)
+
+  return aunWindow.CurrentStackViews as IStackViews<Scheme>;
 
 }
+
+
+
+
+
+/**
+ * CurrentStackViews
+ * @description Obtenir la pile de vues actuelle
+ */
+export function CurrentStackViews<Scheme>() {
+
+  return aunWindow.CurrentStackViews as IStackViews<Scheme>;
+
+}
+
 
 
 
@@ -521,7 +542,7 @@ export function CreateStackViews<Scheme>(
  * @example Construct<ComponentType>( component, child )
  * Construct( component, child )
  */
-export function Construct<Component extends IWidget<IWidgetProps, INode>>(
+export function Construct<Component extends IWidget<IWidgetBaseProps, INode>>(
 
   component: Component,
 
@@ -536,9 +557,9 @@ export function Construct<Component extends IWidget<IWidgetProps, INode>>(
  * @description Créer un composant en ajoutant immédiatement à la fil d'attente hydratation tout en permetant de l'exporter avec un nom d'emprunt. 
  * @param name 
  * @param widgetConstructor 
- * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetProps ) => ... )
+ * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetBaseProps ) => ... )
  */
-export function CreateComponent<P extends IWidgetProps>(
+export function CreateComponent<P extends IWidgetBaseProps>(
 
   name: string,
 
@@ -567,7 +588,7 @@ export function CreateComponent<P extends IWidgetProps>(
  * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponentQueue<WidgetPropsType>( 'ComponentName', ( props : WidgetProps ) => ... )
  */
-export function HydrateComponentQueue<P extends IWidgetProps>(
+export function HydrateComponentQueue<P extends IWidgetBaseProps>(
 
   name: string,
 
@@ -594,7 +615,7 @@ export function HydrateComponentQueue<P extends IWidgetProps>(
  * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponent<PropsType>( 'Hello', HelloComponent )
  */
-export function HydrateComponent<P extends IWidgetProps>(
+export function HydrateComponent<P extends IWidgetBaseProps>(
 
   name: string,
 
@@ -639,7 +660,7 @@ export function HydrateComponent<P extends IWidgetProps>(
  * @param attributes Contenu de la propriété "HTMLElement.attributes"
  * @example ExtractProps<PropsType>( element.attributes )
  */
-export function ExtractProps<P extends IWidgetProps>(attributes: NamedNodeMap): P {
+export function ExtractProps<P extends IWidgetBaseProps>(attributes: NamedNodeMap): P {
 
   const props: P = {} as P
 
@@ -712,6 +733,14 @@ export function ActiveAutoHydrateComponents() {
  * @description Exportations des fonctionnalités de base du framework 
  */
 export default class AUN {
+
+  /**
+   * Instance 
+   * @alias Window aslias de l'object window avec le types des données de AUN
+   */
+  static Instance = aunWindow;
+
+
 
   /**
    * aune — AUN Virtual Element

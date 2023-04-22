@@ -48,6 +48,10 @@ export function findElement(find, callback) {
  * @example AunElement<HTMLDivElement>('div')
  */
 export class AunElement {
+    /**
+     * Widget associé
+     */
+    get widget() { return __classPrivateFieldGet(this, _AunElement_widget, "f"); }
     constructor(tagname) {
         /**
          * Emetteur
@@ -56,10 +60,6 @@ export class AunElement {
         _AunElement_widget.set(this, undefined);
         this.instance = document.createElement(tagname);
     }
-    /**
-     * Widget associé
-     */
-    get widget() { return __classPrivateFieldGet(this, _AunElement_widget, "f"); }
     /**
      * own
      * @description Définit le widget propriétaire de l'élément
@@ -392,6 +392,10 @@ _AunElement_widget = new WeakMap();
  * @description Gestionnaire d'état
  */
 export class AunState {
+    /**
+     * Retourne la valeur de l'état
+     */
+    get value() { return __classPrivateFieldGet(this, _AunState_mirror, "f"); }
     constructor(state) {
         _AunState_instances.add(this);
         _AunState_mirror.set(this, void 0);
@@ -406,10 +410,6 @@ export class AunState {
         // this.#store = state;
         __classPrivateFieldGet(this, _AunState_instances, "m", _AunState_emitters).call(this).initialize();
     }
-    /**
-     * Retourne la valeur de l'état
-     */
-    get value() { return __classPrivateFieldGet(this, _AunState_mirror, "f"); }
     /**
      * initialize
      * @description Initialise l'état
@@ -567,6 +567,10 @@ _AunState_mirror = new WeakMap(), _AunState_recorded = new WeakMap(), _AunState_
  * @description Pour les composant HTML de base
  */
 export class AunWidget {
+    /**
+     * Les propriétés
+     */
+    get props() { return __classPrivateFieldGet(this, _AunWidget__props, "f"); }
     constructor(tagname, props) {
         _AunWidget_instances.add(this);
         _AunWidget__props.set(this, void 0);
@@ -581,10 +585,6 @@ export class AunWidget {
         __classPrivateFieldSet(this, _AunWidget__props, __classPrivateFieldGet(this, _AunWidget_instances, "m", _AunWidget_excavation).call(this, props), "f");
         this.element = (new AunElement(tagname)).own(this);
     }
-    /**
-     * Les propriétés
-     */
-    get props() { return __classPrivateFieldGet(this, _AunWidget__props, "f"); }
     append(...nodes) {
         this.element.instance.append(...nodes);
         return this;
@@ -900,14 +900,14 @@ export class AunConstruct {
     }
 }
 export class AunView {
+    get parameters() { return __classPrivateFieldGet(this, _AunView__parameters, "f"); }
+    get component() { return __classPrivateFieldGet(this, _AunView__component, "f"); }
     constructor(componentConstructor, options) {
         _AunView__parameters.set(this, {});
         _AunView__component.set(this, undefined);
         this.componentConstructor = componentConstructor;
         this.options = options || {};
     }
-    get parameters() { return __classPrivateFieldGet(this, _AunView__parameters, "f"); }
-    get component() { return __classPrivateFieldGet(this, _AunView__component, "f"); }
     show(parameters) {
         __classPrivateFieldSet(this, _AunView__parameters, parameters, "f");
         this.component?.element.removeStyle('display');
@@ -933,6 +933,15 @@ export class AunView {
 }
 _AunView__parameters = new WeakMap(), _AunView__component = new WeakMap();
 export class AunStackViews {
+    /**
+     * Les vues
+     */
+    get views() { return __classPrivateFieldGet(this, _AunStackViews_views, "f"); }
+    /**
+     * Composant Actuellement utilisé
+     */
+    get current() { return __classPrivateFieldGet(this, _AunStackViews_current, "f"); }
+    ;
     constructor(views, options) {
         _AunStackViews_instances.add(this);
         _AunStackViews_views.set(this, {});
@@ -969,15 +978,6 @@ export class AunStackViews {
         });
         __classPrivateFieldGet(this, _AunStackViews_instances, "m", _AunStackViews_initializeCanvas).call(this);
     }
-    /**
-     * Les vues
-     */
-    get views() { return __classPrivateFieldGet(this, _AunStackViews_views, "f"); }
-    /**
-     * Composant Actuellement utilisé
-     */
-    get current() { return __classPrivateFieldGet(this, _AunStackViews_current, "f"); }
-    ;
     middleware(callback) {
         this.navigation.options.middlewares?.push(callback);
         return this;

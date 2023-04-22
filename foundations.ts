@@ -39,7 +39,7 @@ import type {
   IWTargetNode,
   IViewProps,
   IStateVoidCallback,
-  IWidgetProps,
+  IWidgetBaseProps,
   IWidgetAttributeProps,
   IWidgetAttributeNSProps,
 } from "./types";
@@ -154,7 +154,7 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param widget Widget Cible
    * @example element.own( widget )
    */
-  own<P extends IWidgetProps>(widget: IWidget<P, E>): this {
+  own<P extends IWidgetBaseProps>(widget: IWidget<P, E>): this {
 
     this.#widget = widget;
 
@@ -1022,7 +1022,7 @@ export class AunState<S extends IState> implements IStateManager<S>{
  * AUN Widget
  * @description Pour les composant HTML de base
  */
-export class AunWidget<P extends IWidgetProps, E extends INode> implements IWidget<P, E>{
+export class AunWidget<P extends IWidgetBaseProps, E extends INode> implements IWidget<P, E>{
 
   /**
    * Instance de l'élément
@@ -1262,7 +1262,7 @@ export class AunWidget<P extends IWidgetProps, E extends INode> implements IWidg
  * AUN Construct
  * @description Constructeur de Widget
  */
-export class AunConstruct<P extends IWidgetProps, E extends INode> implements IConstruct<P, E>{
+export class AunConstruct<P extends IWidgetBaseProps, E extends INode> implements IConstruct<P, E>{
 
   /**
    * Emetteur
@@ -1332,7 +1332,7 @@ export class AunConstruct<P extends IWidgetProps, E extends INode> implements IC
 
 
 
-  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetProps, value: any) {
+  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetBaseProps, value: any) {
 
     if (slug != 'child') {
 
@@ -1579,7 +1579,7 @@ export class AunConstruct<P extends IWidgetProps, E extends INode> implements IC
 
 export class AunView<
 
-  ComponentProps extends IWidgetProps
+  ComponentProps extends IWidgetBaseProps
 
 > implements IView<ComponentProps>{
 
@@ -1777,7 +1777,7 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   #createViewProps(
 
-    props: IWidgetProps | Scheme[keyof Scheme] | undefined
+    props: IWidgetBaseProps | Scheme[keyof Scheme] | undefined
 
   ): IViewProps {
 
