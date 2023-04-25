@@ -1,11 +1,39 @@
 import CoreAppearance from "@protorians/core/appearance";
-import { AunConstruct, AunElement, AunState, AunWidget, AunView, AunStackViews } from "./foundations";
+import { AunConstruct, AunElement, AunState, AunWidget, AunView, AunStackViews, } from "./foundations";
 import { UnCamelize } from "@protorians/core/utilities";
 import Presenters, { ModalPresenter } from "@protorians/core/presenters";
 const aunWindow = Object.assign({}, {
     _CurrentStackViews: undefined,
 }, window);
 aunWindow.AUNRC = aunWindow.AUNRC || {};
+/**
+ * WidgetWhitelistProps
+ * @description Liste des propriétés réservés aux traitement des widgets
+ */
+export const WidgetWhitelistProps = ('style removeStyle toggleClassname classname removeClassname inlineClassname measure offset html append data attribute removeAttribute toggleAttribute attributeNS').split(' ');
+/**
+ * setWidgetProperty
+ * @param widget Widget cible
+ * @param props Propriété à analyser
+ */
+export function setWidgetProperty(widget, props) {
+    Object.entries(props).forEach(({ 0: name, 1: value }) => {
+        if (WidgetWhitelistProps.indexOf(name) > -1) {
+            name = UnCamelize(name);
+            switch (typeof value) {
+                case 'number':
+                case 'string':
+                    widget.element.instance.setAttribute(`${name}`, `${value}`);
+                    break;
+                case 'boolean':
+                    if (value)
+                        widget.element.instance.setAttribute(`${name}`, `${name}`);
+                    break;
+            }
+        }
+    });
+    return widget;
+}
 /**
  * CreateState
  * @description Instance fonctionnelle d'usage de gestion des états AUN
@@ -129,6 +157,15 @@ export function Widget(props) {
     return RawWidget('div', props);
 }
 /**
+ * CreateCustomWidget
+ * @description Créer un widget Personnalisé
+ * @param tagname nom de la balise encapsulé
+ * @param props Propriétés
+ */
+export function CreateCustomWidget(tagname, props) {
+    return setWidgetProperty(RawWidget(tagname, props), props);
+}
+/**
  * Textual
  * @description Calque destiné aux textes
  * @param props Propriétés du widget. La propriété `child` représente contenu de type string
@@ -165,27 +202,6 @@ export function ImageWidget(props) {
     });
 }
 /**
- * setWidgetProperty
- * @param widget Widget cible
- * @param props Propriété à analyser
- */
-export function setWidgetProperty(widget, props) {
-    Object.entries(props).forEach(({ 0: name, 1: value }) => {
-        name = UnCamelize(name);
-        switch (typeof value) {
-            case 'number':
-            case 'string':
-                widget.element.instance.setAttribute(`${name}`, `${value}`);
-                break;
-            case 'boolean':
-                if (value)
-                    widget.element.instance.setAttribute(`${name}`, `${name}`);
-                break;
-        }
-    });
-    return widget;
-}
-/**
  * InputWidget
  * @description Calque de champs de texte
  * @param props Propriétés de champs de texte
@@ -197,8 +213,41 @@ export function setWidgetProperty(widget, props) {
  * })
  */
 export function InputWidget(props) {
-    return setWidgetProperty(RawWidget('input', props), props);
+    return CreateCustomWidget('input', props);
 }
+/**
+ * VideoWidget
+ * @param props Propriétés
+ */
+export function VideoWidget(props) {
+    return CreateCustomWidget('video', props);
+}
+/**
+ * VideoWidget
+ * @param props Propriétés
+ */
+export function AudioWidget(props) {
+    return CreateCustomWidget('audio', props);
+}
+/**
+ * iFrameWidget
+ * @param props Propriétés
+ * @example
+ * iFrameWidget({
+ *    src: 'example.html'
+ * })
+ */
+export function iFrameWidget(props) {
+    return CreateCustomWidget('iframe', props);
+}
+/**
+ * ButtonWidget
+ * @param props Propriétés
+ * @example
+ * ButtonWidget({
+ *    child: ...
+ * })
+ */
 export function ButtonWidget(props) {
     return RawWidget('button', props);
 }
@@ -214,6 +263,88 @@ export function ButtonWidget(props) {
  */
 export function FormWidget(props) {
     return setWidgetProperty(RawWidget('form', props), props);
+}
+/**
+ * TableCellWidget
+ * @param props Propriétés
+ */
+export function TableCellWidget(props) {
+    return CreateCustomWidget('td', props);
+}
+/**
+ * TableRowWidget
+ * @param props Propriétés
+ */
+export function TableRowWidget(props) {
+    return CreateCustomWidget('tr', props);
+}
+/**
+ * TableHeadWidget
+ * @param props Propriétés
+ */
+export function TableHeadWidget(props) {
+    return CreateCustomWidget('th', props);
+}
+/**
+ * TableBodyWidget
+ * @param props Propriétés
+ */
+export function TableBodyWidget(props) {
+    return CreateCustomWidget('tbody', props);
+}
+/**
+ * TableFootWidget
+ * @param props Propriétés
+ */
+export function TableFootWidget(props) {
+    return CreateCustomWidget('tfoot', props);
+}
+/**
+ * TableCaptionWidget
+ * @param props Propriétés
+ */
+export function TableCaptionWidget(props) {
+    return CreateCustomWidget('caption', props);
+}
+/**
+ * TableWidget
+ * @description Créer un tableau
+ * @param props
+ */
+export function TableWidget(props) {
+    const table = CreateCustomWidget('table', props.table || {});
+    const caption = TableCaptionWidget({ child: props.caption || undefined, });
+    const head = TableRowWidget({ child: undefined, });
+    const bodies = TableBodyWidget({ child: undefined, });
+    const footer = TableFootWidget({ child: undefined, });
+    props.headers.forEach((header, index) => {
+        // Make Header
+        head.element.append(TableHeadWidget({
+            child: props.bodyItemWidget ? props.bodyItemWidget({ index, value: header }) : header
+        }).element.instance);
+        // Make Body
+        if (props.body && props.body[index]) {
+            const body = TableRowWidget({ child: undefined, });
+            props.body[index].forEach(bodyContent => {
+                body.element.append(TableCellWidget({
+                    child: props.bodyItemWidget ? props.bodyItemWidget({ index, value: bodyContent }) : bodyContent,
+                }).element.instance);
+            });
+            bodies.element.append(body.element.instance);
+        }
+        // Make Footer
+        if (props.foots && props.foots[index]) {
+            const foot = TableRowWidget({ child: undefined, });
+            props.foots[index].forEach(footContent => {
+                foot.element.append(TableCellWidget({
+                    child: props.footerItemWidget ? props.footerItemWidget({ index, value: footContent }) : footContent,
+                }).element.instance);
+            });
+            footer.element.append(foot.element.instance);
+        }
+    });
+    table.element.append(caption.element.instance, head.element.instance, bodies.element.instance, footer.element.instance);
+    return table;
 }
 export function ModalWidget(props) {
     let modal = undefined;
@@ -281,7 +412,7 @@ export function Construct(component, child) { return (new AunConstruct()).make(c
  * @description Créer un composant en ajoutant immédiatement à la fil d'attente hydratation tout en permetant de l'exporter avec un nom d'emprunt.
  * @param name
  * @param widgetConstructor
- * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetBaseProps ) => ... )
+ * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetStandardProps ) => ... )
  */
 export function CreateComponent(name, widgetConstructor) {
     if (!(aunWindow.AUNHW instanceof MutationObserver)) {

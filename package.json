@@ -1,6 +1,6 @@
 {
   "name": "@protorians/aun",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "prototype yourself",
   "main": "index.js",
   "type": "module",
@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
-    "types-build": "npm-dts generate -o ./globals.d.ts -c -L debug"
+    "types-build": "npm-dts generate -o ./globals.d.ts -c"
   },
   "keywords": [
     "vitejs",

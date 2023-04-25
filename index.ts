@@ -6,7 +6,7 @@ import {
   AunState,
   AunWidget,
   AunView,
-  AunStackViews
+  AunStackViews,
 } from "./foundations";
 
 import {
@@ -26,14 +26,22 @@ import {
   IWidgetAsyncCallback,
   IWTarget,
   ITextProps,
-  IWidgetBaseProps,
+  IWidgetStandardProps,
   IInputProps,
   IFormProps,
   IModalProps,
   IModalStateProps,
   IButtonProps,
   IWidgetProps,
-  IStackViews
+  IStackViews,
+  IVideoProps,
+  IAudioProps,
+  IIFrameProps,
+  IWidgetTableCellProps,
+  IWidgetTableSectionProps,
+  IWidgetGlobalStandardProps,
+  IWidgetTableProps,
+  IWidgetHTMLGlobalProps,
 } from "./types";
 import { IPresenterModalProps, IPresenters, IProps } from "@protorians/core/types";
 import { UnCamelize } from "@protorians/core/utilities";
@@ -47,6 +55,64 @@ const aunWindow: AUNWindow = Object.assign({}, {
 }, window)
 
 aunWindow.AUNRC = aunWindow.AUNRC || {}
+
+
+
+/**
+ * WidgetWhitelistProps
+ * @description Liste des propriétés réservés aux traitement des widgets
+ */
+export const WidgetWhitelistProps: string[] = ('style removeStyle toggleClassname classname removeClassname inlineClassname measure offset html append data attribute removeAttribute toggleAttribute attributeNS').split(' ')
+
+
+/**
+ * setWidgetProperty
+ * @param widget Widget cible
+ * @param props Propriété à analyser
+ */
+export function setWidgetProperty<
+
+  P extends IProps,
+
+  H extends HTMLElement
+
+>(widget: IWidget<P, H>, props: IProps): IWidget<P, H> {
+
+  Object.entries(props).forEach(({ 0: name, 1: value }) => {
+
+    if (WidgetWhitelistProps.indexOf(name) > -1) {
+
+      name = UnCamelize(name);
+
+      switch (typeof value) {
+
+        case 'number':
+
+        case 'string':
+
+          widget.element.instance.setAttribute(`${name}`, `${value}`)
+
+          break;
+
+
+        case 'boolean':
+
+          if (value)
+
+            widget.element.instance.setAttribute(`${name}`, `${name}`)
+
+          break;
+
+      }
+
+    }
+
+  })
+
+  return widget;
+
+}
+
 
 
 
@@ -71,7 +137,7 @@ export function CreateState<S extends IState>(state: S) {
  * @example DropComponent<PropsType>( '#root', Component( { ... } ) )
  * DropComponent<PropsType>( document.getElementById('root'), Component( { ... } ) )
  */
-export function DropComponent<P extends IWidgetBaseProps, E extends INode>(
+export function DropComponent<P extends IWidgetStandardProps, E extends INode>(
 
   component: IWidget<P, E>,
 
@@ -93,7 +159,7 @@ export function DropComponent<P extends IWidgetBaseProps, E extends INode>(
  * @param component Composant à deposer dans l'élément HTML
  * @example DropComponents<PropsType, HTMLDivElement>( '.drop-target', ( props : Props ) => ... )
  */
-export function DropComponents<P extends IWidgetBaseProps, E extends INode>(
+export function DropComponents<P extends IWidgetStandardProps, E extends INode>(
 
   component: IWidget<P, E>,
 
@@ -125,7 +191,7 @@ export function DropComponents<P extends IWidgetBaseProps, E extends INode>(
  *    setTimeout( () => resolve( component() ), 3000 )
  * })
  */
-export async function AsyncComponent<P extends IWidgetBaseProps, E extends INode>(callback: IWidgetAsyncCallback): Promise<IWidget<P, E>> {
+export async function AsyncComponent<P extends IWidgetStandardProps, E extends INode>(callback: IWidgetAsyncCallback): Promise<IWidget<P, E>> {
 
   return (new Promise<IWidget<any, any>>(callback))
 
@@ -140,7 +206,7 @@ export async function AsyncComponent<P extends IWidgetBaseProps, E extends INode
  * @example UseComponent<PropsType>( '#root', component( props ) ) // Requête de selecteur pour la cible
  * UseComponent<PropsType>( document.getElementById('root'), component( props ) ) // Instance de type HTMLElement pour la cible
  */
-export function UseComponent<P extends IWidgetBaseProps, E extends INode>(
+export function UseComponent<P extends IWidgetStandardProps, E extends INode>(
 
   component: IWidget<any, any>,
 
@@ -189,7 +255,7 @@ export function UseComponent<P extends IWidgetBaseProps, E extends INode>(
  */
 export function CreateKit(definition: IKitProps) {
 
-  return <P extends IWidgetBaseProps, E extends INode>(p: P) =>
+  return <P extends IWidgetStandardProps, E extends INode>(p: P) =>
 
     (definition.component(p) as IWidget<P, E>)
 
@@ -224,7 +290,7 @@ export function aune<E extends INode>(tagname: string) {
  * @param props Propriétés du widget
  * @example RawWidget<PropsType, HTMLSpanElement>( 'span', props )
  */
-export function RawWidget<P extends IWidgetBaseProps, E extends INode>(tagname: string, props: P) {
+export function RawWidget<P extends IWidgetStandardProps, E extends INode>(tagname: string, props: P) {
 
   const widget = (new AunWidget<P, E>(tagname, props))
 
@@ -248,11 +314,36 @@ export function RawWidget<P extends IWidgetBaseProps, E extends INode>(tagname: 
  * otherProp: ...
  * })
  */
-export function Widget(props: IWidgetProps): AunWidget<IWidgetProps, HTMLDivElement> {
+export function Widget(props: IWidgetProps): IWidget<IWidgetProps, HTMLDivElement> {
 
   return RawWidget<IWidgetProps, HTMLDivElement>('div', props);
 
 }
+
+/**
+ * CreateCustomWidget
+ * @description Créer un widget Personnalisé
+ * @param tagname nom de la balise encapsulé
+ * @param props Propriétés
+ */
+export function CreateCustomWidget<
+
+  P extends IProps,
+
+  H extends HTMLElement
+
+>(tagname: string, props: P) {
+
+  return setWidgetProperty<P, H>(
+
+    RawWidget<P, H>(tagname, props),
+
+    props
+
+  );
+
+}
+
 
 
 /**
@@ -264,7 +355,7 @@ export function Widget(props: IWidgetProps): AunWidget<IWidgetProps, HTMLDivElem
  * otherProp: ...
  * })
  */
-export function TextWidget(props: ITextProps): AunWidget<ITextProps, HTMLSpanElement> {
+export function TextWidget(props: ITextProps): IWidget<ITextProps, HTMLSpanElement> {
 
   return RawWidget<ITextProps, HTMLSpanElement>('span', props)
 
@@ -279,7 +370,7 @@ export function TextWidget(props: ITextProps): AunWidget<ITextProps, HTMLSpanEle
  * src: ...
  * })
  */
-export function ImageWidget(props: IImageProps): AunWidget<IImageProps, HTMLImageElement> {
+export function ImageWidget(props: IImageProps): IWidget<IImageProps, HTMLImageElement> {
 
   return RawWidget<IImageProps, HTMLImageElement>('img', props)
 
@@ -309,54 +400,6 @@ export function ImageWidget(props: IImageProps): AunWidget<IImageProps, HTMLImag
 
 }
 
-
-
-/**
- * setWidgetProperty
- * @param widget Widget cible
- * @param props Propriété à analyser
- */
-export function setWidgetProperty<
-
-  P extends IWidgetBaseProps,
-
-  H extends HTMLElement
-
->(widget: IWidget<P, H>, props: IProps): IWidget<P, H> {
-
-  Object.entries(props).forEach(({ 0: name, 1: value }) => {
-
-    name = UnCamelize(name);
-
-    switch (typeof value) {
-
-      case 'number':
-
-      case 'string':
-
-        widget.element.instance.setAttribute(`${name}`, `${value}`)
-
-        break;
-
-
-      case 'boolean':
-
-        if (value)
-
-          widget.element.instance.setAttribute(`${name}`, `${name}`)
-
-        break;
-
-    }
-
-  })
-
-  return widget;
-
-}
-
-
-
 /**
  * InputWidget
  * @description Calque de champs de texte
@@ -370,19 +413,61 @@ export function setWidgetProperty<
  */
 export function InputWidget(props: IInputProps): IWidget<IInputProps, HTMLInputElement> {
 
-  return setWidgetProperty<IInputProps, HTMLInputElement>(
-
-    RawWidget<IInputProps, HTMLInputElement>('input', props),
-
-    props
-
-  );
+  return CreateCustomWidget<IInputProps, HTMLInputElement>('input', props)
 
 }
 
 
 
-export function ButtonWidget(props: IButtonProps) {
+/**
+ * VideoWidget
+ * @param props Propriétés
+ */
+export function VideoWidget(props: IVideoProps): IWidget<IVideoProps, HTMLVideoElement> {
+
+  return CreateCustomWidget<IVideoProps, HTMLVideoElement>('video', props)
+
+}
+
+
+
+/**
+ * VideoWidget
+ * @param props Propriétés
+ */
+export function AudioWidget(props: IAudioProps): IWidget<IAudioProps, HTMLAudioElement> {
+
+  return CreateCustomWidget<IAudioProps, HTMLAudioElement>('audio', props)
+
+}
+
+
+
+/**
+ * iFrameWidget
+ * @param props Propriétés
+ * @example
+ * iFrameWidget({
+ *    src: 'example.html'
+ * })
+ */
+export function iFrameWidget(props: IIFrameProps): IWidget<IIFrameProps, HTMLIFrameElement> {
+
+  return CreateCustomWidget<IIFrameProps, HTMLIFrameElement>('iframe', props)
+
+}
+
+
+
+/**
+ * ButtonWidget
+ * @param props Propriétés
+ * @example 
+ * ButtonWidget({
+ *    child: ...
+ * })
+ */
+export function ButtonWidget(props: IButtonProps): IWidget<IButtonProps, HTMLButtonElement> {
 
   return RawWidget<IButtonProps, HTMLButtonElement>('button', props);
 
@@ -400,7 +485,7 @@ export function ButtonWidget(props: IButtonProps) {
  *    action: 'publish',
  * })
  */
-export function FormWidget(props: IFormProps) {
+export function FormWidget(props: IFormProps): IWidget<IFormProps, HTMLFormElement> {
 
   return setWidgetProperty<IFormProps, HTMLFormElement>(
 
@@ -415,7 +500,172 @@ export function FormWidget(props: IFormProps) {
 
 
 
-export function ModalWidget(props: IModalProps) {
+/**
+ * TableCellWidget
+ * @param props Propriétés
+ */
+export function TableCellWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement> {
+
+  return CreateCustomWidget<IWidgetTableCellProps, HTMLTableCellElement>('td', props)
+
+}
+
+/**
+ * TableRowWidget
+ * @param props Propriétés
+ */
+export function TableRowWidget(props: IWidgetTableSectionProps): IWidget<IWidgetTableSectionProps, HTMLTableRowElement> {
+
+  return CreateCustomWidget<IWidgetTableSectionProps, HTMLTableRowElement>('tr', props)
+
+}
+
+
+/**
+ * TableHeadWidget
+ * @param props Propriétés
+ */
+export function TableHeadWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement> {
+
+  return CreateCustomWidget<IWidgetTableCellProps, HTMLTableCellElement>('th', props)
+
+}
+
+
+/**
+ * TableBodyWidget
+ * @param props Propriétés
+ */
+export function TableBodyWidget(props: IWidgetTableSectionProps): IWidget<IWidgetTableSectionProps, HTMLTableSectionElement> {
+
+  return CreateCustomWidget<IWidgetTableSectionProps, HTMLTableSectionElement>('tbody', props)
+
+}
+
+
+/**
+ * TableFootWidget
+ * @param props Propriétés
+ */
+export function TableFootWidget(props: IWidgetTableSectionProps): IWidget<IWidgetTableSectionProps, HTMLTableSectionElement> {
+
+  return CreateCustomWidget<IWidgetTableSectionProps, HTMLTableSectionElement>('tfoot', props)
+
+}
+
+
+/**
+ * TableCaptionWidget
+ * @param props Propriétés
+ */
+export function TableCaptionWidget(props: IWidgetGlobalStandardProps): IWidget<IWidgetGlobalStandardProps, HTMLTableCaptionElement> {
+
+  return CreateCustomWidget<IWidgetGlobalStandardProps, HTMLTableCaptionElement>('caption', props)
+
+}
+
+
+
+/**
+ * TableWidget
+ * @description Créer un tableau
+ * @param props 
+ */
+export function TableWidget(props: IWidgetTableProps): IWidget<IWidgetHTMLGlobalProps, HTMLTableElement> {
+
+  const table = CreateCustomWidget<IWidgetHTMLGlobalProps, HTMLTableElement>('table', props.table || {})
+
+  const caption = TableCaptionWidget({ child: props.caption || undefined, })
+
+  const head = TableRowWidget({ child: undefined, })
+
+  const bodies = TableBodyWidget({ child: undefined, })
+
+  const footer = TableFootWidget({ child: undefined, })
+
+
+  props.headers.forEach((header, index) => {
+
+    // Make Header
+    head.element.append(
+
+      TableHeadWidget({
+
+        child: props.bodyItemWidget ? props.bodyItemWidget({ index, value: header }) : header
+
+      }).element.instance
+
+    );
+
+    // Make Body
+    if (props.body && props.body[index]) {
+
+      const body = TableRowWidget({ child: undefined, })
+
+      props.body[index].forEach(bodyContent => {
+
+        body.element.append(
+
+          TableCellWidget({
+
+            child: props.bodyItemWidget ? props.bodyItemWidget({ index, value: bodyContent }) : bodyContent,
+
+          }).element.instance
+
+        )
+
+      });
+
+      bodies.element.append(body.element.instance)
+
+    }
+
+    // Make Footer
+    if (props.foots && props.foots[index]) {
+
+      const foot = TableRowWidget({ child: undefined, })
+
+      props.foots[index].forEach(footContent => {
+
+        foot.element.append(
+
+          TableCellWidget({
+
+            child: props.footerItemWidget ? props.footerItemWidget({ index, value: footContent }) : footContent,
+
+          }).element.instance
+
+        )
+
+      });
+
+      footer.element.append(foot.element.instance)
+
+    }
+
+
+  })
+
+  table.element.append(
+
+    caption.element.instance,
+
+    head.element.instance,
+
+    bodies.element.instance,
+
+    footer.element.instance
+
+  );
+
+  return table;
+
+}
+
+
+
+
+export function ModalWidget(props: IModalProps): IWidget<IModalProps, HTMLFormElement> {
 
   let modal: IPresenters<IPresenterModalProps> | undefined = undefined;
 
@@ -495,7 +745,7 @@ export function ModalWidget(props: IModalProps) {
  * @param component Composant utilisé pour la vue
  * @param options Options de la vue
  */
-export function View<C extends IWidgetBaseProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined) {
+export function View<C extends IWidgetStandardProps>(component: IComponentConstructor, options?: IViewOptions<C> | undefined) {
 
   return new AunView<C>(component, options)
 
@@ -542,7 +792,7 @@ export function CurrentStackViews<Scheme>() {
  * @example Construct<ComponentType>( component, child )
  * Construct( component, child )
  */
-export function Construct<Component extends IWidget<IWidgetBaseProps, INode>>(
+export function Construct<Component extends IWidget<IWidgetStandardProps, INode>>(
 
   component: Component,
 
@@ -557,9 +807,9 @@ export function Construct<Component extends IWidget<IWidgetBaseProps, INode>>(
  * @description Créer un composant en ajoutant immédiatement à la fil d'attente hydratation tout en permetant de l'exporter avec un nom d'emprunt. 
  * @param name 
  * @param widgetConstructor 
- * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetBaseProps ) => ... )
+ * @example export const HelloWord = CreateComponent<PropType>('HelloWorld', ( props : IWidgetStandardProps ) => ... )
  */
-export function CreateComponent<P extends IWidgetBaseProps>(
+export function CreateComponent<P extends IWidgetStandardProps>(
 
   name: string,
 
@@ -588,7 +838,7 @@ export function CreateComponent<P extends IWidgetBaseProps>(
  * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponentQueue<WidgetPropsType>( 'ComponentName', ( props : WidgetProps ) => ... )
  */
-export function HydrateComponentQueue<P extends IWidgetBaseProps>(
+export function HydrateComponentQueue<P extends IWidgetStandardProps>(
 
   name: string,
 
@@ -615,7 +865,7 @@ export function HydrateComponentQueue<P extends IWidgetBaseProps>(
  * @param widgetConstructor Constructeur du composant AUN
  * @example HydrateComponent<PropsType>( 'Hello', HelloComponent )
  */
-export function HydrateComponent<P extends IWidgetBaseProps>(
+export function HydrateComponent<P extends IWidgetStandardProps>(
 
   name: string,
 
@@ -660,7 +910,7 @@ export function HydrateComponent<P extends IWidgetBaseProps>(
  * @param attributes Contenu de la propriété "HTMLElement.attributes"
  * @example ExtractProps<PropsType>( element.attributes )
  */
-export function ExtractProps<P extends IWidgetBaseProps>(attributes: NamedNodeMap): P {
+export function ExtractProps<P extends IWidgetStandardProps>(attributes: NamedNodeMap): P {
 
   const props: P = {} as P
 

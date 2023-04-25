@@ -37,6 +37,7 @@ export type AUNWindow = Partial<Window> & {
 export type IChild = string
   | number
   | boolean
+  | null
   | IStateManager<IState>
   | IWidget<any, any>
   | HTMLElement
@@ -113,11 +114,51 @@ export interface IWidgetAttributeNSProps {
 
 }
 
+
+
+export type IWidgetReferrerPolicy = 'no-referrer' | 'no-referrer-when-downgrade' | 'origin' | ' origin-when-cross-origin' | 'unsafe-url';
+
+
+
+export interface IWidgetHTMLGlobalProps {
+
+  accesskey?: string;
+
+  contenteditable?: string;
+
+  dir?: string;
+
+  id?: string;
+
+  lang?: string;
+
+  title?: string;
+
+  tabindex?: number;
+
+  spellcheck?: boolean;
+
+  draggable?: boolean;
+
+  hidden?: boolean;
+
+  translate?: 'yes' | 'no';
+
+}
+
+
+
+export interface IWidgetGlobalStandardProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
+
+}
+
+
+
 /**
- * IWidgetBaseProps extends IProps
+ * IWidgetStandardProps extends IProps
  * @description Propriétés de widget de base
  */
-export interface IWidgetBaseProps extends IProps {
+export interface IWidgetStandardProps extends IProps {
 
   child?: IChildren | IChildrenElement;
 
@@ -154,7 +195,7 @@ export interface IWidgetBaseProps extends IProps {
 }
 
 
-export interface IWidgetProps extends Omit<IWidgetBaseProps, 'child'> {
+export interface IWidgetProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
 
   child?: IChildrenElement;
 
@@ -162,16 +203,163 @@ export interface IWidgetProps extends Omit<IWidgetBaseProps, 'child'> {
 
 
 
+
+export type IWidgetTableColumnData = string | number | boolean | null | undefined;
+
+// export interface IWidgetTableColumnProps extends IProps {
+
+//   head: IWidgetTableColumnData;
+
+//   body: IWidgetTableColumnData[];
+
+//   foot?: IWidgetTableColumnData;
+
+//   headItem?: IWidget<any, any>;
+
+//   bodyItem?: IWidget<any, any>;
+
+//   footItem?: IWidget<any, any>;
+
+// }
+
+// export interface ITableColumn {
+
+//   head(widget: IWidget<IWidgetTableSectionProps, HTMLTableRowElement>): this;
+
+//   body(widget: IWidget<IWidgetTableSectionProps, HTMLTableSectionElement>): this;
+
+//   foot(widget: IWidget<IWidgetTableSectionProps, HTMLTableSectionElement>): this;
+
+//   // table(widget: IWidget<IWidgetHTMLGlobalProps, HTMLTableElement>): this;
+
+// }
+
+
+
+export type IWidgetTableDataPayload = { index: number, value: IWidgetTableColumnData };
+
+export type IWidgetTableDataCallback = (payload: IWidgetTableDataPayload) => IWidget<any, any>;
+
+export interface IWidgetTableProps extends IProps {
+
+  table?: IWidgetHTMLGlobalProps;
+
+  caption?: IWidget<any, any>;
+
+  headers: IWidgetTableColumnData[];
+
+  body?: IWidgetTableColumnData[][];
+
+  foots?: IWidgetTableColumnData[][];
+
+  headerItemWidget?: IWidgetTableDataCallback;
+
+  bodyItemWidget?: IWidgetTableDataCallback;
+
+  footerItemWidget?: IWidgetTableDataCallback;
+
+}
+
+
+export interface IWidgetTableCellProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
+
+  child?: IChildren | IChildrenElement;
+
+  abbr?: string;
+
+  headers?: string;
+
+  colspan?: number;
+
+  rowspan?: number;
+
+  scope?: 'col' | 'colgroup' | 'row' | 'rowgroup';
+
+}
+
+
+export interface IWidgetTableSectionProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
+
+  child?: IChildren | IChildrenElement;
+
+}
+
+
+
 /**
- * ITextProps extends Omit<IWidgetBaseProps, 'child'>
+ * ITextProps extends IWidgetStandardProps
  * @description Propriétés des textes de widget
  */
-export interface ITextProps extends Omit<IWidgetBaseProps, 'child'> {
+export interface ITextProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
 
   child: string;
 
 }
 
+
+
+
+export interface IVideoProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
+
+  autoplay?: boolean;
+
+  controls?: boolean;
+
+  loop?: boolean;
+
+  muted?: boolean;
+
+  width?: string;
+
+  height?: string;
+
+  poster?: string;
+
+  preload?: 'auto' | 'metadata' | 'none';
+
+  src?: string;
+
+}
+
+
+
+export interface IAudioProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
+
+  autoplay?: boolean;
+
+  controls?: boolean;
+
+  loop?: boolean;
+
+  muted?: boolean;
+
+  preload?: boolean;
+
+  src: string;
+
+}
+
+
+
+export interface IIFrameProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
+
+  allow?: string;
+
+  allowfullscreen?: 'true' | 'false';
+
+  allowpaymentrequest?: 'true' | 'false';
+
+  loading?: 'eager' | 'lazy';
+
+  name?: string;
+
+  referrerpolicy?: IWidgetReferrerPolicy;
+
+  sandbox?: 'allow-forms' | 'allow-pointer-lock' | 'allow-popups' | 'allow-same-origin' | 'allow-scripts' | 'allow-top-navigation';
+
+  src: string;
+
+}
 
 
 
@@ -204,7 +392,7 @@ export interface IModalStateProps extends IProps {
 
 
 
-export interface IFormProps extends Omit<IWidgetBaseProps, 'child'> {
+export interface IFormProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
 
   acceptCharset?: string;
 
@@ -254,7 +442,7 @@ export interface IFormProps extends Omit<IWidgetBaseProps, 'child'> {
 
 
 
-export interface IButtonProps extends Omit<IWidgetBaseProps, 'child'> {
+export interface IButtonProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
 
   type?: 'button' | 'submit' | 'reset';
 
@@ -263,7 +451,7 @@ export interface IButtonProps extends Omit<IWidgetBaseProps, 'child'> {
 }
 
 
-export interface IInputProps extends IWidgetBaseProps {
+export interface IInputProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
 
   type?: 'text'
 
@@ -335,10 +523,6 @@ export interface IInputProps extends IWidgetBaseProps {
 
   formtarget?: '_blank' | '_self' | '_parent' | '_top' | string;
 
-  height?: number;
-
-  width?: number;
-
   list?: string;
 
   max?: number | string;
@@ -370,18 +554,13 @@ export interface IInputProps extends IWidgetBaseProps {
 }
 
 
-
-export interface IImageProps extends IProps {
+export interface IImageProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
 
   src: string;
 
   mode?: 'cover' | 'contain' | 'auto';
 
   alt?: string;
-
-  width?: string;
-
-  height?: string;
 
   aspectRatio?: string;
 
@@ -393,13 +572,15 @@ export interface IImageProps extends IProps {
 
   longdesc?: string;
 
-  referrerpolicy?: 'no-referrer' | 'no-referrer-when-downgrade' | 'origin' | ' origin-when-cross-origin' | 'unsafe-url';
+  referrerpolicy?: IWidgetReferrerPolicy;
 
   sizes?: string;
 
   srcset?: string;
 
   usemap?: string;
+
+  child?: undefined;
 
 }
 
@@ -596,7 +777,7 @@ export interface IElement<E extends INode> extends IPhysicalMethods {
 
   get widget(): IWidget<any, E> | undefined;
 
-  own<P extends IWidgetBaseProps>(widget: IWidget<P, E> | undefined): this;
+  own<P extends IWidgetStandardProps>(widget: IWidget<P, E> | undefined): this;
 
   // append( ...nodes: (string | Node)[] ) : this;
 
@@ -608,7 +789,7 @@ export interface IElement<E extends INode> extends IPhysicalMethods {
 
 export type IWidgetTimerCallback = <
 
-  P extends IWidgetBaseProps,
+  P extends IWidgetStandardProps,
 
   E extends INode
 
@@ -616,7 +797,7 @@ export type IWidgetTimerCallback = <
 
 export type IWidgetRequestAnimationFrameCallback = <
 
-  P extends IWidgetBaseProps,
+  P extends IWidgetStandardProps,
 
   E extends INode
 
@@ -634,10 +815,10 @@ export type IWidgetAsyncCallback = (
 
 export type IWidgetLayerCallback<E extends INode> = (element: IElement<E>) => void
 
-export type IWidgetReadyCallback<P extends IWidgetBaseProps, E extends INode> = (widget: IWidget<P, E>) => void
+export type IWidgetReadyCallback<P extends IWidgetStandardProps, E extends INode> = (widget: IWidget<P, E>) => void
 
 
-export interface IWidgetEmitterScheme<P extends IWidgetBaseProps, E extends INode> {
+export interface IWidgetEmitterScheme<P extends IWidgetStandardProps, E extends INode> {
 
   ready: IWidget<P, E>;
 
@@ -665,7 +846,7 @@ export interface IWidgetEmitterScheme<P extends IWidgetBaseProps, E extends INod
 
 }
 
-export interface IWidget<P extends IWidgetBaseProps, E extends INode> {
+export interface IWidget<P extends IWidgetStandardProps, E extends INode> {
 
   element: IElement<E>;
 
@@ -700,7 +881,7 @@ export interface IWidget<P extends IWidgetBaseProps, E extends INode> {
 
   frameReady(callback: IWidgetRequestAnimationFrameCallback): this;
 
-  // catch<P extends IWidgetBaseProps, E extends INode>( callback : IStateErrorExceptionCallback<P, E> ) : IWidget<P, E>;
+  // catch<P extends IWidgetStandardProps, E extends INode>( callback : IStateErrorExceptionCallback<P, E> ) : IWidget<P, E>;
 
 }
 
@@ -799,7 +980,7 @@ export interface IWidgerErrorException {
 
 
 
-export interface IConstructEmitterScheme<P extends IWidgetBaseProps, E extends INode> {
+export interface IConstructEmitterScheme<P extends IWidgetStandardProps, E extends INode> {
 
   before: IWidget<P, E>;
 
@@ -809,7 +990,7 @@ export interface IConstructEmitterScheme<P extends IWidgetBaseProps, E extends I
 
 }
 
-export interface IConstruct<P extends IWidgetBaseProps, E extends INode> {
+export interface IConstruct<P extends IWidgetStandardProps, E extends INode> {
 
   emitter: IEventDispatcher<IConstructEmitterScheme<P, E>>;
 
@@ -823,7 +1004,7 @@ export interface IConstruct<P extends IWidgetBaseProps, E extends INode> {
 
   makeAppearance(root: IWidget<P, E>, payload: IAppearanceObject): IWidget<P, E>;
 
-  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetBaseProps, value: any): this;
+  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetStandardProps, value: any): this;
 }
 
 
@@ -836,7 +1017,7 @@ export interface IConstruct<P extends IWidgetBaseProps, E extends INode> {
 
 export type IHydrateComponent<
 
-  P extends IWidgetBaseProps,
+  P extends IWidgetStandardProps,
 
   E extends HTMLElement
 
@@ -957,7 +1138,7 @@ export interface IKitProps {
 
 }
 
-// export interface IKit<P extends IWidgetBaseProps, E extends INode>{
+// export interface IKit<P extends IWidgetStandardProps, E extends INode>{
 
 //   emitter : IEventDispatcher<IKitEmitterScheme>;
 
@@ -971,7 +1152,7 @@ export interface IKitProps {
 
 
 
-export type IViewEmitterCallbackArgument<P extends IWidgetBaseProps> = {
+export type IViewEmitterCallbackArgument<P extends IWidgetStandardProps> = {
 
   component: IWidget<P, HTMLDivElement>;
 
@@ -979,14 +1160,14 @@ export type IViewEmitterCallbackArgument<P extends IWidgetBaseProps> = {
 
 }
 
-export type IViewEmitterCallback<P extends IWidgetBaseProps> = (
+export type IViewEmitterCallback<P extends IWidgetStandardProps> = (
 
   payload: IViewEmitterCallbackArgument<P>
 
 ) => void
 
 
-export interface IViewEmitters<P extends IWidgetBaseProps> {
+export interface IViewEmitters<P extends IWidgetStandardProps> {
 
   show?: IViewEmitterCallback<P>;
 
@@ -995,7 +1176,7 @@ export interface IViewEmitters<P extends IWidgetBaseProps> {
 }
 
 
-export interface IViewOptions<P extends IWidgetBaseProps> {
+export interface IViewOptions<P extends IWidgetStandardProps> {
 
   name: string;
 
@@ -1028,13 +1209,13 @@ export interface IViewProps extends IProps {
 
 }
 
-export type IViewWidget<P extends IWidgetBaseProps> = ((props: P)
+export type IViewWidget<P extends IWidgetStandardProps> = ((props: P)
 
   => IWidget<any, any>)
 
   ;
 
-export interface IView<P extends IWidgetBaseProps> {
+export interface IView<P extends IWidgetStandardProps> {
 
   get parameters(): P;
 

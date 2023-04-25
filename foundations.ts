@@ -39,7 +39,7 @@ import type {
   IWTargetNode,
   IViewProps,
   IStateVoidCallback,
-  IWidgetBaseProps,
+  IWidgetStandardProps,
   IWidgetAttributeProps,
   IWidgetAttributeNSProps,
 } from "./types";
@@ -154,7 +154,7 @@ export class AunElement<E extends INode> implements IElement<E>{
    * @param widget Widget Cible
    * @example element.own( widget )
    */
-  own<P extends IWidgetBaseProps>(widget: IWidget<P, E>): this {
+  own<P extends IWidgetStandardProps>(widget: IWidget<P, E>): this {
 
     this.#widget = widget;
 
@@ -1022,7 +1022,7 @@ export class AunState<S extends IState> implements IStateManager<S>{
  * AUN Widget
  * @description Pour les composant HTML de base
  */
-export class AunWidget<P extends IWidgetBaseProps, E extends INode> implements IWidget<P, E>{
+export class AunWidget<P extends IWidgetStandardProps, E extends INode> implements IWidget<P, E>{
 
   /**
    * Instance de l'élément
@@ -1262,7 +1262,7 @@ export class AunWidget<P extends IWidgetBaseProps, E extends INode> implements I
  * AUN Construct
  * @description Constructeur de Widget
  */
-export class AunConstruct<P extends IWidgetBaseProps, E extends INode> implements IConstruct<P, E>{
+export class AunConstruct<P extends IWidgetStandardProps, E extends INode> implements IConstruct<P, E>{
 
   /**
    * Emetteur
@@ -1332,7 +1332,7 @@ export class AunConstruct<P extends IWidgetBaseProps, E extends INode> implement
 
 
 
-  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetBaseProps, value: any) {
+  propertyBuilder(root: IWidget<P, E>, slug: keyof IWidgetStandardProps, value: any) {
 
     if (slug != 'child') {
 
@@ -1579,7 +1579,7 @@ export class AunConstruct<P extends IWidgetBaseProps, E extends INode> implement
 
 export class AunView<
 
-  ComponentProps extends IWidgetBaseProps
+  ComponentProps extends IWidgetStandardProps
 
 > implements IView<ComponentProps>{
 
@@ -1777,7 +1777,7 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   #createViewProps(
 
-    props: IWidgetBaseProps | Scheme[keyof Scheme] | undefined
+    props: IWidgetStandardProps | Scheme[keyof Scheme] | undefined
 
   ): IViewProps {
 
@@ -1916,4 +1916,3 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
 
 }
-
