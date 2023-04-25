@@ -282,8 +282,15 @@ export function TableRowWidget(props) {
  * TableHeadWidget
  * @param props Propriétés
  */
-export function TableHeadWidget(props) {
+export function TableHeaderWidget(props) {
     return CreateCustomWidget('th', props);
+}
+/**
+ * TableHeadWidget
+ * @param props Propriétés
+ */
+export function TableHeadWidget(props) {
+    return CreateCustomWidget('thead', props);
 }
 /**
  * TableBodyWidget
@@ -314,12 +321,12 @@ export function TableCaptionWidget(props) {
 export function TableWidget(props) {
     const table = CreateCustomWidget('table', props.table || {});
     const caption = TableCaptionWidget({ child: props.caption || undefined, });
-    const head = TableRowWidget({ child: undefined, });
+    const head = TableHeadWidget({ child: undefined, });
     const bodies = TableBodyWidget({ child: undefined, });
     const footer = TableFootWidget({ child: undefined, });
     props.headers.forEach((header, index) => {
         // Make Header
-        head.element.append(TableHeadWidget({
+        head.element.append(TableHeaderWidget({
             child: props.bodyItemWidget ? props.bodyItemWidget({ index, value: header }) : header
         }).element.instance);
         // Make Body

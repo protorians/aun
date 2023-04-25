@@ -648,6 +648,11 @@ declare module '@protorians/aun/index' {
    * TableHeadWidget
    * @param props Propriétés
    */
+  export function TableHeaderWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement>;
+  /**
+   * TableHeadWidget
+   * @param props Propriétés
+   */
   export function TableHeadWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement>;
   /**
    * TableBodyWidget

@@ -525,9 +525,20 @@ export function TableRowWidget(props: IWidgetTableSectionProps): IWidget<IWidget
  * TableHeadWidget
  * @param props Propriétés
  */
-export function TableHeadWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement> {
+export function TableHeaderWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement> {
 
   return CreateCustomWidget<IWidgetTableCellProps, HTMLTableCellElement>('th', props)
+
+}
+
+
+/**
+ * TableHeadWidget
+ * @param props Propriétés
+ */
+export function TableHeadWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement> {
+
+  return CreateCustomWidget<IWidgetTableCellProps, HTMLTableCellElement>('thead', props)
 
 }
 
@@ -577,7 +588,7 @@ export function TableWidget(props: IWidgetTableProps): IWidget<IWidgetHTMLGlobal
 
   const caption = TableCaptionWidget({ child: props.caption || undefined, })
 
-  const head = TableRowWidget({ child: undefined, })
+  const head = TableHeadWidget({ child: undefined, })
 
   const bodies = TableBodyWidget({ child: undefined, })
 
@@ -589,7 +600,7 @@ export function TableWidget(props: IWidgetTableProps): IWidget<IWidgetHTMLGlobal
     // Make Header
     head.element.append(
 
-      TableHeadWidget({
+      TableHeaderWidget({
 
         child: props.bodyItemWidget ? props.bodyItemWidget({ index, value: header }) : header
 
