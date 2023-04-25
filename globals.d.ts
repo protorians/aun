@@ -466,7 +466,7 @@ declare module '@protorians/aun/foundations' {
 }
 declare module '@protorians/aun/index' {
   import { AunElement, AunState, AunWidget, AunView } from "@protorians/aun/foundations";
-  import { AUNWindow, IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWTarget, ITextProps, IWidgetStandardProps, IInputProps, IFormProps, IModalProps, IButtonProps, IWidgetProps, IStackViews, IVideoProps, IAudioProps, IIFrameProps, IWidgetTableCellProps, IWidgetTableSectionProps, IWidgetGlobalStandardProps, IWidgetTableProps, IWidgetHTMLGlobalProps } from "@protorians/aun/types";
+  import { AUNWindow, IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWTarget, ITextProps, IWidgetStandardProps, IInputProps, IFormProps, IModalProps, IButtonProps, IWidgetProps, IStackViews, IVideoProps, IAudioProps, IIFrameProps } from "@protorians/aun/types";
   import { IProps } from "@protorians/core/types";
   /**
    * WidgetWhitelistProps
@@ -634,47 +634,6 @@ declare module '@protorians/aun/index' {
    * })
    */
   export function FormWidget(props: IFormProps): IWidget<IFormProps, HTMLFormElement>;
-  /**
-   * TableCellWidget
-   * @param props Propriétés
-   */
-  export function TableCellWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement>;
-  /**
-   * TableRowWidget
-   * @param props Propriétés
-   */
-  export function TableRowWidget(props: IWidgetTableSectionProps): IWidget<IWidgetTableSectionProps, HTMLTableRowElement>;
-  /**
-   * TableHeadWidget
-   * @param props Propriétés
-   */
-  export function TableHeaderWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement>;
-  /**
-   * TableHeadWidget
-   * @param props Propriétés
-   */
-  export function TableHeadWidget(props: IWidgetTableCellProps): IWidget<IWidgetTableCellProps, HTMLTableCellElement>;
-  /**
-   * TableBodyWidget
-   * @param props Propriétés
-   */
-  export function TableBodyWidget(props: IWidgetTableSectionProps): IWidget<IWidgetTableSectionProps, HTMLTableSectionElement>;
-  /**
-   * TableFootWidget
-   * @param props Propriétés
-   */
-  export function TableFootWidget(props: IWidgetTableSectionProps): IWidget<IWidgetTableSectionProps, HTMLTableSectionElement>;
-  /**
-   * TableCaptionWidget
-   * @param props Propriétés
-   */
-  export function TableCaptionWidget(props: IWidgetGlobalStandardProps): IWidget<IWidgetGlobalStandardProps, HTMLTableCaptionElement>;
-  /**
-   * TableWidget
-   * @description Créer un tableau
-   * @param props
-   */
-  export function TableWidget(props: IWidgetTableProps): IWidget<IWidgetHTMLGlobalProps, HTMLTableElement>;
   export function ModalWidget(props: IModalProps): IWidget<IModalProps, HTMLFormElement>;
   /**
    * View
@@ -891,33 +850,6 @@ declare module '@protorians/aun/types' {
   }
   export interface IWidgetProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
       child?: IChildrenElement;
-  }
-  export type IWidgetTableColumnData = string | number | boolean | null | undefined;
-  export type IWidgetTableDataPayload = {
-      index: number;
-      value: IWidgetTableColumnData;
-  };
-  export type IWidgetTableDataCallback = (payload: IWidgetTableDataPayload) => IWidget<any, any>;
-  export interface IWidgetTableProps extends IProps {
-      table?: IWidgetHTMLGlobalProps;
-      caption?: IWidget<any, any>;
-      headers: IWidgetTableColumnData[];
-      body?: IWidgetTableColumnData[][];
-      foots?: IWidgetTableColumnData[][];
-      headerItemWidget?: IWidgetTableDataCallback;
-      bodyItemWidget?: IWidgetTableDataCallback;
-      footerItemWidget?: IWidgetTableDataCallback;
-  }
-  export interface IWidgetTableCellProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
-      child?: IChildren | IChildrenElement;
-      abbr?: string;
-      headers?: string;
-      colspan?: number;
-      rowspan?: number;
-      scope?: 'col' | 'colgroup' | 'row' | 'rowgroup';
-  }
-  export interface IWidgetTableSectionProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
-      child?: IChildren | IChildrenElement;
   }
   /**
    * ITextProps extends IWidgetStandardProps

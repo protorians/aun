@@ -41,7 +41,7 @@ import type {
   IStateVoidCallback,
   IWidgetStandardProps,
   IWidgetAttributeProps,
-  IWidgetAttributeNSProps,
+  IWidgetAttributeNSProps
 } from "./types";
 import type {
   IAppearance,
@@ -1916,3 +1916,8 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
 
 }
+
+
+
+
+

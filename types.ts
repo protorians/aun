@@ -204,86 +204,6 @@ export interface IWidgetProps extends IWidgetStandardProps, IWidgetHTMLGlobalPro
 
 
 
-export type IWidgetTableColumnData = string | number | boolean | null | undefined;
-
-// export interface IWidgetTableColumnProps extends IProps {
-
-//   head: IWidgetTableColumnData;
-
-//   body: IWidgetTableColumnData[];
-
-//   foot?: IWidgetTableColumnData;
-
-//   headItem?: IWidget<any, any>;
-
-//   bodyItem?: IWidget<any, any>;
-
-//   footItem?: IWidget<any, any>;
-
-// }
-
-// export interface ITableColumn {
-
-//   head(widget: IWidget<IWidgetTableSectionProps, HTMLTableRowElement>): this;
-
-//   body(widget: IWidget<IWidgetTableSectionProps, HTMLTableSectionElement>): this;
-
-//   foot(widget: IWidget<IWidgetTableSectionProps, HTMLTableSectionElement>): this;
-
-//   // table(widget: IWidget<IWidgetHTMLGlobalProps, HTMLTableElement>): this;
-
-// }
-
-
-
-export type IWidgetTableDataPayload = { index: number, value: IWidgetTableColumnData };
-
-export type IWidgetTableDataCallback = (payload: IWidgetTableDataPayload) => IWidget<any, any>;
-
-export interface IWidgetTableProps extends IProps {
-
-  table?: IWidgetHTMLGlobalProps;
-
-  caption?: IWidget<any, any>;
-
-  headers: IWidgetTableColumnData[];
-
-  body?: IWidgetTableColumnData[][];
-
-  foots?: IWidgetTableColumnData[][];
-
-  headerItemWidget?: IWidgetTableDataCallback;
-
-  bodyItemWidget?: IWidgetTableDataCallback;
-
-  footerItemWidget?: IWidgetTableDataCallback;
-
-}
-
-
-export interface IWidgetTableCellProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
-
-  child?: IChildren | IChildrenElement;
-
-  abbr?: string;
-
-  headers?: string;
-
-  colspan?: number;
-
-  rowspan?: number;
-
-  scope?: 'col' | 'colgroup' | 'row' | 'rowgroup';
-
-}
-
-
-export interface IWidgetTableSectionProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
-
-  child?: IChildren | IChildrenElement;
-
-}
-
 
 
 /**
@@ -1283,4 +1203,12 @@ export interface IStackViews<Scheme> {
   run(): this;
 
 }
+
+
+
+
+
+
+
+
 

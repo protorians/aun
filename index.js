@@ -18,7 +18,7 @@ export const WidgetWhitelistProps = ('style removeStyle toggleClassname classnam
  */
 export function setWidgetProperty(widget, props) {
     Object.entries(props).forEach(({ 0: name, 1: value }) => {
-        if (WidgetWhitelistProps.indexOf(name) > -1) {
+        if (WidgetWhitelistProps.indexOf(name) == -1) {
             name = UnCamelize(name);
             switch (typeof value) {
                 case 'number':
@@ -263,95 +263,6 @@ export function ButtonWidget(props) {
  */
 export function FormWidget(props) {
     return setWidgetProperty(RawWidget('form', props), props);
-}
-/**
- * TableCellWidget
- * @param props Propriétés
- */
-export function TableCellWidget(props) {
-    return CreateCustomWidget('td', props);
-}
-/**
- * TableRowWidget
- * @param props Propriétés
- */
-export function TableRowWidget(props) {
-    return CreateCustomWidget('tr', props);
-}
-/**
- * TableHeadWidget
- * @param props Propriétés
- */
-export function TableHeaderWidget(props) {
-    return CreateCustomWidget('th', props);
-}
-/**
- * TableHeadWidget
- * @param props Propriétés
- */
-export function TableHeadWidget(props) {
-    return CreateCustomWidget('thead', props);
-}
-/**
- * TableBodyWidget
- * @param props Propriétés
- */
-export function TableBodyWidget(props) {
-    return CreateCustomWidget('tbody', props);
-}
-/**
- * TableFootWidget
- * @param props Propriétés
- */
-export function TableFootWidget(props) {
-    return CreateCustomWidget('tfoot', props);
-}
-/**
- * TableCaptionWidget
- * @param props Propriétés
- */
-export function TableCaptionWidget(props) {
-    return CreateCustomWidget('caption', props);
-}
-/**
- * TableWidget
- * @description Créer un tableau
- * @param props
- */
-export function TableWidget(props) {
-    const table = CreateCustomWidget('table', props.table || {});
-    const caption = TableCaptionWidget({ child: props.caption || undefined, });
-    const head = TableHeadWidget({ child: undefined, });
-    const bodies = TableBodyWidget({ child: undefined, });
-    const footer = TableFootWidget({ child: undefined, });
-    props.headers.forEach((header, index) => {
-        // Make Header
-        head.element.append(TableHeaderWidget({
-            child: props.bodyItemWidget ? props.bodyItemWidget({ index, value: header }) : header
-        }).element.instance);
-        // Make Body
-        if (props.body && props.body[index]) {
-            const body = TableRowWidget({ child: undefined, });
-            props.body[index].forEach(bodyContent => {
-                body.element.append(TableCellWidget({
-                    child: props.bodyItemWidget ? props.bodyItemWidget({ index, value: bodyContent }) : bodyContent,
-                }).element.instance);
-            });
-            bodies.element.append(body.element.instance);
-        }
-        // Make Footer
-        if (props.foots && props.foots[index]) {
-            const foot = TableRowWidget({ child: undefined, });
-            props.foots[index].forEach(footContent => {
-                foot.element.append(TableCellWidget({
-                    child: props.footerItemWidget ? props.footerItemWidget({ index, value: footContent }) : footContent,
-                }).element.instance);
-            });
-            footer.element.append(foot.element.instance);
-        }
-    });
-    table.element.append(caption.element.instance, head.element.instance, bodies.element.instance, footer.element.instance);
-    return table;
 }
 export function ModalWidget(props) {
     let modal = undefined;
