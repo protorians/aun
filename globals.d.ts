@@ -522,16 +522,16 @@ declare module '@protorians/aun/index' {
    */
   export function UseComponent<P extends IWidgetStandardProps, E extends INode>(component: IWidget<any, any>, target: IWTarget): IWidget<P, E>;
   /**
-   * CreateKit
+   * CreateComponentKit
    * @description Créer un Kit Composant
    * @param definition Définition du Kit
    * @example
-   * CreateKit( {
+   * CreateComponentKit( {
    *    appearance: { ... }
    *    component: ( props : Props ) => ...
    * } )
    */
-  export function CreateKit(definition: IKitProps): <P extends IWidgetStandardProps, E extends HTMLElement>(p: P) => IWidget<P, E>;
+  export function CreateComponentKit(definition: IKitProps): <P extends IWidgetStandardProps, E extends HTMLElement>(p: P) => IWidget<P, E>;
   /**
    * aune — AUN Virtual Element
    * @description Instance fonctionnelle d'usage des éléments AUN
@@ -1164,7 +1164,7 @@ declare module '@protorians/aun/types' {
       unlink(property?: string | string[]): this;
   }
   export interface IKitProps {
-      appearance: IAppearanceStyleSheet;
+      appearance: IAppearanceStyleSheet | string | string[];
       component: IComponentConstructor;
   }
   export type IViewEmitterCallbackArgument<P extends IWidgetStandardProps> = {

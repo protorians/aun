@@ -1052,7 +1052,7 @@ export interface IAttribute {
 
 export interface IKitProps {
 
-  appearance: IAppearanceStyleSheet;
+  appearance: IAppearanceStyleSheet | string | string[];
 
   component: IComponentConstructor;
 

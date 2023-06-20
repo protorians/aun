@@ -108,18 +108,23 @@ export function UseComponent(component, target) {
     return component;
 }
 /**
- * CreateKit
+ * CreateComponentKit
  * @description Créer un Kit Composant
  * @param definition Définition du Kit
  * @example
- * CreateKit( {
+ * CreateComponentKit( {
  *    appearance: { ... }
  *    component: ( props : Props ) => ...
  * } )
  */
-export function CreateKit(definition) {
+export function CreateComponentKit(definition) {
+    const appearance = (new CoreAppearance());
     return (p) => definition.component(p)
-        .manipulate(element => element.classname((new CoreAppearance()).sheet(definition.appearance).mount().uid));
+        .manipulate(element => element.classname((typeof definition.appearance == 'string'
+        ? appearance.inject(definition.appearance)
+        : (Array.isArray(definition.appearance)
+            ? appearance.inject(definition.appearance)
+            : appearance.sheet(definition.appearance))).mount().uid));
 }
 /**
  * aune — AUN Virtual Element

@@ -239,16 +239,18 @@ export function UseComponent<P extends IWidgetStandardProps, E extends INode>(
 
 
 /**
- * CreateKit
+ * CreateComponentKit
  * @description Créer un Kit Composant
  * @param definition Définition du Kit
  * @example
- * CreateKit( {
+ * CreateComponentKit( {
  *    appearance: { ... }
  *    component: ( props : Props ) => ...
  * } )
  */
-export function CreateKit(definition: IKitProps) {
+export function CreateComponentKit(definition: IKitProps) {
+
+  const appearance = (new CoreAppearance());
 
   return <P extends IWidgetStandardProps, E extends INode>(p: P) =>
 
@@ -256,7 +258,23 @@ export function CreateKit(definition: IKitProps) {
 
       .manipulate(element => element.classname(
 
-        (new CoreAppearance()).sheet(definition.appearance).mount().uid
+        (
+
+          typeof definition.appearance == 'string'
+
+            ? appearance.inject(definition.appearance)
+
+            : (
+
+              Array.isArray(definition.appearance)
+
+                ? appearance.inject(definition.appearance)
+
+                : appearance.sheet(definition.appearance)
+
+            )
+
+        ).mount().uid
 
       ))
 
