@@ -374,7 +374,7 @@ export function HydrateComponent(name, widgetConstructor) {
          * Extraction des props
          */
         const props = ExtractProps(ref.attributes);
-        props.child = ref.innerHTML || undefined;
+        props.html = ref.innerHTML;
         /**
          * Mise en place du composant
          */

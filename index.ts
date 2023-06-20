@@ -720,7 +720,7 @@ export function HydrateComponent<P extends IWidgetStandardProps>(
 
 ) {
 
-  const refs = document.querySelectorAll<Element>(`${name}`)
+  const refs = document.querySelectorAll<HTMLElement>(`${name}`)
 
   /**
    * Références liste
@@ -732,7 +732,7 @@ export function HydrateComponent<P extends IWidgetStandardProps>(
      */
     const props = ExtractProps<P>(ref.attributes)
 
-    props.child = ref.innerHTML || undefined;
+    props.html = ref.innerHTML;
 
     /**
      * Mise en place du composant

@@ -1,6 +1,7 @@
 {
   "name": "@protorians/aun",
-  "version": "0.0.15",
+  "displayName": "Protorians AUN",
+  "version": "0.0.16",
   "description": "prototype yourself",
   "main": "index.js",
   "type": "module",
