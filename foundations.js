@@ -712,6 +712,14 @@ _AunWidget__props = new WeakMap(), _AunWidget_instances = new WeakSet(), _AunWid
     this.emitter.dispatch('excavation', this);
     return p;
 };
+// export function useConstructMutations(observe: IConstructMutation) {
+//   const aunWindow: AUNWindow = Object.assign({}, {
+//     AUNCMQ: new AUNContrustMutations(),
+//   }, window)
+//   aunWindow.AUNCMQ = (aunWindow.AUNCMQ || new AUNContrustMutations());
+//   aunWindow.AUNCMQ.observe(observe);
+//   return aunWindow.AUNCMQ.start();
+// }
 /**
  * AUN Construct
  * @description Constructeur de Widget
@@ -738,6 +746,9 @@ export class AunConstruct {
      * @param child Enfants à ajouter
      */
     make(root, child) {
+        // useConstructMutations(mutations => {
+        //   console.warn('Mutations Found', mutations)
+        // })
         this.emitter.dispatch('before', root);
         root.emitter.dispatch('beforeRendering', child);
         this.makeChildren(root, child);

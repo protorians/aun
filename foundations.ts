@@ -58,6 +58,8 @@ import CoreAppearance from "@protorians/core/appearance";
 
 
 
+
+
 /**
  * findElement — Find Element
  * @param find Recherché
@@ -1018,6 +1020,8 @@ export class AunState<S extends IState> implements IStateManager<S>{
 
 }
 
+
+
 /**
  * AUN Widget
  * @description Pour les composant HTML de base
@@ -1258,6 +1262,25 @@ export class AunWidget<P extends IWidgetStandardProps, E extends INode> implemen
 
 }
 
+
+
+// export function useConstructMutations(observe: IConstructMutation) {
+
+//   const aunWindow: AUNWindow = Object.assign({}, {
+
+//     AUNCMQ: new AUNContrustMutations(),
+
+//   }, window)
+
+//   aunWindow.AUNCMQ = (aunWindow.AUNCMQ || new AUNContrustMutations());
+
+//   aunWindow.AUNCMQ.observe(observe);
+
+//   return aunWindow.AUNCMQ.start();
+
+// }
+
+
 /**
  * AUN Construct
  * @description Constructeur de Widget
@@ -1295,6 +1318,12 @@ export class AunConstruct<P extends IWidgetStandardProps, E extends INode> imple
    */
   make(root: IWidget<P, E>, child: IChildren) {
 
+    // useConstructMutations(mutations => {
+
+    //   console.warn('Mutations Found', mutations)
+
+    // })
+
     this.emitter.dispatch('before', root)
 
     root.emitter.dispatch('beforeRendering', child)
@@ -1308,6 +1337,8 @@ export class AunConstruct<P extends IWidgetStandardProps, E extends INode> imple
     this.emitter.dispatch('after', root)
 
     root.emitter.dispatch('ready', root)
+
+
 
     return root;
 

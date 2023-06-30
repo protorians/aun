@@ -11,6 +11,82 @@ import type {
 } from "@protorians/core/types";
 import { ICoreTransition } from "@protorians/core/types";
 
+
+
+export type IElementTargetAttribute = '_blank' | '_self' | '_parent' | '_top' | string;
+
+
+export type IThemeColor =
+
+  'text'
+
+  | 'text-lite'
+  | 'text-heavy'
+
+  | 'layer-heavy'
+  | 'layer'
+  | 'layer-lite'
+
+  | 'one-lite'
+  | 'one'
+  | 'one-heavy'
+
+  | 'two-lite'
+  | 'two'
+  | 'two-heavy'
+
+  | 'three-lite'
+  | 'three'
+  | 'three-heavy'
+
+  | 'four-lite'
+  | 'four'
+  | 'four-heavy'
+
+  | 'five-lite'
+  | 'five'
+  | 'five-heavy'
+
+  | 'error-lite'
+  | 'error'
+  | 'error-heavy'
+
+  | 'warning-lite'
+  | 'warning'
+  | 'warning-heavy'
+
+  | 'success-lite'
+  | 'success'
+  | 'success-heavy'
+
+  | 'black-lite'
+  | 'black'
+  | 'black-heavy'
+
+  | 'white-lite'
+  | 'white'
+  | 'white-heavy'
+
+  | 'dark-lite'
+  | 'dark'
+  | 'dark-heavy'
+
+  | 'light-lite'
+  | 'light'
+  | 'light-heavy'
+
+  ;
+
+export type IMouseActionPayload<I> = { event?: Event, item: I }
+
+export type IMouseAction<I> = {
+
+  type?: keyof HTMLElementEventMap;
+
+  callback: (payload: IMouseActionPayload<I>) => void;
+
+}
+
 export interface AunNode {
 
   AUNAOD?: boolean;
@@ -29,10 +105,10 @@ export type AUNWindow = Partial<Window> & {
    */
   AUNHW?: MutationObserver;
 
-
   CurrentStackViews?: IStackViews<any> | undefined;
 
 }
+
 
 export type IChild = string
   | number
@@ -144,6 +220,8 @@ export interface IWidgetHTMLGlobalProps {
 
   translate?: 'yes' | 'no';
 
+  rel?: string;
+
 }
 
 
@@ -204,15 +282,13 @@ export interface IWidgetProps extends IWidgetStandardProps, IWidgetHTMLGlobalPro
 
 
 
-
-
 /**
  * ITextProps extends IWidgetStandardProps
  * @description Propriétés des textes de widget
  */
 export interface ITextProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
 
-  child: string;
+  child: string | IWidget<ITextProps, HTMLSpanElement>;
 
 }
 
@@ -348,15 +424,31 @@ export interface IFormProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps
 
   | 'help';
 
-  target?: '_blank'
-
-  | '_parent'
-
-  | '_top'
-
-  | '_self';
+  target?: IElementTargetAttribute;
 
   child: IChildElement
+
+}
+
+
+
+export interface IAnchorProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
+
+  href: string;
+
+  hreflang?: string;
+
+  ping?: string;
+
+  referrerpolicy?: IWidgetReferrerPolicy;
+
+  target?: IElementTargetAttribute;
+
+  type?: string;
+
+  download?: string;
+
+  media?: string;
 
 }
 
@@ -441,7 +533,7 @@ export interface IInputProps extends IWidgetStandardProps, IWidgetHTMLGlobalProp
 
   formnovalidate?: boolean;
 
-  formtarget?: '_blank' | '_self' | '_parent' | '_top' | string;
+  formtarget?: IElementTargetAttribute;
 
   list?: string;
 

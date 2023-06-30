@@ -466,8 +466,9 @@ declare module '@protorians/aun/foundations' {
 }
 declare module '@protorians/aun/index' {
   import { AunElement, AunState, AunWidget, AunView } from "@protorians/aun/foundations";
-  import { AUNWindow, IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWTarget, ITextProps, IWidgetStandardProps, IInputProps, IFormProps, IModalProps, IButtonProps, IWidgetProps, IStackViews, IVideoProps, IAudioProps, IIFrameProps } from "@protorians/aun/types";
+  import { AUNWindow, IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWTarget, ITextProps, IWidgetStandardProps, IInputProps, IFormProps, IButtonProps, IWidgetProps, IStackViews, IVideoProps, IAudioProps, IIFrameProps, IAnchorProps } from "@protorians/aun/types";
   import { IProps } from "@protorians/core/types";
+  export function useAUNWindow(): AUNWindow;
   /**
    * WidgetWhitelistProps
    * @description Liste des propriétés réservés aux traitement des widgets
@@ -634,7 +635,17 @@ declare module '@protorians/aun/index' {
    * })
    */
   export function FormWidget(props: IFormProps): IWidget<IFormProps, HTMLFormElement>;
-  export function ModalWidget(props: IModalProps): IWidget<IModalProps, HTMLFormElement>;
+  /**
+   * FormWidget
+   * @description Calque de Formulaire
+   * @param props Propriétés de formulaire
+   * @example
+   * FormWidget({
+   *    method: 'post',
+   *    action: 'publish',
+   * })
+   */
+  export function AnchorWidget(props: IAnchorProps): IWidget<IAnchorProps, HTMLAnchorElement>;
   /**
    * View
    * @param component Composant utilisé pour la vue
@@ -768,6 +779,16 @@ declare module '@protorians/aun/types' {
   /// <reference types="node" />
   import type { IAppearance, IAppearanceObject, IAppearanceStyleSheet, IEventDispatcher, IEventDispatcherCallback, INavigation, INavigationMiddlewareCallback, INavigationOptions, IProps } from "@protorians/core/types";
   import { ICoreTransition } from "@protorians/core/types";
+  export type IElementTargetAttribute = '_blank' | '_self' | '_parent' | '_top' | string;
+  export type IThemeColor = 'text' | 'text-lite' | 'text-heavy' | 'layer-heavy' | 'layer' | 'layer-lite' | 'one-lite' | 'one' | 'one-heavy' | 'two-lite' | 'two' | 'two-heavy' | 'three-lite' | 'three' | 'three-heavy' | 'four-lite' | 'four' | 'four-heavy' | 'five-lite' | 'five' | 'five-heavy' | 'error-lite' | 'error' | 'error-heavy' | 'warning-lite' | 'warning' | 'warning-heavy' | 'success-lite' | 'success' | 'success-heavy' | 'black-lite' | 'black' | 'black-heavy' | 'white-lite' | 'white' | 'white-heavy' | 'dark-lite' | 'dark' | 'dark-heavy' | 'light-lite' | 'light' | 'light-heavy';
+  export type IMouseActionPayload<I> = {
+      event?: Event;
+      item: I;
+  };
+  export type IMouseAction<I> = {
+      type?: keyof HTMLElementEventMap;
+      callback: (payload: IMouseActionPayload<I>) => void;
+  };
   export interface AunNode {
       AUNAOD?: boolean;
   }
@@ -823,6 +844,7 @@ declare module '@protorians/aun/types' {
       draggable?: boolean;
       hidden?: boolean;
       translate?: 'yes' | 'no';
+      rel?: string;
   }
   export interface IWidgetGlobalStandardProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
   }
@@ -856,7 +878,7 @@ declare module '@protorians/aun/types' {
    * @description Propriétés des textes de widget
    */
   export interface ITextProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
-      child: string;
+      child: string | IWidget<ITextProps, HTMLSpanElement>;
   }
   export interface IVideoProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
       autoplay?: boolean;
@@ -909,8 +931,18 @@ declare module '@protorians/aun/types' {
       name?: string;
       novalidate?: boolean;
       rel?: 'external' | 'license' | 'next' | 'nofollow' | 'noopener' | 'noreferrer' | 'opener' | 'prev' | 'search' | 'help';
-      target?: '_blank' | '_parent' | '_top' | '_self';
+      target?: IElementTargetAttribute;
       child: IChildElement;
+  }
+  export interface IAnchorProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
+      href: string;
+      hreflang?: string;
+      ping?: string;
+      referrerpolicy?: IWidgetReferrerPolicy;
+      target?: IElementTargetAttribute;
+      type?: string;
+      download?: string;
+      media?: string;
   }
   export interface IButtonProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
       type?: 'button' | 'submit' | 'reset';
@@ -930,7 +962,7 @@ declare module '@protorians/aun/types' {
       formenctype?: string;
       formmethod?: 'get' | 'post';
       formnovalidate?: boolean;
-      formtarget?: '_blank' | '_self' | '_parent' | '_top' | string;
+      formtarget?: IElementTargetAttribute;
       list?: string;
       max?: number | string;
       min?: number | string;

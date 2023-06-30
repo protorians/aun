@@ -1,11 +1,16 @@
 import CoreAppearance from "@protorians/core/appearance";
-import { AunConstruct, AunElement, AunState, AunWidget, AunView, AunStackViews, } from "./foundations";
+import { AunConstruct, AunElement, AunState, AunWidget, AunView, AunStackViews } from "./foundations";
 import { UnCamelize } from "@protorians/core/utilities";
-import Presenters, { ModalPresenter } from "@protorians/core/presenters";
 const aunWindow = Object.assign({}, {
     _CurrentStackViews: undefined,
 }, window);
 aunWindow.AUNRC = aunWindow.AUNRC || {};
+export function useAUNWindow() {
+    return Object.assign({}, {
+        AUNRC: aunWindow.AUNRC || {},
+        // AUNCMQ: new AUNContrustMutations(),
+    }, window);
+}
 /**
  * WidgetWhitelistProps
  * @description Liste des propriétés réservés aux traitement des widgets
@@ -269,31 +274,43 @@ export function ButtonWidget(props) {
 export function FormWidget(props) {
     return setWidgetProperty(RawWidget('form', props), props);
 }
-export function ModalWidget(props) {
-    let modal = undefined;
-    const state = CreateState({
-        open: props.isOpen || false,
-    });
-    const widget = Widget({
-        child: props.child
-    });
-    modal = Presenters.context(new ModalPresenter(widget.element.instance, {
-        host: widget.element.instance.parentElement,
-    }));
-    props.trigger.ready(() => {
-        console.log('Ready Modal->', modal);
-        props.trigger.element.on('click', () => {
-            if (state.value.open)
-                modal?.open();
-            else
-                modal?.close();
-            state.set({ open: !state.value.open });
-        });
-        if (props.isOpen)
-            modal?.open();
-    });
-    return props.trigger;
+/**
+ * FormWidget
+ * @description Calque de Formulaire
+ * @param props Propriétés de formulaire
+ * @example
+ * FormWidget({
+ *    method: 'post',
+ *    action: 'publish',
+ * })
+ */
+export function AnchorWidget(props) {
+    return setWidgetProperty(RawWidget('a', props), props);
 }
+// export function ModalWidget(props: IModalProps): IWidget<IModalProps, HTMLFormElement> {
+//   let modal: IPresenters<IPresenterModalProps> | undefined = undefined;
+//   const state = CreateState<IModalStateProps>({
+//     open: props.isOpen || false,
+//   });
+//   const widget = Widget({
+//     child: props.child
+//   });
+//   modal = Presenters.context(
+//     new ModalPresenter(widget.element.instance, {
+//       host: widget.element.instance.parentElement,
+//     })
+//   );
+//   props.trigger.ready(() => {
+//     console.log('Ready Modal->', modal)
+//     props.trigger.element.on('click', () => {
+//       if (state.value.open) modal?.open()
+//       else modal?.close()
+//       state.set({ open: !state.value.open });
+//     })
+//     if (props.isOpen) modal?.open()
+//   })
+//   return props.trigger;
+// }
 // export function SheetWidget(){}
 // export function ActionSheetWidget(){}
 // export function ListSheetWidget(){}

@@ -6,7 +6,7 @@ import {
   AunState,
   AunWidget,
   AunView,
-  AunStackViews,
+  AunStackViews
 } from "./foundations";
 
 import {
@@ -29,18 +29,18 @@ import {
   IWidgetStandardProps,
   IInputProps,
   IFormProps,
-  IModalProps,
-  IModalStateProps,
+  // IModalProps,
+  // IModalStateProps,
   IButtonProps,
   IWidgetProps,
   IStackViews,
   IVideoProps,
   IAudioProps,
-  IIFrameProps
+  IIFrameProps,
+  IAnchorProps
 } from "./types";
-import { IPresenterModalProps, IPresenters, IProps } from "@protorians/core/types";
+import { IProps } from "@protorians/core/types";
 import { UnCamelize } from "@protorians/core/utilities";
-import Presenters, { ModalPresenter } from "@protorians/core/presenters";
 
 
 const aunWindow: AUNWindow = Object.assign({}, {
@@ -49,7 +49,20 @@ const aunWindow: AUNWindow = Object.assign({}, {
 
 }, window)
 
-aunWindow.AUNRC = aunWindow.AUNRC || {}
+aunWindow.AUNRC = aunWindow.AUNRC || {};
+
+
+export function useAUNWindow(): AUNWindow {
+
+  return Object.assign({}, {
+
+    AUNRC: aunWindow.AUNRC || {},
+
+    // AUNCMQ: new AUNContrustMutations(),
+
+  }, window)
+
+}
 
 
 
@@ -512,53 +525,77 @@ export function FormWidget(props: IFormProps): IWidget<IFormProps, HTMLFormEleme
 
 
 
-export function ModalWidget(props: IModalProps): IWidget<IModalProps, HTMLFormElement> {
+/**
+ * FormWidget
+ * @description Calque de Formulaire
+ * @param props Propriétés de formulaire
+ * @example
+ * FormWidget({
+ *    method: 'post',
+ *    action: 'publish',
+ * })
+ */
+export function AnchorWidget(props: IAnchorProps): IWidget<IAnchorProps, HTMLAnchorElement> {
 
-  let modal: IPresenters<IPresenterModalProps> | undefined = undefined;
+  return setWidgetProperty<IAnchorProps, HTMLAnchorElement>(
 
-  const state = CreateState<IModalStateProps>({
+    RawWidget<IAnchorProps, HTMLAnchorElement>('a', props),
 
-    open: props.isOpen || false,
-
-  });
-
-  const widget = Widget({
-
-    child: props.child
-
-  });
-
-  modal = Presenters.context(
-
-    new ModalPresenter(widget.element.instance, {
-
-      host: widget.element.instance.parentElement,
-
-    })
+    props
 
   );
 
-  props.trigger.ready(() => {
-
-    console.log('Ready Modal->', modal)
-
-    props.trigger.element.on('click', () => {
-
-      if (state.value.open) modal?.open()
-
-      else modal?.close()
-
-      state.set({ open: !state.value.open });
-
-    })
-
-    if (props.isOpen) modal?.open()
-
-  })
-
-  return props.trigger;
-
 }
+
+
+
+// export function ModalWidget(props: IModalProps): IWidget<IModalProps, HTMLFormElement> {
+
+//   let modal: IPresenters<IPresenterModalProps> | undefined = undefined;
+
+//   const state = CreateState<IModalStateProps>({
+
+//     open: props.isOpen || false,
+
+//   });
+
+//   const widget = Widget({
+
+//     child: props.child
+
+//   });
+
+//   modal = Presenters.context(
+
+//     new ModalPresenter(widget.element.instance, {
+
+//       host: widget.element.instance.parentElement,
+
+//     })
+
+//   );
+
+//   props.trigger.ready(() => {
+
+//     console.log('Ready Modal->', modal)
+
+//     props.trigger.element.on('click', () => {
+
+//       if (state.value.open) modal?.open()
+
+//       else modal?.close()
+
+//       state.set({ open: !state.value.open });
+
+//     })
+
+//     if (props.isOpen) modal?.open()
+
+//   })
+
+//   return props.trigger;
+
+// }
 
 
 // export function SheetWidget(){}
