@@ -1882,6 +1882,8 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
             this.last = component;
 
+            this.emitter.dispatch('navigate', this);
+
           })
 
           if (this.last) {
@@ -1901,6 +1903,8 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
           canvas.append(component.element.instance)
 
           this.last = component;
+
+          this.emitter.dispatch('navigate', this);
 
         }
 

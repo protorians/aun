@@ -1053,6 +1053,7 @@ _AunStackViews_views = new WeakMap(), _AunStackViews_current = new WeakMap(), _A
                 view.options.transitions?.entry.startIn(component.element.instance, () => {
                     this.last?.element.remove();
                     this.last = component;
+                    this.emitter.dispatch('navigate', this);
                 });
                 if (this.last) {
                     oldView?.options.transitions?.exit.startOut(this.last.element.instance, () => { });
@@ -1063,6 +1064,7 @@ _AunStackViews_views = new WeakMap(), _AunStackViews_current = new WeakMap(), _A
                 canvas.innerText = '';
                 canvas.append(component.element.instance);
                 this.last = component;
+                this.emitter.dispatch('navigate', this);
             }
         });
     }

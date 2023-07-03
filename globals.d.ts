@@ -1245,6 +1245,7 @@ declare module '@protorians/aun/types' {
   };
   export interface IStackViewsEmitterScheme<Scheme> {
       error: keyof Scheme;
+      navigate: IStackViews<Scheme>;
   }
   export interface IStackViews<Scheme> {
       get views(): IStackViewsList<Scheme>;

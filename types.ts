@@ -1274,6 +1274,10 @@ export interface IStackViewsEmitterScheme<Scheme> {
 
   error: keyof Scheme;
 
+  navigate: IStackViews<Scheme>;
+
+  // back: IStackViews<Scheme>;
+
 }
 
 export interface IStackViews<Scheme> {
