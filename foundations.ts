@@ -1950,6 +1950,21 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
   }
 
 
+  display(state?: boolean) {
+
+    findElement(this.options.canvas, canvas => {
+
+      if (!state) canvas.style.display = 'flex'
+
+      else canvas.style.removeProperty('display')
+
+    })
+
+    return this;
+
+  }
+
+
 }
 
 

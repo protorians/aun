@@ -1298,6 +1298,8 @@ export interface IStackViews<Scheme> {
 
   run(): this;
 
+  display(state?: boolean): this;
+
 }
 
 

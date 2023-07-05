@@ -461,6 +461,7 @@ declare module '@protorians/aun/foundations' {
        * Démarrage
        */
       run(): this;
+      display(state?: boolean): this;
   }
 
 }
@@ -1256,6 +1257,7 @@ declare module '@protorians/aun/types' {
       last: IWidget<any, any> | undefined;
       middleware(callback: INavigationMiddlewareCallback<Scheme>): this;
       run(): this;
+      display(state?: boolean): this;
   }
 
 }

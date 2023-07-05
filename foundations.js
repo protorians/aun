@@ -1003,6 +1003,15 @@ export class AunStackViews {
         }
         return this;
     }
+    display(state) {
+        findElement(this.options.canvas, canvas => {
+            if (!state)
+                canvas.style.display = 'flex';
+            else
+                canvas.style.removeProperty('display');
+        });
+        return this;
+    }
 }
 _AunStackViews_views = new WeakMap(), _AunStackViews_current = new WeakMap(), _AunStackViews_instances = new WeakSet(), _AunStackViews_initializeCanvas = function _AunStackViews_initializeCanvas() {
     findElement(this.options.canvas, canvas => {
