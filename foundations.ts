@@ -41,7 +41,8 @@ import type {
   IStateVoidCallback,
   IWidgetStandardProps,
   IWidgetAttributeProps,
-  IWidgetAttributeNSProps
+  IWidgetAttributeNSProps,
+  IStackViewsAnimate
 } from "./types";
 import type {
   IAppearance,
@@ -55,6 +56,7 @@ import type {
 import { AttributesObject, UpdateObject } from "@protorians/core/utilities";
 import { Navigation } from "@protorians/core/navigation";
 import CoreAppearance from "@protorians/core/appearance";
+import { CoreTransitions } from "@protorians/core/transitions";
 
 
 
@@ -1768,6 +1770,7 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   }
 
+
   #initializeCanvas() {
 
     findElement(this.options.canvas, canvas => {
@@ -1954,13 +1957,77 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
     findElement(this.options.canvas, canvas => {
 
-      if (!state) canvas.style.display = 'flex'
+      if (state) canvas.style.removeProperty('display')
 
-      else canvas.style.removeProperty('display')
+      else canvas.style.display = 'none'
 
     })
 
     return this;
+
+  }
+
+  animate(animate: IStackViewsAnimate) {
+
+    findElement(this.options.canvas, canvas =>
+
+      animate.transition[animate.moment == 'in' ? 'startIn' : 'startOut'](canvas, animate.done)
+
+    )
+
+    return this;
+
+  }
+
+  goDown() {
+
+    return this.animate({
+
+      transition: CoreTransitions.SlideFadedVertical,
+
+      moment: 'out',
+
+      // done: () => this.display(true)
+
+    })
+
+  }
+
+  goUp() {
+
+    return this.animate({
+
+      transition: CoreTransitions.SlideFadedVertical,
+
+      moment: 'in',
+
+      // done: () => this.display(false)
+
+    })
+
+  }
+
+  goCard() {
+
+    return this.animate({
+
+      transition: CoreTransitions.Card,
+
+      moment: 'in',
+
+    })
+
+  }
+
+  outCard() {
+
+    return this.animate({
+
+      transition: CoreTransitions.Card,
+
+      moment: 'out',
+
+    })
 
   }
 

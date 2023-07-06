@@ -1,4 +1,5 @@
 import type {
+  IAnimationStateCallback,
   IAppearance,
   IAppearanceObject,
   IAppearanceStyleSheet,
@@ -9,12 +10,13 @@ import type {
   INavigationOptions,
   IProps
 } from "@protorians/core/types";
-import { ICoreTransition } from "@protorians/core/types";
+import type {
+  ICoreTransition
+} from "@protorians/core/types";
 
 
 
 export type IElementTargetAttribute = '_blank' | '_self' | '_parent' | '_top' | string;
-
 
 export type IThemeColor =
 
@@ -1300,13 +1302,28 @@ export interface IStackViews<Scheme> {
 
   display(state?: boolean): this;
 
+  animate(animate: IStackViewsAnimate): this;
+
+  goDown(): this;
+
+  goUp(): this;
+
+  goCard(): this;
+
+  outCard(): this;
+
 }
 
 
 
+export type IStackViewsAnimate = {
 
+  transition: ICoreTransition;
 
+  moment: 'in' | 'out',
 
+  done?: IAnimationStateCallback
 
+}
 
 

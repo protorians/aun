@@ -9,7 +9,7 @@ declare module '@protorians/aun/exceptions' {
 }
 declare module '@protorians/aun/foundations' {
   import EventDispatcher from "@protorians/core/event-dispatcher";
-  import type { IAttributesMap, IChildren, IComponentConstructor, IConstruct, IConstructEmitterScheme, IElement, IElementClassName, IElementCSS, IElementCSSRemoves, IElementEmitterScheme, IElementEventCallback, IElementMeasureCallback, IElementOffsetCallback, IFindElementCallback, INode, IStackViews, IStackViewsEmitterScheme, IStackViewsList, IStackViewsOptions, IState, IStateCallback, IStateErrorCallback, IStateManager, IStateManagerEmitterScheme, IStateRecords, IView, IViewOptions, IWidget, IWidgetEmitterScheme, IWidgetLayerCallback, IWidgetReadyCallback, IWidgetRequestAnimationFrameCallback, IWidgetTimerCallback, IWTarget, IWTargetNode, IStateVoidCallback, IWidgetStandardProps } from "@protorians/aun/types";
+  import type { IAttributesMap, IChildren, IComponentConstructor, IConstruct, IConstructEmitterScheme, IElement, IElementClassName, IElementCSS, IElementCSSRemoves, IElementEmitterScheme, IElementEventCallback, IElementMeasureCallback, IElementOffsetCallback, IFindElementCallback, INode, IStackViews, IStackViewsEmitterScheme, IStackViewsList, IStackViewsOptions, IState, IStateCallback, IStateErrorCallback, IStateManager, IStateManagerEmitterScheme, IStateRecords, IView, IViewOptions, IWidget, IWidgetEmitterScheme, IWidgetLayerCallback, IWidgetReadyCallback, IWidgetRequestAnimationFrameCallback, IWidgetTimerCallback, IWTarget, IWTargetNode, IStateVoidCallback, IWidgetStandardProps, IStackViewsAnimate } from "@protorians/aun/types";
   import type { IAppearance, IAppearanceObject, IEventDispatcher, IEventDispatcherCallback, INavigation, INavigationMiddlewareCallback } from "@protorians/core/types";
   /**
    * findElement — Find Element
@@ -462,6 +462,11 @@ declare module '@protorians/aun/foundations' {
        */
       run(): this;
       display(state?: boolean): this;
+      animate(animate: IStackViewsAnimate): this;
+      goDown(): this;
+      goUp(): this;
+      goCard(): this;
+      outCard(): this;
   }
 
 }
@@ -778,8 +783,8 @@ declare module '@protorians/aun/index' {
 }
 declare module '@protorians/aun/types' {
   /// <reference types="node" />
-  import type { IAppearance, IAppearanceObject, IAppearanceStyleSheet, IEventDispatcher, IEventDispatcherCallback, INavigation, INavigationMiddlewareCallback, INavigationOptions, IProps } from "@protorians/core/types";
-  import { ICoreTransition } from "@protorians/core/types";
+  import type { IAnimationStateCallback, IAppearance, IAppearanceObject, IAppearanceStyleSheet, IEventDispatcher, IEventDispatcherCallback, INavigation, INavigationMiddlewareCallback, INavigationOptions, IProps } from "@protorians/core/types";
+  import type { ICoreTransition } from "@protorians/core/types";
   export type IElementTargetAttribute = '_blank' | '_self' | '_parent' | '_top' | string;
   export type IThemeColor = 'text' | 'text-lite' | 'text-heavy' | 'layer-heavy' | 'layer' | 'layer-lite' | 'one-lite' | 'one' | 'one-heavy' | 'two-lite' | 'two' | 'two-heavy' | 'three-lite' | 'three' | 'three-heavy' | 'four-lite' | 'four' | 'four-heavy' | 'five-lite' | 'five' | 'five-heavy' | 'error-lite' | 'error' | 'error-heavy' | 'warning-lite' | 'warning' | 'warning-heavy' | 'success-lite' | 'success' | 'success-heavy' | 'black-lite' | 'black' | 'black-heavy' | 'white-lite' | 'white' | 'white-heavy' | 'dark-lite' | 'dark' | 'dark-heavy' | 'light-lite' | 'light' | 'light-heavy';
   export type IMouseActionPayload<I> = {
@@ -1258,7 +1263,17 @@ declare module '@protorians/aun/types' {
       middleware(callback: INavigationMiddlewareCallback<Scheme>): this;
       run(): this;
       display(state?: boolean): this;
+      animate(animate: IStackViewsAnimate): this;
+      goDown(): this;
+      goUp(): this;
+      goCard(): this;
+      outCard(): this;
   }
+  export type IStackViewsAnimate = {
+      transition: ICoreTransition;
+      moment: 'in' | 'out';
+      done?: IAnimationStateCallback;
+  };
 
 }
 declare module '@protorians/aun' {

@@ -14,6 +14,7 @@ import EventDispatcher from "@protorians/core/event-dispatcher";
 import { AttributesObject, UpdateObject } from "@protorians/core/utilities";
 import { Navigation } from "@protorians/core/navigation";
 import CoreAppearance from "@protorians/core/appearance";
+import { CoreTransitions } from "@protorians/core/transitions";
 /**
  * findElement — Find Element
  * @param find Recherché
@@ -1005,12 +1006,42 @@ export class AunStackViews {
     }
     display(state) {
         findElement(this.options.canvas, canvas => {
-            if (!state)
-                canvas.style.display = 'flex';
-            else
+            if (state)
                 canvas.style.removeProperty('display');
+            else
+                canvas.style.display = 'none';
         });
         return this;
+    }
+    animate(animate) {
+        findElement(this.options.canvas, canvas => animate.transition[animate.moment == 'in' ? 'startIn' : 'startOut'](canvas, animate.done));
+        return this;
+    }
+    goDown() {
+        return this.animate({
+            transition: CoreTransitions.SlideFadedVertical,
+            moment: 'out',
+            // done: () => this.display(true)
+        });
+    }
+    goUp() {
+        return this.animate({
+            transition: CoreTransitions.SlideFadedVertical,
+            moment: 'in',
+            // done: () => this.display(false)
+        });
+    }
+    goCard() {
+        return this.animate({
+            transition: CoreTransitions.Card,
+            moment: 'in',
+        });
+    }
+    outCard() {
+        return this.animate({
+            transition: CoreTransitions.Card,
+            moment: 'out',
+        });
     }
 }
 _AunStackViews_views = new WeakMap(), _AunStackViews_current = new WeakMap(), _AunStackViews_instances = new WeakSet(), _AunStackViews_initializeCanvas = function _AunStackViews_initializeCanvas() {
