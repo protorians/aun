@@ -240,8 +240,8 @@ export function TextareaWidget(props) {
 }
 /**
  * LabelWidget
- * @description Calque de champs de texte multiple
- * @param props Propriétés de champs de texte
+ * @description Calque de label pour les champs
+ * @param props Propriétés du label
  * @example
  * LabelWidget({
  *    for: 'element-id',
