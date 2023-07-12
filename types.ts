@@ -568,6 +568,12 @@ export interface IInputProps extends IWidgetStandardProps, IWidgetHTMLGlobalProp
 }
 
 
+
+export interface ITextareaProps extends Omit<IInputProps, 'type' | 'step' | 'src'> {
+
+}
+
+
 export interface IImageProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
 
   src: string;

@@ -461,18 +461,38 @@ declare module '@protorians/aun/foundations' {
        * Démarrage
        */
       run(): this;
+      /**
+       * Affichage de la pile de vues
+       * @param state Etat de l'affichage (`true` : pour afficher)
+       */
       display(state?: boolean): this;
+      /**
+       * Animation de la pile de vues
+       * @param animate Construction de l'animation
+       */
       animate(animate: IStackViewsAnimate): this;
+      /**
+       * Faire descendre la pile de vues au bas de l'écran
+       */
       goDown(): this;
+      /**
+       * Faire monter la pile de vues à sa place initiale
+       */
       goUp(): this;
+      /**
+       * Afficher la pile de vues en mode carte (Réduction du scalling)
+       */
       goCard(): this;
+      /**
+       * Sortir de l'affiche carte
+       */
       outCard(): this;
   }
 
 }
 declare module '@protorians/aun/index' {
   import { AunElement, AunState, AunWidget, AunView } from "@protorians/aun/foundations";
-  import { AUNWindow, IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWTarget, ITextProps, IWidgetStandardProps, IInputProps, IFormProps, IButtonProps, IWidgetProps, IStackViews, IVideoProps, IAudioProps, IIFrameProps, IAnchorProps } from "@protorians/aun/types";
+  import { AUNWindow, IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWTarget, ITextProps, IWidgetStandardProps, IInputProps, IFormProps, IButtonProps, IWidgetProps, IStackViews, IVideoProps, IAudioProps, IIFrameProps, IAnchorProps, ITextareaProps } from "@protorians/aun/types";
   import { IProps } from "@protorians/core/types";
   export function useAUNWindow(): AUNWindow;
   /**
@@ -602,6 +622,17 @@ declare module '@protorians/aun/index' {
    * })
    */
   export function InputWidget(props: IInputProps): IWidget<IInputProps, HTMLInputElement>;
+  /**
+   * TextareaWidget
+   * @description Calque de champs de texte multiple
+   * @param props Propriétés de champs de texte
+   * @example
+   * TextareaWidget({
+   *    value: 'content',
+   *    ...
+   * })
+   */
+  export function TextareaWidget(props: ITextareaProps): IWidget<ITextareaProps, HTMLTextAreaElement>;
   /**
    * VideoWidget
    * @param props Propriétés
@@ -983,6 +1014,8 @@ declare module '@protorians/aun/types' {
       src?: string;
       step?: number;
       value?: string;
+  }
+  export interface ITextareaProps extends Omit<IInputProps, 'type' | 'step' | 'src'> {
   }
   export interface IImageProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
       src: string;

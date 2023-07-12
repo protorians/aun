@@ -120,6 +120,7 @@ export function findElement(
 }
 
 
+
 /**
  * AUN Element
  * @description Encapscule l'lement HTML pour un usage optimal
@@ -1952,7 +1953,10 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   }
 
-
+  /**
+   * Affichage de la pile de vues
+   * @param state Etat de l'affichage (`true` : pour afficher)
+   */
   display(state?: boolean) {
 
     findElement(this.options.canvas, canvas => {
@@ -1967,6 +1971,10 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   }
 
+  /**
+   * Animation de la pile de vues
+   * @param animate Construction de l'animation
+   */
   animate(animate: IStackViewsAnimate) {
 
     findElement(this.options.canvas, canvas =>
@@ -1979,6 +1987,9 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   }
 
+  /**
+   * Faire descendre la pile de vues au bas de l'écran
+   */
   goDown() {
 
     return this.animate({
@@ -1993,6 +2004,9 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   }
 
+  /**
+   * Faire monter la pile de vues à sa place initiale
+   */
   goUp() {
 
     return this.animate({
@@ -2007,6 +2021,9 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   }
 
+  /**
+   * Afficher la pile de vues en mode carte (Réduction du scalling)
+   */
   goCard() {
 
     return this.animate({
@@ -2019,6 +2036,9 @@ export class AunStackViews<Scheme> implements IStackViews<Scheme>{
 
   }
 
+  /**
+   * Sortir de l'affiche carte
+   */
   outCard() {
 
     return this.animate({

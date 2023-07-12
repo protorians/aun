@@ -37,7 +37,8 @@ import {
   IVideoProps,
   IAudioProps,
   IIFrameProps,
-  IAnchorProps
+  IAnchorProps,
+  ITextareaProps
 } from "./types";
 import { IProps } from "@protorians/core/types";
 import { UnCamelize } from "@protorians/core/utilities";
@@ -440,6 +441,23 @@ export function ImageWidget(props: IImageProps): IWidget<IImageProps, HTMLImageE
 export function InputWidget(props: IInputProps): IWidget<IInputProps, HTMLInputElement> {
 
   return CreateCustomWidget<IInputProps, HTMLInputElement>('input', props)
+
+}
+
+
+/**
+ * TextareaWidget
+ * @description Calque de champs de texte multiple
+ * @param props Propriétés de champs de texte
+ * @example
+ * TextareaWidget({
+ *    value: 'content',
+ *    ... 
+ * })
+ */
+export function TextareaWidget(props: ITextareaProps): IWidget<ITextareaProps, HTMLTextAreaElement> {
+
+  return CreateCustomWidget<ITextareaProps, HTMLTextAreaElement>('textarea', props)
 
 }
 

@@ -226,6 +226,19 @@ export function InputWidget(props) {
     return CreateCustomWidget('input', props);
 }
 /**
+ * TextareaWidget
+ * @description Calque de champs de texte multiple
+ * @param props Propriétés de champs de texte
+ * @example
+ * TextareaWidget({
+ *    value: 'content',
+ *    ...
+ * })
+ */
+export function TextareaWidget(props) {
+    return CreateCustomWidget('textarea', props);
+}
+/**
  * VideoWidget
  * @param props Propriétés
  */

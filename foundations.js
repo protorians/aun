@@ -1004,6 +1004,10 @@ export class AunStackViews {
         }
         return this;
     }
+    /**
+     * Affichage de la pile de vues
+     * @param state Etat de l'affichage (`true` : pour afficher)
+     */
     display(state) {
         findElement(this.options.canvas, canvas => {
             if (state)
@@ -1013,10 +1017,17 @@ export class AunStackViews {
         });
         return this;
     }
+    /**
+     * Animation de la pile de vues
+     * @param animate Construction de l'animation
+     */
     animate(animate) {
         findElement(this.options.canvas, canvas => animate.transition[animate.moment == 'in' ? 'startIn' : 'startOut'](canvas, animate.done));
         return this;
     }
+    /**
+     * Faire descendre la pile de vues au bas de l'écran
+     */
     goDown() {
         return this.animate({
             transition: CoreTransitions.SlideFadedVertical,
@@ -1024,6 +1035,9 @@ export class AunStackViews {
             // done: () => this.display(true)
         });
     }
+    /**
+     * Faire monter la pile de vues à sa place initiale
+     */
     goUp() {
         return this.animate({
             transition: CoreTransitions.SlideFadedVertical,
@@ -1031,12 +1045,18 @@ export class AunStackViews {
             // done: () => this.display(false)
         });
     }
+    /**
+     * Afficher la pile de vues en mode carte (Réduction du scalling)
+     */
     goCard() {
         return this.animate({
             transition: CoreTransitions.Card,
             moment: 'in',
         });
     }
+    /**
+     * Sortir de l'affiche carte
+     */
     outCard() {
         return this.animate({
             transition: CoreTransitions.Card,
