@@ -492,7 +492,7 @@ declare module '@protorians/aun/foundations' {
 }
 declare module '@protorians/aun/index' {
   import { AunElement, AunState, AunWidget, AunView } from "@protorians/aun/foundations";
-  import { AUNWindow, IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWTarget, ITextProps, IWidgetStandardProps, IInputProps, IFormProps, IButtonProps, IWidgetProps, IStackViews, IVideoProps, IAudioProps, IIFrameProps, IAnchorProps, ITextareaProps } from "@protorians/aun/types";
+  import { AUNWindow, IChildren, IComponentConstructor, IHydrateComponent, IKitProps, IImageProps, INode, IStackViewsList, IStackViewsOptions, IState, IViewOptions, IWidget, IWidgetAsyncCallback, IWTarget, ITextProps, IWidgetStandardProps, IInputProps, IFormProps, IButtonProps, IWidgetProps, IStackViews, IVideoProps, IAudioProps, IIFrameProps, IAnchorProps, ITextareaProps, ILabelProps } from "@protorians/aun/types";
   import { IProps } from "@protorians/core/types";
   export function useAUNWindow(): AUNWindow;
   /**
@@ -633,6 +633,17 @@ declare module '@protorians/aun/index' {
    * })
    */
   export function TextareaWidget(props: ITextareaProps): IWidget<ITextareaProps, HTMLTextAreaElement>;
+  /**
+   * LabelWidget
+   * @description Calque de champs de texte multiple
+   * @param props Propriétés de champs de texte
+   * @example
+   * LabelWidget({
+   *    for: 'element-id',
+   *    ...
+   * })
+   */
+  export function LabelWidget(props: ILabelProps): IWidget<ILabelProps, HTMLLabelElement>;
   /**
    * VideoWidget
    * @param props Propriétés
@@ -1016,6 +1027,10 @@ declare module '@protorians/aun/types' {
       value?: string;
   }
   export interface ITextareaProps extends Omit<IInputProps, 'type' | 'step' | 'src'> {
+  }
+  export interface ILabelProps extends IWidgetGlobalStandardProps {
+      for?: string;
+      form?: string;
   }
   export interface IImageProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
       src: string;

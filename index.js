@@ -239,6 +239,19 @@ export function TextareaWidget(props) {
     return CreateCustomWidget('textarea', props);
 }
 /**
+ * LabelWidget
+ * @description Calque de champs de texte multiple
+ * @param props Propriétés de champs de texte
+ * @example
+ * LabelWidget({
+ *    for: 'element-id',
+ *    ...
+ * })
+ */
+export function LabelWidget(props) {
+    return CreateCustomWidget('label', props);
+}
+/**
  * VideoWidget
  * @param props Propriétés
  */

@@ -573,6 +573,14 @@ export interface ITextareaProps extends Omit<IInputProps, 'type' | 'step' | 'src
 
 }
 
+export interface ILabelProps extends IWidgetGlobalStandardProps {
+
+  for?: string;
+
+  form?: string;
+
+}
+
 
 export interface IImageProps extends IWidgetStandardProps, IWidgetHTMLGlobalProps {
 

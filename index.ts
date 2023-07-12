@@ -38,7 +38,8 @@ import {
   IAudioProps,
   IIFrameProps,
   IAnchorProps,
-  ITextareaProps
+  ITextareaProps,
+  ILabelProps
 } from "./types";
 import { IProps } from "@protorians/core/types";
 import { UnCamelize } from "@protorians/core/utilities";
@@ -458,6 +459,23 @@ export function InputWidget(props: IInputProps): IWidget<IInputProps, HTMLInputE
 export function TextareaWidget(props: ITextareaProps): IWidget<ITextareaProps, HTMLTextAreaElement> {
 
   return CreateCustomWidget<ITextareaProps, HTMLTextAreaElement>('textarea', props)
+
+}
+
+
+/**
+ * LabelWidget
+ * @description Calque de champs de texte multiple
+ * @param props Propriétés de champs de texte
+ * @example
+ * LabelWidget({
+ *    for: 'element-id',
+ *    ... 
+ * })
+ */
+export function LabelWidget(props: ILabelProps): IWidget<ILabelProps, HTMLLabelElement> {
+
+  return CreateCustomWidget<ILabelProps, HTMLLabelElement>('label', props)
 
 }
 
